@@ -1,0 +1,6 @@
+# heavy / derived: see docs/workflow-retopology.md ("O que vai para o git")
+projects/*/input/
+projects/*/output/
+projects/*/draft/
+__pycache__/
+*.blend1
