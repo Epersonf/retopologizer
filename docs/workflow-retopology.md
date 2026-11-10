@@ -39,6 +39,8 @@ docs/                    este workflow + notas por projeto
   ser a face de trás de nenhuma face (é o vermelho do Face Orientation). Cobre também o interior
   das cavidades abertas. Ignora hits quase rasantes (|n·d| < 0.1). `fix_flipped()` inverte faces
   vistas só por trás; `hidden` = faces com 0 votos de frente são apagadas (estavam enterradas).
+- **Z-fighting** (`qa_zfight.py`): nenhum par de triângulos paralelos a <1 mm com área de sobreposição
+  (face dentro de face, tampa/placa coplanar). Correção: afastar a placa 2–4 mm ou remover a face.
 - **UV** (`qa_uv.py`): zero overlap (entre e dentro de ilhas, rasterizado a 2048 e 4096), nada fora
   de 0-1, sem faces de área zero, gap mínimo de 8 px entre ilhas (a margem do bake é 8 px).
   `unwrap_atlas(names, margin=0.006, angle=89)`: smart project + densidade igual + pack (≈52% do atlas).
@@ -70,7 +72,15 @@ fazer um bake só**, numa imagem só (`tools/bake_maps.py`).
    canal B do glTF), AO. 2048 px, margem 16 px (EXTEND), 16 samples (AO 128), sem denoise.
 5. `wire_material.py` liga os PNGs num Principled e exporta o FBX só com os low-poly (a
    referência nunca vai para `output/`). PNGs e FBX em `output/`; .blend em `draft/`.
-6. Checar: % de faces pretas no basecolor por objeto (< 3%) e um render workbench TEXTURE.
+6. **Bake robusto** (`tools/bake_robust.py`, substitui o bake simples): além dos mapas, assa por
+   texel a posição do hit na referência e a flag Backfacing; texel válido = achou hit + frente +
+   hit a < `max_dist` (0.12) da malha low. Inválidos são re-assados com outros extrusion/ray
+   (0.10/0.20 → 0.05/0.10 → 0.20/0.40); o que sobrar é preenchido por inpaint dentro da mesma
+   ilha UV (`bake_inpaint.py`, equivale ao clone tool) e as ilhas são dilatadas na margem.
+   Devolve `worst_unbaked_faces` e `poor_fit_faces_mm` (faces da low longe da ref → ajustar
+   vértices) e dá para salvar um mapa de máscara (verde ok, amarelo recuperado, vermelho inpaint).
+   Chest: 1.27% inválido no 1º passe → 0.43% inpaint (tiras curvas da tampa/alça).
+7. Checar: % de faces pretas no basecolor por objeto (< 3%) e um render workbench TEXTURE.
 - Referência escondida no viewport (`hide_set`) faz o bake falhar: "No valid selected objects".
 
 ## Ajuste depois do UV/bake (sem quebrar UV)

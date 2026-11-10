@@ -13,6 +13,9 @@
 | wire_material.py | dentro do Blender | liga PNGs no Principled + exporta FBX só dos low |
 | qa_all.py | dentro do Blender | portão de QA: backfaces + UV (levanta erro) |
 | qa_faces.py | dentro do Blender | raycast multi-direção: nenhuma backface exposta; fix_flipped |
+| qa_zfight.py | dentro do Blender | faces coplanares sobrepostas (z-fighting/flicker): BVH + filtros numpy |
+| bake_robust.py | dentro do Blender | bake com validação por texel (hit/backface/distância), re-bake multi-passada e inpaint por ilha |
+| bake_inpaint.py | numpy puro | inpaint/dilate restritos à ilha UV (clone automático) |
 | qa_uv.py | dentro do Blender | overlap/gap/limites de UV; unwrap_atlas (smart project + pack) |
 | make_lean_blend.py | dentro do Blender | .blend enxuto p/ git (sem ref, imagens empacotadas) |
 | export_from_blend.py | `blender -b` | regenera PNGs + FBX a partir do .blend enxuto |

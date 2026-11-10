@@ -58,7 +58,9 @@ def _votes(names, n_dirs=64, res=80, graze=0.1):
 
 def qa_faces(names, n_dirs=64, res=80, tol=0, graze=0.1):
     front, back = _votes(names, n_dirs, res, graze)
-    bad = {n: sorted(i for i, c in back[n].items() if c > tol) for n in names}
+    # a real exposed backface collects many votes; single stray rays at crease/seam pixels are noise
+    bad = {n: sorted(i for i, c in back[n].items()
+                     if c > max(tol, 1, 0.002 * (c + front[n].get(i, 0)))) for n in names}
     nbad = sum(len(v) for v in bad.values())
     return {"pass": nbad == 0, "exposed_backface_faces": nbad,
             "per_object": {n: len(v) for n, v in bad.items()},

@@ -25,15 +25,18 @@ def _islands(me, uv):
     return [find(i) for i in range(len(me.polygons))]
 
 
-def qa_uv(names, size=2048, min_gap_px=8, layer=0):
+def qa_uv(names, size=2048, min_gap_px=8, layer=0, maps=False):
     cover = np.zeros((size, size), np.int16)      # polygons covering each pixel centre
     ids = np.zeros((size, size), np.int32)        # island id per pixel
+    pid = np.full((size, size), -1, np.int32)     # global polygon id per pixel
+    poly_of = []; base = 0
     out = {"oob_faces": 0, "zero_area_faces": 0, "flipped_uv_faces": 0}
     next_id = 1; island_count = 0
     for n in names:
         me = bpy.data.objects[n].data
         uvl = me.uv_layers[layer].data
         isl = _islands(me, uvl)
+        poly_of += [(n, k) for k in range(len(me.polygons))]
         remap = {}
         me.calc_loop_triangles()
         for p in me.polygons:
@@ -63,7 +66,8 @@ def qa_uv(names, size=2048, min_gap_px=8, layer=0):
             m = (l1 > 1e-9) & (l2 > 1e-9) & (1 - l1 - l2 > 1e-9)
             cover[ys[m], xs[m]] += 1
             ids[ys[m], xs[m]] = iid
-        island_count += len(remap)
+            pid[ys[m], xs[m]] = base + t.polygon_index
+        island_count += len(remap); base += len(me.polygons)
     out["overlap_pixels"] = int((cover > 1).sum())
     # minimum distance between different islands (shift test inside a disk of radius g)
     gap_bad = 0; g = int(min_gap_px)
@@ -77,6 +81,8 @@ def qa_uv(names, size=2048, min_gap_px=8, layer=0):
                 "coverage_pct": round(100 * float((ids > 0).mean()), 1), "size": size})
     out["pass"] = (out["overlap_pixels"] == 0 and out["oob_faces"] == 0 and
                    out["zero_area_faces"] == 0 and gap_bad == 0)
+    if maps:
+        out.update({"_ids": ids, "_pid": pid, "_poly_of": poly_of})
     return out
 
 
