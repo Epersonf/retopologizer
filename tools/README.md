@@ -20,6 +20,7 @@
 | ref_part.py | dentro do Blender | recorta a parte da ref que pertence a uma peça, no espaço local dela |
 | fit_report.py | dentro do Blender | erro novo→ref e ref→novo (mm) + células onde falta detalhe |
 | section_overlay.py | dentro do Blender | PNG de cortes: ref colorida × low branca |
+| render_thumbnail.py | dentro do Blender | thumbnail 1920x1080 jpg p/ loja (Eevee, 3 luzes, chão) |
 | qa_uv.py | dentro do Blender | overlap/gap/limites de UV; unwrap_atlas (smart project + pack) |
 | make_lean_blend.py | dentro do Blender | .blend enxuto p/ git (sem ref, imagens empacotadas) |
 | export_from_blend.py | `blender -b` | regenera PNGs + FBX a partir do .blend enxuto |

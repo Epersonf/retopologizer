@@ -111,6 +111,17 @@ fazer um bake só**, numa imagem só (`tools/bake_maps.py`).
 - O que gerava artefatos no bake: placas/presilha 2-3 cm além da ref (raio longe) e topo da
   cúpula ~1 cm alto. Corrigido: frente das placas +0.02, topo −0.004…−0.013, cintas ajustadas.
 
+## Listagem / loja (Fab)
+Gerar no fim, com o material final ligado: `projects/<nome>/listing/`.
+- **Thumbnail**: `render_thumbnail(partes, "listing/thumbnail.jpg")` (`tools/render_thumbnail.py`): 1920x1080
+  (mínimo do Fab), jpg/png/webp, <= 3 MB (sai ~0,2 MB), Eevee + 3 luzes + chão. Ajustar `cam`/`look_at` à escala do
+  modelo e **olhar o arquivo** antes de subir (enquadramento, nada cortado, textura final).
+- **description.md**: título, o que vem, tabela técnica (tris, malhas, UV, tamanho, pivô, formato), checks de QA,
+  limitações (ex.: só albedo) e **aviso de IA generativa** (conferir as regras atuais do Fab).
+- Só o albedo foi mantido neste projeto: `wire_and_export(..., maps=("basecolor",))`.
+- Nunca `img.reload()` antes do export: o que o artista pintou no Blender mora na imagem empacotada do .blend;
+  o PNG em disco ainda é o bake antigo (isso já apagou uma edição; recuperada do .blend salvo).
+
 ## O que vai para o git e como reproduzir
 - Só entra no repo: `tools/`, `docs/`, `inputs.json` e **um `.blend` enxuto por projeto**
   (`projects/<nome>/<nome>.blend`): low-poly + UV + material + **imagens baked empacotadas** (blob).

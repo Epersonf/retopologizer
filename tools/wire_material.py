@@ -16,8 +16,7 @@ def wire_and_export(lows, mat_name, outdir, prefix, fbx_name, blend_path=None, m
     def tex(name, cs, y):
         n = nt.nodes.new("ShaderNodeTexImage"); n.location = (-300, y)
         img = bpy.data.images.get(f"bake_{name}")   # reuse the baked image (no duplicates)
-        if img is not None and img.filepath:
-            img.reload()                            # pick up edits made to the PNG
+        # NEVER img.reload(): edits painted in Blender live only in the (packed) image, the PNG on disk is the old bake
         if img is None:
             img = bpy.data.images.load(f"{outdir}/{prefix}_{name}.png", check_existing=True)
         img.colorspace_settings.name = cs; n.image = img
