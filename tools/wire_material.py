@@ -4,7 +4,8 @@ FBX never contains the reference object (selection-only export)."""
 import bpy
 
 
-def wire_and_export(lows, mat_name, outdir, prefix, fbx_name, blend_path=None):
+def wire_and_export(lows, mat_name, outdir, prefix, fbx_name, blend_path=None, maps=("basecolor", "roughness", "metallic", "normal")):
+    """maps: which PNGs to wire (e.g. maps=("basecolor",) when only the albedo was kept)."""
     m = bpy.data.materials[mat_name]; nt = m.node_tree
     for n in list(nt.nodes):
         nt.nodes.remove(n)
@@ -15,16 +16,21 @@ def wire_and_export(lows, mat_name, outdir, prefix, fbx_name, blend_path=None):
     def tex(name, cs, y):
         n = nt.nodes.new("ShaderNodeTexImage"); n.location = (-300, y)
         img = bpy.data.images.get(f"bake_{name}")   # reuse the baked image (no duplicates)
+        if img is not None and img.filepath:
+            img.reload()                            # pick up edits made to the PNG
         if img is None:
             img = bpy.data.images.load(f"{outdir}/{prefix}_{name}.png", check_existing=True)
         img.colorspace_settings.name = cs; n.image = img
         return n
     nt.links.new(tex("basecolor", "sRGB", 300).outputs["Color"], bsdf.inputs["Base Color"])
-    nt.links.new(tex("roughness", "Non-Color", 0).outputs["Color"], bsdf.inputs["Roughness"])
-    nt.links.new(tex("metallic", "Non-Color", -300).outputs["Color"], bsdf.inputs["Metallic"])
-    nm = nt.nodes.new("ShaderNodeNormalMap"); nm.location = (0, -600)
-    nt.links.new(tex("normal", "Non-Color", -600).outputs["Color"], nm.inputs["Color"])
-    nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+    if "roughness" in maps:
+        nt.links.new(tex("roughness", "Non-Color", 0).outputs["Color"], bsdf.inputs["Roughness"])
+    if "metallic" in maps:
+        nt.links.new(tex("metallic", "Non-Color", -300).outputs["Color"], bsdf.inputs["Metallic"])
+    if "normal" in maps:
+        nm = nt.nodes.new("ShaderNodeNormalMap"); nm.location = (0, -600)
+        nt.links.new(tex("normal", "Non-Color", -600).outputs["Color"], nm.inputs["Color"])
+        nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
     bpy.ops.object.select_all(action='DESELECT')
     for n in lows:
         bpy.data.objects[n].select_set(True)
