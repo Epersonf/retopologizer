@@ -102,11 +102,15 @@ class Mesh:
         for t in tris:
             self.f(*[verts[i] for i in t])
 
-    def mirror_x(self):
+    def mirror(self, axis='X'):
+        """Mirror + apply + weld the seam. axis = 'X' (lid) or 'Y' (cow: faces +X, symmetric about y=0)."""
         bm = self.bm
         geom = list(bm.verts) + list(bm.edges) + list(bm.faces)
-        ret = bmesh.ops.mirror(bm, geom=geom, axis='X', merge_dist=1e-5)
+        bmesh.ops.mirror(bm, geom=geom, axis=axis, merge_dist=1e-5)
         bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+
+    def mirror_x(self):
+        self.mirror('X')
 
     def to_object(self, name, collection=None):
         me = bpy.data.meshes.new(name); self.bm.to_mesh(me); self.bm.free()
