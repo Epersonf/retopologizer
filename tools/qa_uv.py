@@ -29,7 +29,7 @@ def qa_uv(names, size=2048, min_gap_px=8, layer=0, maps=False):
     cover = np.zeros((size, size), np.int16)      # polygons covering each pixel centre
     ids = np.zeros((size, size), np.int32)        # island id per pixel
     pid = np.full((size, size), -1, np.int32)     # global polygon id per pixel
-    poly_of = []; base = 0
+    poly_of = []; base = 0; pairs = set()
     out = {"oob_faces": 0, "zero_area_faces": 0, "flipped_uv_faces": 0}
     next_id = 1; island_count = 0
     for n in names:
@@ -64,11 +64,17 @@ def qa_uv(names, size=2048, min_gap_px=8, layer=0, maps=False):
             l1 = ((b[1] - c[1]) * (qx - c[0]) + (c[0] - b[0]) * (qy - c[1])) / d
             l2 = ((c[1] - a[1]) * (qx - c[0]) + (a[0] - c[0]) * (qy - c[1])) / d
             m = (l1 > 1e-9) & (l2 > 1e-9) & (1 - l1 - l2 > 1e-9)
+            prev = pid[ys[m], xs[m]]
+            hit = prev[prev >= 0]          # includes triangles of the same n-gon (flipped fan = fold)
+            if hit.size:
+                for q in np.unique(hit)[:4]:
+                    pairs.add((int(q), base + t.polygon_index))
             cover[ys[m], xs[m]] += 1
             ids[ys[m], xs[m]] = iid
             pid[ys[m], xs[m]] = base + t.polygon_index
         island_count += len(remap); base += len(me.polygons)
     out["overlap_pixels"] = int((cover > 1).sum())
+    out["overlap_pairs"] = [(poly_of[a], poly_of[b]) for a, b in sorted(pairs)[:12]]   # who overlaps whom
     # minimum distance between different islands (shift test inside a disk of radius g)
     gap_bad = 0; g = int(min_gap_px)
     for dy in range(-g, g + 1):

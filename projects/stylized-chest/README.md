@@ -1,8 +1,8 @@
 # stylized-chest — notas
 
 Origem: `input/844b92ca...glb` — 1 mesh, 500 000 tris, 0.70×0.71×0.80 m, 1 material + UV.
-Saída: `output/stylized-chest.fbx` — **721 tris** (v3: 473 + 248; antes 756) (budget 2000; alvo <1000), 2 objetos:
-`chest_base` (492) e `chest_lid` (264, origem no pivô da dobradiça, rotação X = -50°).
+Saída: `output/stylized-chest.fbx` — **813 tris** (v5: 473 + 340; antes 721) (budget 2000; alvo <1000), 2 objetos:
+`chest_base` (492) e `chest_lid` (340, origem no pivô da dobradiça, rotação X = -50°).
 
 ## Medidas da referência (Z up, frente = -Y)
 - Base: z 0–0.355; parede x ±0.305, y -0.33…0.14, espessura 0.04; piso 0.062; plinto 0–0.06
@@ -33,3 +33,14 @@ buracos de 4 arestas preenchidos, fundo da tampa refeito com bridge, 42 faces en
 QA: 0 backfaces (400 dir × 200²), UV refeito (234 ilhas, 52% do atlas, 0 overlap a 2048/4096, gap ≥ 8 px).
 Rebake 2048 (margem 8 px). Backups: `draft/backups/v3_before_face_fix` (ignorado pelo git).
 Repo: `stylized-chest.blend` (9 MB, imagens empacotadas) + `inputs.json` (sha256 do GLB).
+
+## v5 (tampa refeita com snap + espelho)
+Pedido: a tampa não capturava detalhes e o bake saía com artifacts. Refeita pelo método manual
+(anéis colados na ref + Mirror), script reprodutível `build_lid_v5.py` (exemplo do método) (usa `ref_part`).
+Medido na ref: cinta central |x|<0.055 (+14 mm), bloco da ponta 0.225–0.31 (+22 mm), chanfro até
+x=0.326, cavidade em arco até x=0.26 (teto z=0.251), rim z=0.06; fecho 0.124×0.075 com furo,
+rebites nas 4 placas de canto. Ajuste: novo→ref média 3,4 mm, p95 11 mm.
+QA: 0 backfaces, UV 0 overlap (66°), 0 z-fight. Bake robusto: 1,14% inválido no 1º passe, 0,18% no fim
+(0 faces da tampa entre as piores; sobram faces da base: 36, 102, 174 e a banda inferior).
+Backup da tampa editada à mão pelo usuário: `draft/backups/v4_user_edit_lid` (ignorado pelo git).
+Pendência: a base ainda tem faces longe da ref (poor_fit_faces_mm no relatório do bake).

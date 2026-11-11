@@ -33,6 +33,25 @@ docs/                    este workflow + notas por projeto
 7. **UV** (feito pelo usuário): sem overlap, todas as partes no mesmo atlas 0-1.
 8. **Bake** (abaixo) e **exportar** com `wire_material.py`.
 
+## Retopologia manual: snap + espelho (peças com detalhe, ex.: tampa v5)
+É o jeito do artista (vértice a vértice com snap, `Mirror` quando simétrico), automatizado:
+1. `ref_part(ref, parte, "REF_X")`: recorta da referência só a peça, **no espaço local dela** (tampa
+   na pose fechada, simetria em X). Medir antes: alturas por raycast (`h(x)`), cortes por ângulo.
+2. Cortes: de um centro `c` dentro da peça, `Surface.outer(x, c, ângulo)` devolve o ponto do casco;
+   `simplify(corte, 6 mm)` (Douglas-Peucker) acha os cantos (tampa: 9 cantos externos, 8 da cavidade).
+   Os **mesmos ângulos** valem para todos os anéis => mesma topologia => tiras de quads.
+3. Anéis só do meio lado (x>=0): cinta, degrau, corpo, degrau, bloco da ponta, chanfro, tampa da
+   ponta. Degrau = dois anéis no mesmo x (parede plana). Pontas do anel: raio horizontal na parede
+   (o raio de 18° oscila ±1,5 cm na rugosidade da IA). `Mesh.mirror_x()` = Mirror + apply + solda.
+4. Piso plano (rim) entre o laço externo e a cavidade: `fill_flat_ring` (triangulação sem cruzar;
+   `bridge_loops` cruzou triângulos em laços com contagens diferentes => overlap de UV/z-fight).
+5. Detalhes salientes (fecho, rebites) = `Mesh.prism`: base **projetada na própria malha** e
+   afundada 4 mm (sem face de baixo), topo na superfície da ref; furo = `dimple`. Base flutuando
+   deixa o raio entrar no slab e a QA acusa backface.
+6. Conferir: `fit_report` (novo→ref média 3,4 mm), `section_overlay`, QA (`qa_all`), UV de novo
+   (`unwrap_atlas(angle=66)`: 89° dobrou ilhas do arco), `bake_robust`.
+   Tampa v5: 340 tris (era 248, mas fiel: cintas, blocos, chanfros, cavidade em arco, fecho, rebites).
+
 ## QA obrigatório (antes do UV final, do bake e do export)
 `tools/qa_all.py` → `qa_all([...])` levanta erro se qualquer teste falhar.
 - **Backfaces** (`qa_faces.py`): 400 direções × 200×200 raios; o primeiro hit de cada raio não pode

@@ -16,6 +16,10 @@
 | qa_zfight.py | dentro do Blender | faces coplanares sobrepostas (z-fighting/flicker): BVH + filtros numpy |
 | bake_robust.py | dentro do Blender | bake com validação por texel (hit/backface/distância), re-bake multi-passada e inpaint por ilha |
 | bake_inpaint.py | numpy puro | inpaint/dilate restritos à ilha UV (clone automático) |
+| snap_retopo.py | dentro do Blender | retopo manual: vértices colados na ref (snap) + anéis + espelho (Surface, Mesh; snap_surface.py/snap_mesh.py) |
+| ref_part.py | dentro do Blender | recorta a parte da ref que pertence a uma peça, no espaço local dela |
+| fit_report.py | dentro do Blender | erro novo→ref e ref→novo (mm) + células onde falta detalhe |
+| section_overlay.py | dentro do Blender | PNG de cortes: ref colorida × low branca |
 | qa_uv.py | dentro do Blender | overlap/gap/limites de UV; unwrap_atlas (smart project + pack) |
 | make_lean_blend.py | dentro do Blender | .blend enxuto p/ git (sem ref, imagens empacotadas) |
 | export_from_blend.py | `blender -b` | regenera PNGs + FBX a partir do .blend enxuto |
