@@ -34,6 +34,7 @@ docs/                    este workflow + notas por projeto
 8. **Bake** (abaixo) e **exportar** com `wire_material.py`.
 
 ## Retopologia manual: snap + espelho (peças com detalhe, ex.: tampa v5)
+Guia completo, com armadilhas: `docs/retopo-snap-mirror.md`.
 É o jeito do artista (vértice a vértice com snap, `Mirror` quando simétrico), automatizado:
 1. `ref_part(ref, parte, "REF_X")`: recorta da referência só a peça, **no espaço local dela** (tampa
    na pose fechada, simetria em X). Medir antes: alturas por raycast (`h(x)`), cortes por ângulo.

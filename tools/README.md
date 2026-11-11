@@ -1,5 +1,7 @@
 # tools/ — índice
 
+Método snap + espelho: `docs/retopo-snap-mirror.md`.
+
 | arquivo | onde roda | para quê |
 |---|---|---|
 | inspect_glb.py | `blender --background --python` | tris/bbox/materiais de um GLB |
