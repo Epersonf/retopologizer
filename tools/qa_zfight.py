@@ -1,6 +1,6 @@
 """QA: no two faces may fight for the same pixels (z-fighting / flickering while the camera moves).
 Pairs of triangles that are (near) parallel, closer than `eps` metres and whose overlap in the plane
-is larger than `min_area` are reported. Uses BVH self-overlap (broad phase) + numpy filters +
+is larger than `min_area` are reported. Uses an AABB broad phase + numpy filters +
 exact 2D triangle clipping only for the few survivors, so it takes well under a second.
   exec(open(...).read()); r = qa_zfight(["chest_base","chest_lid"])   # r["pass"]
 Adjacent faces that only touch along an edge are fine (overlap area ~ 0)."""
@@ -50,10 +50,16 @@ def qa_zfight(names, eps=0.001, par=1e-3, min_area=1e-6, limit=40):
     a, b, c = V[T[:, 0]], V[T[:, 1]], V[T[:, 2]]
     nn = np.cross(b - a, c - a); ar = np.linalg.norm(nn, axis=1); ok = ar > 1e-14
     nn[ok] /= ar[ok, None]
-    tree = BVHTree.FromPolygons(V.tolist(), T.tolist(), epsilon=eps)
-    pr = np.array(tree.overlap(tree), np.int64).reshape(-1, 2)
-    pr = pr[pr[:, 0] < pr[:, 1]]
-    i, j = pr[:, 0], pr[:, 1]
+    # Broad phase = our own AABB test. NOT BVHTree.overlap: Blender's narrow phase is a tri-tri intersection
+    # test that never reports exactly COPLANAR triangles (which is precisely the z-fight case).
+    lo = np.minimum(np.minimum(a, b), c) - eps; hi = np.maximum(np.maximum(a, b), c) + eps
+    pi_, pj_ = [], []
+    for i0 in range(0, len(T), 512):
+        i1 = min(i0 + 512, len(T))
+        m = np.all(lo[i0:i1, None, :] <= hi[None, :, :], axis=2) & np.all(lo[None, :, :] <= hi[i0:i1, None, :], axis=2)
+        r, cc = np.nonzero(m); r = r + i0; k = r < cc
+        pi_.append(r[k]); pj_.append(cc[k])
+    i, j = np.concatenate(pi_), np.concatenate(pj_)
     keep = ~((own[i, 0] == own[j, 0]) & (own[i, 1] == own[j, 1])) & ok[i] & ok[j]
     keep &= np.abs(np.einsum("ij,ij->i", nn[i], nn[j])) > 1 - par
     i, j = i[keep], j[keep]

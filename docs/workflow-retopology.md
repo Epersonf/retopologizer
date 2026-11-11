@@ -58,7 +58,8 @@ docs/                    este workflow + notas por projeto
   ser a face de trás de nenhuma face (é o vermelho do Face Orientation). Cobre também o interior
   das cavidades abertas. Ignora hits quase rasantes (|n·d| < 0.1). `fix_flipped()` inverte faces
   vistas só por trás; `hidden` = faces com 0 votos de frente são apagadas (estavam enterradas).
-- **Z-fighting** (`qa_zfight.py`): nenhum par de triângulos paralelos a <1 mm com área de sobreposição
+- **Z-fighting** (`qa_zfight.py`; broad phase própria por AABB: `BVHTree.overlap` NUNCA reporta triângulos coplanares
+  e deixou passar placas de canto coplanares com a borda da base, que no Cycles saíam pretas): nenhum par de triângulos paralelos a <1 mm com área de sobreposição
   (face dentro de face, tampa/placa coplanar). Correção: afastar a placa 2–4 mm ou remover a face.
 - **UV** (`qa_uv.py`): zero overlap (entre e dentro de ilhas, rasterizado a 2048 e 4096), nada fora
   de 0-1, sem faces de área zero, gap mínimo de 8 px entre ilhas (a margem do bake é 8 px).
@@ -113,8 +114,9 @@ fazer um bake só**, numa imagem só (`tools/bake_maps.py`).
 
 ## Listagem / loja (Fab)
 Gerar no fim, com o material final ligado: `projects/<nome>/listing/`.
-- **Thumbnail**: `render_thumbnail(partes, "listing/thumbnail.jpg")` (`tools/render_thumbnail.py`): 1920x1080
-  (mínimo do Fab), jpg/png/webp, <= 3 MB (sai ~0,2 MB), Eevee + 3 luzes + chão. Ajustar `cam`/`look_at` à escala do
+- **Thumbnail**: `render_thumbnail(partes, "listing/thumbnail.jpg", samples=768)` (`tools/render_thumbnail.py`): 1920x1080
+  (mínimo do Fab), jpg/png/webp, <= 3 MB (sai ~0,2 MB), **Cycles** (AgX Punchy, softbox key + fill + 2 rim + spot no chão, 85 mm,
+  DOF leve; ~1 min a 768 amostras com GPU; testar com samples=64). Ajustar `cam`/`look_at` à escala do
   modelo e **olhar o arquivo** antes de subir (enquadramento, nada cortado, textura final).
 - **description.md**: título, o que vem, tabela técnica (tris, malhas, UV, tamanho, pivô, formato), checks de QA,
   limitações (ex.: só albedo) e **aviso de IA generativa** (conferir as regras atuais do Fab).
