@@ -1,5 +1,7 @@
 # Workflow de retopologia por reconstrução (Blender + MCP)
 
+> **PROIBIDO retopologia automática** (QuadriFlow, Remesh, Decimate como entrega). Ver `docs/regras-retopologia.md`.
+
 Para modelos gerados por IA (centenas de milhares de tris). Em vez de "retopo em cima do
 mesh", **mede-se a referência e reconstrói-se a forma** com poucos polígonos, verificando
 com métricas objetivas. Nunca entrar em Edit Mode no mesh de referência (crasha).
