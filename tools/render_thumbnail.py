@@ -10,11 +10,11 @@ import bpy, os
 from mathutils import Vector
 
 RIG = (  # name, kind, location, energy(W), colour, size_x, size_y
-    ("key", 'AREA', (-2.6, -2.4, 2.9), 620, (1.0, 0.88, 0.74), 3.2, 3.2),
-    ("fill", 'AREA', (3.0, -2.2, 1.1), 130, (0.72, 0.82, 1.0), 3.5, 2.5),
-    ("rim_l", 'AREA', (-2.2, 2.4, 1.6), 520, (0.78, 0.88, 1.0), 0.5, 2.8),
-    ("rim_r", 'AREA', (2.4, 2.1, 1.4), 520, (1.0, 0.92, 0.82), 0.5, 2.8),
-    ("pool", 'SPOT', (0.0, -0.3, 4.2), 330, (1.0, 0.95, 0.9), 0, 0),
+    ("key", 'AREA', (-2.6, -2.4, 2.9), 320, (1.0, 0.9, 0.78), 4.5, 4.5),
+    ("fill", 'AREA', (3.0, -2.2, 0.8), 35, (0.72, 0.82, 1.0), 3.5, 2.5),
+    ("rim_l", 'AREA', (-2.2, 2.4, 1.6), 230, (0.78, 0.88, 1.0), 0.5, 2.8),
+    ("rim_r", 'AREA', (2.0, 2.6, 2.3), 170, (1.0, 0.92, 0.82), 0.5, 2.8),
+    ("pool", 'SPOT', (0.0, -0.3, 4.2), 150, (1.0, 0.95, 0.9), 0, 0),
 )
 SAVE = ("engine", "resolution_x", "resolution_y", "resolution_percentage", "filepath")
 
@@ -25,7 +25,7 @@ def _settings(sc):
 
 
 def render_thumbnail(names, path, look_at=(0, 0.02, 0.40), cam=(-2.5, -3.35, 1.45), lens=85, samples=768,
-                     exposure=0.0, fstop=9.0):
+                     exposure=-0.2, fstop=9.0):
     sc = bpy.context.scene; made = []; r0, o0 = _settings(sc)
     sc.render.engine = 'CYCLES'; cy = sc.cycles
     try:
@@ -40,7 +40,7 @@ def render_thumbnail(names, path, look_at=(0, 0.02, 0.40), cam=(-2.5, -3.35, 1.4
     sc.render.image_settings.file_format = 'JPEG'; sc.render.image_settings.quality = 94
     vs = sc.view_settings; vs.view_transform = 'AgX'; vs.exposure = exposure
     try:
-        vs.look = 'Punchy'
+        vs.look = 'None'
     except TypeError:
         pass
     w = bpy.data.worlds.new("_thw"); w.use_nodes = True
@@ -71,7 +71,7 @@ def render_thumbnail(names, path, look_at=(0, 0.02, 0.40), cam=(-2.5, -3.35, 1.4
             for nd in s.material.node_tree.nodes:
                 if nd.type == 'BSDF_PRINCIPLED' and nd not in [t[0] for t in tweaks]:
                     tweaks.append((nd, nd.inputs["Roughness"].default_value, nd.inputs["Specular IOR Level"].default_value))
-                    nd.inputs["Roughness"].default_value = 0.6; nd.inputs["Specular IOR Level"].default_value = 0.35
+                    nd.inputs["Roughness"].default_value = 0.78; nd.inputs["Specular IOR Level"].default_value = 0.15
     sc.render.filepath = path; bpy.ops.render.render(write_still=True)
     for nd, r, s in tweaks:
         nd.inputs["Roughness"].default_value = r; nd.inputs["Specular IOR Level"].default_value = s

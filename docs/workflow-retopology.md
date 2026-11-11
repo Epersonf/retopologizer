@@ -115,7 +115,7 @@ fazer um bake só**, numa imagem só (`tools/bake_maps.py`).
 ## Listagem / loja (Fab)
 Gerar no fim, com o material final ligado: `projects/<nome>/listing/`.
 - **Thumbnail**: `render_thumbnail(partes, "listing/thumbnail.jpg", samples=768)` (`tools/render_thumbnail.py`): 1920x1080
-  (mínimo do Fab), jpg/png/webp, <= 3 MB (sai ~0,2 MB), **Cycles** (AgX Punchy, softbox key + fill + 2 rim + spot no chão, 85 mm,
+  (mínimo do Fab), jpg/png/webp, <= 3 MB (sai ~0,2 MB), **Cycles** (AgX sem look, key suave + fill fraco + 2 rim + spot no chão, material mais fosco, 85 mm,
   DOF leve; ~1 min a 768 amostras com GPU; testar com samples=64). Ajustar `cam`/`look_at` à escala do
   modelo e **olhar o arquivo** antes de subir (enquadramento, nada cortado, textura final).
 - **description.md**: título, o que vem, tabela técnica (tris, malhas, UV, tamanho, pivô, formato), checks de QA,
