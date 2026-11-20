@@ -1,13 +1,13 @@
 """Locks (hair clumps, tentacles, horns, cables): a closed tube grown along a given spine, rings laid on the real cross-section.
   rings, tip = lock(T, ref, pts, radii, n=None, step=None, up=(0,0,1), root=True)
 pts: spine points root -> tip (e.g. from projects/hat-hair/hair_locks.py, already on the medial axis); radii: tube radius per
-point. Stations are spaced so the quads come out square (2*pi*r/n, 1.2..4 cm); each ring is cring() around the spine
-tangent, started from the previous ring's first direction (no twist), then align(). The tip is a vertex with n/2 quads around
+point. Stations are spaced so the quads come out square (2*pi*r/n, 1.2..4 cm); each ring is section() around the spine
+tangent (exit rays windowed to the measured radius), started from the previous ring's first direction, then align(). The tip is a vertex with n/2 quads around
 it (n even), the root is capped the same way with a vertex inside the tube (hidden in whatever the lock grows from).
 Returns (rings, tip vertex). Every vertex is a ray hit on the reference; faces are quads only."""
 import math
 from mathutils import Vector
-from .contour import cring, align, frame
+from .contour import align, frame
 
 
 def stations(pts, radii, n, step=None, lo=0.012, hi=0.04):
