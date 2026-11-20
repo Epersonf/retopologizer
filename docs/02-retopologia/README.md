@@ -12,13 +12,16 @@ só quads; ferramenta automática mede e confere, não gera a malha; a ref nunca
 | tronco, tubo ou árvore em volta de um eixo | anéis em volta do eixo com snap | `retopo-snap-mirror.md` | `projects/stylized-tree` |
 | personagem ou orgânico (corpo, mão, garras, cauda, cabeça) | pacote `tools/02-retopologia/retopo` (anéis, patches, dedos) | `retopo-llm.md` | `projects/stylized-cuca` |
 | pano com abertura e eixo torto (gorro, capuz, manga, ponta caída) | anéis por campo de Laplace | `retopo-casca-campo.md` | `projects/hat-hair` |
-| muitas madeixas/tubos fundidos (cabelo, tentáculos) | casca para a base + tubo por madeixa (tentativa) | `retopo-tubos-cabelo.md` | `projects/hat-hair` |
+| muitas madeixas/tubos fundidos (cabelo, tentáculos) | casca para a base + uma malha separada por tubo | `retopo-tubos-cabelo.md` | `projects/hat-hair` |
 | estátua torta ou assimétrica | "como está", partes em cascas separadas, sem simetrizar | `retopo-llm.md` | `projects/stylized-cow` |
 
 Dúvida entre dois: cabe numa **casca com abertura**? Laplace. Tem **cantos duros**? Snap + espelho. **Deforma** ou tem
 braços/pernas? `tools/02-retopologia/retopo`.
 
 ## 2. Decida loops, polos e contagens
+**Antes de começar, pergunte ao usuário o orçamento de polígonos de cada parte e do todo** (e se o limite é em quads ou em
+triângulos: 1 quad = 2 triângulos; o Blender mostra triângulos). Sem alvo, o resultado sai grande demais e é refeito (cabelo do
+`hat-hair`: 1410 quads = 2800 triângulos, o usuário queria até 1000). Reparta o orçamento entre as partes antes de construir.
 Antes de qualquer vértice: `topologia.md` (loops nas juntas, polos longe de dobras, orçamento). Cada loop precisa de
 motivo: silhueta, deformação ou bake.
 
