@@ -10,6 +10,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent.parent
 PARTS = {  # name: (PH, TH, CLOSE, OPEN, counts)
     "dome": ((-100, 100), (0, 140), 4, 8, "48,24,12"),
+    "front": ((100, 260), (0, 70), 4, 8, "24,12,6"),
+    "hood": ((-100, 100), (0, 120), 4, 8, "32,16,8"),       # dome + front cap as ONE shell (ALSO below): no seam, one rim, one lid
     "left": ((80, 180), (0, 140), 4, 8, "48,24,12"),
     "right": ((-180, -80), (0, 140), 4, 8, "48,24,12"),
 }
@@ -32,7 +34,7 @@ def run(*a):
     r = subprocess.run([sys.executable, "-I", *map(str, a)], capture_output=True, text=True); print(r.stdout, r.stderr[-800:])
 
 
-blender("hair_shell_select.py", PART=part, PH=PH, TH=TH)
+blender("hair_shell_select.py", PART=part, PH=PH, TH=TH, ALSO=[((100, 260), (0, 70))] if part == "hood" else [])
 run(HERE / "hair_shell.py", part, CLOSE, OPEN)
 run(HERE / "hair_field.py", "hair_" + part, COUNTS)
 blender("hair_shell_build.py", PART=part)

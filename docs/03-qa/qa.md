@@ -10,6 +10,8 @@ levanta erro se algum teste falhar (`raise_on_fail=False` só devolve o relatór
 | teste | ferramenta | falha quando | correção |
 |---|---|---|---|
 | backfaces | `qa_faces.py` | o primeiro hit de algum raio (400 direções × 200×200, cavidades abertas incluídas) é o lado de trás de uma face, o vermelho do Face Orientation; hits rasantes (\|n·d\| < 0,1) ignorados | `fix_flipped()` inverte faces vistas só por trás; face com 0 votos de frente estava enterrada: apagar |
+| **normal invertida visível (portão estrito)** | `qa_strict.py` | **qualquer** raio, de 400 direções em volta (200×200 cada), cuja primeira batida é o verso de uma face, confirmado por 4 raios vizinhos; tolerância zero, o modelo é **reprovado** (não salvar, não entregar) | `heal_flipped()` relaxa as faces reprovadas (cada vez mais forte e mais largo) e reroda; se sobrar, mudar a geometria (bordas da casca, tampa), nunca "flipar" |
+| partes flutuando | `qa_floating.py` | algum grupo de peças soltas (união por interseção ou < 3 mm) não toca o maior; esperado = nº de grupos da ref (normalmente 1) | alongar a ponta da peça até a superfície que ela devia tocar (`hair_connect.py`); **sempre rodar ao dividir um objeto em várias malhas ou montar peças separadas** |
 | z-fighting | `qa_zfight.py` | dois triângulos quase paralelos a < 1 mm com área sobreposta (placa coplanar, face dentro de face) | afastar 2–4 mm ou remover a face |
 | UV | `qa_uv.py` | overlap entre ou dentro de ilhas (a 2048 e 4096), fora de 0–1, área zero, invertida, ilhas a < 8 px | refazer a UV (`docs/04-uv-bake/uv-bake.md`) |
 

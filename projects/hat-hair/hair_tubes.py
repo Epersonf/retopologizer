@@ -1,18 +1,21 @@
 """Hair locks as separate swept tubes (normal python + numpy, no Blender, runs in seconds). One closed quad tube per spine of
 hair_locks.py: rings of 6/8 verts along the smoothed spine, radius from the EDT radius (smoothed), a 3/4-quad cap vertex at both
-ends. Faces are wound outward by construction and checked per face. Tubes are NOT connected (each is its own object).
-Tip taper: from half the length on, the radius falls linearly to TIP (0.3) of itself. Ring spacing grows (x1.08 steps) until the
+ends. Faces are wound outward by construction and checked per face. Tubes are separate objects (hair_connect.py makes each reach what it grows from). Spines: draft/hair_locks.npz, then the new
+ones of draft/hair_locks_z.npz.
+Radius never below 0.75 x the median (no thin necks; hair does not thin at a junction). A FREE tip tapers over its last 30 % to
+TIP (0.35) of the radius; a tip that was made to reach something (hair_connect.py) keeps its full radius. Ring spacing grows (x1.08 steps) until the
 quad total fits BUDGET.
   python -I projects/hat-hair/hair_tubes.py [min_len_m=0.06] [budget_quads=820]   ->  draft/hair_tubes.npz, output/hair_tubes.obj"""
-import sys
+import sys, json
 import numpy as np
 from pathlib import Path
+from scipy.spatial import cKDTree
 
 MIN_LEN = float(sys.argv[1]) if len(sys.argv) > 1 else 0.06
 BUDGET = int(sys.argv[2]) if len(sys.argv) > 2 else 820
-TIP = 0.3
+TIP = 0.35
 H = Path(__file__).resolve().parent
-S = np.load(H / "draft" / "hair_locks.npz")
+EXT = json.loads((H / "draft" / "hair_ext.json").read_text()) if (H / "draft" / "hair_ext.json").exists() else {}   # {index: [root_ext_m, tip_ext_m, root_point|null, tip_point|null]}
 
 
 def smooth(a, k=2):
@@ -21,13 +24,19 @@ def smooth(a, k=2):
     return a
 
 
-def tube(p, r, k=1.0):
+def tube(p, r, k=1.0, e0=0.0, e1=0.0, p0=None, p1=None):
+    """e0 / e1: metres the spine is extended at the root / tip (so the tube reaches into what it grows from); p0 / p1: instead,
+    a point the root / tip must reach (hair_connect.py: the surface of whatever it floated next to)."""
+    u0 = (p[0] - p[1]) / np.linalg.norm(p[0] - p[1]); u1 = (p[-1] - p[-2]) / np.linalg.norm(p[-1] - p[-2])
+    a0 = p[:1] + u0 * e0 if p0 is None else np.array([p0]); a1 = p[-1:] + u1 * e1 if p1 is None else np.array([p1])
+    p = np.vstack([a0, p, a1]); r = np.r_[r[0], r, r[-1]]
     L = np.r_[0, np.cumsum(np.linalg.norm(np.diff(p, axis=0), axis=1))]
-    r = smooth(r.astype(float), 2); n = 8 if np.median(r) >= 0.032 else 6
+    r = smooth(np.maximum(r.astype(float), 0.75 * np.median(r)), 2); n = 8 if np.median(r) >= 0.032 else 6
     step = k * max(0.025, 2 * np.pi * np.median(r) / n); m = max(3, int(round(L[-1] / step)) + 1)
     t = np.linspace(0, L[-1], m)
     c = smooth(np.stack([np.interp(t, L, p[:, i]) for i in range(3)], 1), 2); rr = np.interp(t, L, r)
-    s = t / t[-1]; rr = rr * np.where(s < 0.5, 1.0, 1 - (1 - TIP) * (s - 0.5) / 0.5)                  # taper to the tip
+    if p1 is None:                                                                  # only a free tip tapers, never a junction
+        s = t / t[-1]; rr = rr * (1 - (1 - TIP) * np.clip((s - 0.7) / 0.3, 0, 1))
     d = np.gradient(c, axis=0); d /= np.linalg.norm(d, axis=1)[:, None]
     u = np.cross(d[0], [0, 0, 1.0]); u = u if np.linalg.norm(u) > 1e-3 else np.cross(d[0], [1.0, 0, 0])
     V = []
@@ -45,11 +54,19 @@ def tube(p, r, k=1.0):
     return V, F, int(bad.sum())                                                   # faces the nearest-axis test disagrees with
 
 
-spines = [(i, S["p%d" % i], S["r%d" % i]) for i in range(int(S["n"]))
-          if np.linalg.norm(np.diff(S["p%d" % i], axis=0), axis=1).sum() >= MIN_LEN]
+spines = []                                                      # geodesic spines first, then those of the z mode that are new
+for f in ("hair_locks.npz", "hair_locks_z.npz"):
+    if (H / "draft" / f).exists():
+        S = np.load(H / "draft" / f)
+        for j in range(int(S["n"])):
+            p_, r_ = S["p%d" % j], S["r%d" % j]
+            new = not spines or np.mean([tree.query(q)[0] < 0.015 for q in p_ for tree in [cKDTree(np.vstack([s[1] for s in spines]))]]) < 0.7
+            if np.linalg.norm(np.diff(p_, axis=0), axis=1).sum() >= MIN_LEN and new:
+                spines.append((len(spines), p_, r_))
 k = 1.0
 while True:
-    built = [(i,) + tube(p, r, k) for i, p, r in spines]; tot = sum(len(F) for _, _, F, _ in built)
+    built = [(i,) + tube(p, r, k, *EXT.get(str(i), [1.2 * float(r[0]), 0.0, None, None])) for i, p, r in spines]
+    tot = sum(len(F) for _, _, F, _ in built)
     if tot <= BUDGET:
         break
     k *= 1.08

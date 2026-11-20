@@ -50,6 +50,8 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 |---|---|---|
 | qa_all.py | dentro do Blender | portão único: backfaces + UV (2048 e 4096) + z-fighting; levanta erro se falhar |
 | qa_faces.py | dentro do Blender | raycast de 400 direções: nenhuma backface exposta; `fix_flipped` |
+| qa_strict.py | dentro do Blender | portão de tolerância zero: nenhum raio de 400 direções pode bater no verso de uma face; `heal_flipped` relaxa dobras e levanta erro se sobrar |
+| qa_floating.py | dentro do Blender | nenhuma peça solta flutuando: grupos de partes que se tocam; devolve a lacuna e o ponto a alcançar |
 | qa_zfight.py | dentro do Blender | faces quase paralelas sobrepostas a < 1 mm, broad phase por AABB |
 
 ## 04-uv-bake/

@@ -4,7 +4,10 @@ persistence (a tip counts if it stands >= PERSIST above the saddle where its loc
 bumps. Each branch = the surface path tip -> saddle, then every sample is pulled onto the medial axis of the volume by climbing
 the Euclidean distance transform (hair_outer.npz), so the spine runs along the middle of the tube. Writes draft/hair_locks.npz
 (spine i: points (n,3), radius (n,), root point) and a numbered plot.
-  python -I projects/hat-hair/hair_locks.py [persistence_m=0.05]"""
+  python -I projects/hat-hair/hair_locks.py [persistence_m=0.05] [z]
+With `z` the tips are the LOWEST points of the hair instead of the farthest from the dome, persistence counted in height: finds the
+hanging strands whose ends are not far from the dome when measured over the surface (the geodesic mode merges them).
+Written to draft/hair_locks_z.npz."""
 import sys
 import numpy as np
 from pathlib import Path
@@ -13,6 +16,7 @@ from scipy.sparse import coo_matrix, csr_matrix
 from scipy.sparse.csgraph import dijkstra
 
 PERSIST = float(sys.argv[1]) if len(sys.argv) > 1 else 0.05
+ZMODE = len(sys.argv) > 2 and sys.argv[2] == "z"
 STEP = 0.010                                                          # spine sample spacing along a lock
 D = Path(__file__).resolve().parent / "draft"
 o = np.load(D / "hair_in.npz"); V, F = o["V"].astype(np.float64), o["F"]
@@ -29,7 +33,8 @@ print("welded verts", nv, "dome sources", len(src), "max geodesic %.2f m" % g.ma
 
 A = csr_matrix((np.ones(2 * len(E)), (np.r_[E[:, 0], E[:, 1]], np.r_[E[:, 1], E[:, 0]])), shape=(nv, nv))
 ptr, nb = A.indptr, A.indices
-order = np.argsort(-g); parent = np.arange(nv); peak = np.arange(nv); done = np.zeros(nv, bool); tips = []
+hh = 0.6 - V[:, 2] if ZMODE else g                # height the merge tree runs on
+order = np.argsort(-hh); parent = np.arange(nv); peak = np.arange(nv); done = np.zeros(nv, bool); tips = []
 
 
 def find(x):
@@ -39,15 +44,15 @@ def find(x):
 
 
 for v in order:                                                       # merge tree: highest first, a vertex joins its higher neighbours
-    if g[v] < 0:
+    if hh[v] < 0:
         break
     comps = {find(u) for u in nb[ptr[v]:ptr[v + 1]] if done[u]}
     done[v] = True
     if not comps:
         continue
-    comps = sorted(comps, key=lambda c: -g[peak[c]]); keep = comps[0]
+    comps = sorted(comps, key=lambda c: -hh[peak[c]]); keep = comps[0]
     for c in comps[1:]:
-        if g[peak[c]] - g[v] >= PERSIST:
+        if hh[peak[c]] - hh[v] >= PERSIST:
             tips.append((peak[c], g[v]))                                # a tip that stands out: (peak vertex, saddle height)
         parent[c] = keep
     parent[v] = keep
@@ -84,6 +89,6 @@ for pk, sad in tips:
         A_[1:-1] = (A_[:-2] + 2 * A_[1:-1] + A_[2:]) / 4
     out.append((A_, samp(edt, A_), s[-1]))
 out.sort(key=lambda x: -x[2])
-np.savez(D / "hair_locks.npz", n=len(out), **{"p%d" % i: a for i, (a, r, L) in enumerate(out)}, **{"r%d" % i: r for i, (a, r, L) in enumerate(out)})
+np.savez(D / ("hair_locks_z.npz" if ZMODE else "hair_locks.npz"), n=len(out), **{"p%d" % i: a for i, (a, r, L) in enumerate(out)}, **{"r%d" % i: r for i, (a, r, L) in enumerate(out)})
 for i, (a, r, L) in enumerate(out):
     print(i + 1, "len %.2f m" % L, "root", np.round(a[0], 3), "tip", np.round(a[-1], 3), "r %.1f..%.1f cm" % (r.min() * 100, r.max() * 100))
