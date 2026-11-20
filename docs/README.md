@@ -14,6 +14,7 @@ Caminhos nos guias: sempre `docs/<pasta>/<arquivo>.md`, a partir da raiz do repo
 | | retopo-snap-mirror.md | peça dura ou prop: anéis por ângulo + espelho (tampa do baú) |
 | | retopo-llm.md | personagem ou orgânico com o pacote `tools/02-retopologia/retopo` (Cuca) |
 | | retopo-casca-campo.md | pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
+| | retopo-tubos-cabelo.md | madeixas/tubos fundidos: detector de cachos + tubo por madeixa (tentativa, com problemas conhecidos) |
 | 03-qa (4) | qa.md | conferir a malha antes de UV, bake e export |
 | 04-uv-bake (5 e 6) | uv-bake.md | UV, mapas PBR, bake alta para baixa, artefatos |
 | 05-entrega (7 e 9) | entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor, thumbnail e loja Fab |

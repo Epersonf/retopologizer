@@ -16,6 +16,7 @@ R = Ref("HiPoly"); T = Topo(R)      # ... T.strip(A, B); T.orient(); T.write("No
 | contour.py | contornos no corte real: `cring`, `chalf`, `track` (espinha de tubo), `centred`, `align`, `box_ring`, `at_width` |
 | topo.py | `Topo`: construtor bmesh com snap (`v`, `vs`, `f`, `strip`, `fan`, `grid`, `old`, `write`) |
 | topo_ops.py | operações do `Topo`: `relax` com snap, `orient` (winding para fora), `chain`, `mirror_x` |
+| lock.py | `lock` (tubo fechado por madeixa/tentáculo/chifre sobre um eixo dado), `section` (anel por raios de saída com janela de raio), `stations`; guia e problemas conhecidos: `docs/02-retopologia/retopo-tubos-cabelo.md` |
 | patches.py | `solve_spokes` + `poly_patch`: buraco de 3 ou 5 lados fechado com quads em volta de um polo |
 | digits.py | `digit`, `claw_base`, `spine`: dedo, garra ou chifre crescido de um anel até a ponta |
 | qa.py | `topo_qa`: contagens, buracos, non-manifold, duplicados, winding, faces para dentro, polos, distância |

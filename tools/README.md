@@ -37,7 +37,7 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 | snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` na ref; `simplify` |
 | snap_mesh.py | via snap_retopo | `Mesh`: `v`, `f`, `strip`, `cap`, `prism`, `dimple`, `fill_flat_ring`, `mirror_x`, `to_object` |
 | snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: anel de corte por raycast do centro |
-| retopo/ | dentro do Blender (`import retopo`) | personagens e orgânicos: `Ref`, `Topo`, contornos, patches, dedos, `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
+| retopo/ | dentro do Blender (`import retopo`) | personagens e orgânicos: `Ref`, `Topo`, contornos, patches, dedos, `lock` (tubo por madeixa, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
 | compare_mesh.py | dentro do Blender | distância ref↔novo (mm e % da diagonal) nos dois sentidos + pontos críticos |
 | fit_report.py | dentro do Blender | erro novo→ref e ref→novo (mm) + células de 5 cm onde falta detalhe |
 | overlay.py | `python` (PIL) | silhuetas ref × novo: vermelho só ref, ciano só novo, cinza os dois |

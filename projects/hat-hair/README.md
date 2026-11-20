@@ -9,20 +9,25 @@ personagem = +X, metros.
 (`docs/02-retopologia/retopo-casca-campo.md`); scripts `hat_measure.py`, `hat_field.py`, `hat_outer.py`, `hat_bake.py`,
 `hat_to_cuca.py`.
 
-## Cabelo: em andamento (parte 1 de N)
-O cabelo é uma peça só (um componente), feita de tubos ocos (parede de 2 a 4 cm, cavidade fechada). De fora: três madeixas
-grossas e longas na nuca e no topo, cortinas de madeixas finas em S nas duas laterais (cada uma termina num cacho) e uma
-mecha que cruza o topo da frente.
+## Cabelo: tentativa 1, não aprovada
+O cabelo é uma peça só (um componente), feita de tubos ocos (parede de 2 a 4 cm). De fora: três madeixas grossas na nuca e no
+topo, cortinas de madeixas finas em S nas laterais (cada uma termina num cacho) e uma mecha que cruza o topo da frente.
 
 | parte | estado | quads | erro médio / máx | método |
 |---|---|---|---|---|
-| nuca e topo (`Hair_dome`) | feito, `quad_only`, borda aberta | 552 | 0,03 / 0,9 mm | casco por Laplace, borda = corte a ±100° da nuca |
-| cortina esquerda (+X) | a fazer | | | tubos por madeixa (ver abaixo) |
-| cortina direita (−X) | a fazer | | | idem |
-| mecha do topo da frente, cachos das pontas | a fazer | | | tubos finos com ponta em leque |
+| nuca e topo (`Hair_dome`) | ok, `quad_only`, borda aberta | 552 | 0,03 / 0,9 mm | casco por Laplace |
+| 17 madeixas (`Hair_locks`) | **com problemas**: normais invertidas (`inward_area` 23,8 %), arestas soltas, tubos que se atravessam | 1030 | 0,31 / 13,1 mm | `hair_locks.py` + `retopo.lock` |
+| cachos pequenos, pontas enroladas, frente | não feito | | | |
 
-Entrega da parte 1: `output/hair_dome.obj` (git-ignored). Cena de trabalho: `draft/hair_work.blend` (`Hair_dome`,
-`HairFull`, `HairOuter`, `Hat_retopo`, `HiPoly`).
+Os problemas, as ferramentas que ajudaram e o plano da próxima rodada estão em
+`docs/02-retopologia/retopo-tubos-cabelo.md`. Resumo das ferramentas novas:
+- `hair_locks.py [persistência_m=0.05]` acha as madeixas sozinho (geodésica a partir do dome + árvore de fusão + eixo medial
+  por EDT) e grava `draft/hair_locks.npz`; `hair_locks_plot.py` desenha o gráfico numerado.
+- `hair_locks_build.py` (`LOCKS` = ids 1-based, `NAME`) constrói os tubos com `retopo.lock` e imprime o `topo_qa`.
+- Scripts descartáveis de teste (um tubo, todos, sheet de vistas) ficaram só em /tmp; recriar se precisar.
+
+Cena de trabalho: `draft/hair_work.blend` (`Hair_dome`, `Hair_locks`, `HairFull`, `HairOuter`, `Hat_retopo`, `HiPoly`; não
+versionada). `output/hair_dome.obj` (git-ignored).
 
 ### Como a parte 1 é feita (um comando por parte)
 Worker no ar em `draft/hair_work.blend` com `HairFull` carregado (`hair_proxy.py` com `NPZ = draft/hair_in.npz`,
@@ -44,7 +49,5 @@ Worker no ar em `draft/hair_work.blend` com `HairFull` carregado (`hair_proxy.py
   é frágil.
 - Fechar frestas na seleção só funciona com a malha completa (a malha "de fora" não tem as faces dentro das frestas).
 
-### Próximo passo proposto
-Cortinas e cachos como **tubos por madeixa**: o artista (ou o agente, com imagem) escolhe raiz e direção de cada madeixa
-principal olhando a ref com grade em cm; `retopo.track` segue o centro da seção; anéis de 8 com `cring` na referência de
-fora (`HairOuter`), `T.strip` entre eles e leque na ponta. Documentar em `docs/02-retopologia/` quando funcionar.
+### Próximo passo
+Ver "Para a próxima tentativa" em `docs/02-retopologia/retopo-tubos-cabelo.md`: tubo por tubo com QA, normais por tubo, persistência 3,5 cm.

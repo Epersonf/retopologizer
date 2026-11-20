@@ -12,6 +12,7 @@ só quads; ferramenta automática mede e confere, não gera a malha; a ref nunca
 | tronco, tubo ou árvore em volta de um eixo | anéis em volta do eixo com snap | `retopo-snap-mirror.md` | `projects/stylized-tree` |
 | personagem ou orgânico (corpo, mão, garras, cauda, cabeça) | pacote `tools/02-retopologia/retopo` (anéis, patches, dedos) | `retopo-llm.md` | `projects/stylized-cuca` |
 | pano com abertura e eixo torto (gorro, capuz, manga, ponta caída) | anéis por campo de Laplace | `retopo-casca-campo.md` | `projects/hat-hair` |
+| muitas madeixas/tubos fundidos (cabelo, tentáculos) | casca para a base + tubo por madeixa (tentativa) | `retopo-tubos-cabelo.md` | `projects/hat-hair` |
 | estátua torta ou assimétrica | "como está", partes em cascas separadas, sem simetrizar | `retopo-llm.md` | `projects/stylized-cow` |
 
 Dúvida entre dois: cabe numa **casca com abertura**? Laplace. Tem **cantos duros**? Snap + espelho. **Deforma** ou tem
