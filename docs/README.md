@@ -15,6 +15,6 @@ Ordem de um projeto: workflow → topologia → retopo por partes → qa → uv-
 | retopo-casca-campo.md | retopo de peça de pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
 | qa.md | para conferir a malha antes de UV, bake e export |
 | uv-bake.md | UV, mapas PBR, bake alta → baixa, artefatos |
-| entrega.md | FBX, Godot (jogo Braziletto), thumbnail e descrição da loja Fab |
+| entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor de ajuste, thumbnail e loja Fab |
 | rigging.md | auto-rig humanoide, rig à mão, pesos, cauda |
 | git-reproducao.md | o que commitar, regenerar `output/`, GLBs pesados |

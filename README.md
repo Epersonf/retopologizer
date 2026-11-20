@@ -59,6 +59,7 @@ dela; cada guia aponta para o próximo.
 | saber se a malha está pronta | `docs/qa.md` |
 | UV, mapas PBR, bake, manchas pretas no bake | `docs/uv-bake.md` |
 | exportar FBX, levar à Godot, thumbnail e texto da loja | `docs/entrega.md` |
+| pôr chapéu/adereço na cabeça de um personagem no jogo e ajustar no editor | `docs/entrega.md` |
 | rig humanoide, pesos, cauda | `docs/rigging.md` |
 | o que commitar, regenerar `output/`, GLB pesado | `docs/git-reproducao.md` |
 | como chamar uma ferramenta | `tools/README.md` e o docstring do arquivo |
