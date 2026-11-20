@@ -56,7 +56,7 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 | qa_mesh.py | dentro do Blender | quads, borda aberta, non-manifold, winding, duplicados, degeneradas |
 | qa_local.py | dentro do Blender | normal invertida vista de perto (frestas, dobras, tampa de tubo furando) |
 | qa_attach.py | dentro do Blender | tubo conectado só por encosto / tampa fora do pai ("ponta solta apesar de conectada") |
-| qa_fit.py | dentro do Blender | fidelidade à ref: IoU de silhueta em 14 direções, buracos (ref sem cobertura), caroços que a ref não tem |
+| qa_fit.py | dentro do Blender | fidelidade à ref: só o visível: IoU de silhueta em 14 direções, buracos (ref sem cobertura), caroços que a ref não tem (profundidade do primeiro hit) |
 | qa_strict.py | dentro do Blender | portão de tolerância zero: nenhum raio de 400 direções pode bater no verso de uma face; `heal_flipped` relaxa dobras e levanta erro se sobrar |
 | qa_floating.py | dentro do Blender | nenhuma peça solta flutuando: grupos de partes que se tocam; devolve a lacuna e o ponto a alcançar |
 | qa_zfight.py | dentro do Blender | faces quase paralelas sobrepostas a < 1 mm, broad phase por AABB |

@@ -19,7 +19,7 @@ for n in ("Hair_locks", "Hair_t"):
     if n in bpy.data.objects:
         bpy.data.objects.remove(bpy.data.objects[n])
 exec(open(r"C:\Users\epers\Desktop\retopologizer\tools\03-qa\qa_suite.py").read())
-qa = qa_suite(ob.name, ref="HairFull")
+qa = qa_suite(ob.name, ref="HairFull", fast=globals().get("FAST", False))
 if not qa["pass"]:                                       # rejected: inspect it under another name, never as the deliverable
     bpy.ops.wm.save_as_mainfile(filepath=H + r"\draft\hair_lowpoly_rejected.blend")
     raise AssertionError("REJECTED %s\n%s" % (qa["failed"], "\n".join(qa["lines"])))

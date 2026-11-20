@@ -102,6 +102,17 @@ O que se tentou para passar e não bastou (para não repetir):
 Caminho provável: lóbulos de trás como tubos grossos (raio 6–8 cm, hoje o filtro RDROP/orçamento os perde) e uma tampa plana na
 altura da borda no lugar do leque; prender cada tubo ao capuz por uma haste que nasce dentro dele, nunca em outro tubo.
 
+## Abordagem híbrida: casca cilíndrica (`hair_cyl.py`), o que funcionou
+Escolhas manuais (eixo vertical pela cabeça, colunas, linhas, raio de "preenchimento da cabeça") + ajuste paramétrico à ref (raios
+horizontais de fora para o eixo, primeiro hit = raio). Cabelo pendurado é estrelado em torno do eixo vertical, então a grade **não dobra**
+e não há tampa para posicionar: só os dois leques (topo e base). Onde a ref não tem cabelo (janela do rosto, vãos) o raio é o da cabeça
+(material `headfill`, escondido pela cabeça, ignorado pelo `qa_fit`). Cada coluna tem seu próprio topo e base (a bainha irregular).
+Resultado, sem tubos (`python -I projects/hat-hair/hair_build.py notubes`): 1008 quads = 2016 triângulos, passa mesh, budget, shape,
+floating, attach, **local e strict (as normais que reprovavam o modelo antigo)**; reprova só o `fit` (IoU 0,87, ~16 % da ref sem
+cobertura, ~13 % de excesso, a 3 cm): os cachos soltos não existem e a bainha/janela são grosseiras. Parece um capuz liso de cabelo,
+não cachos. Com tubos por cima (`hair_build.py` sem `notubes`) os tubos viram palitos saindo da casca e ainda reprovam `local`.
+Passar disso pede decisão de estilo: casca limpa (aprovável), ou casca + cachos em fita (ondulados, não prismas retos).
+
 ## Ainda em aberto
 - Silhueta sem cobertura: 10 a 16 % nas vistas (pontas de cachos, cantos). O detector em modo `z` (`hair_locks.py 0.04 z`) achou os
   tubos que o geodésico perdia (madeixas de baixo). **Referência certa para a cobertura é `HairFull`**: `HiPoly` inclui o gorro e
