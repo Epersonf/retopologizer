@@ -26,8 +26,9 @@ A engine triangula tudo: o orçamento é contado em **triângulos**.
 | winding | ordem dos vértices da face = lado da normal; vizinhas precisam concordar |
 
 ## Princípios
-1. **Quads em tudo**: deformam e subdividem de forma previsível, formam loops, dão UV limpa. Triângulo só onde ajuda
-   (ponta de cone, área rígida que não dobra); n-gon só em face plana e escondida.
+1. **Só quads, sem exceção** (regra do repo): nenhum triângulo, nenhum n-gon. Quads deformam e subdividem de forma
+   previsível, formam loops e dão UV limpa. Ponta de cone ou garra = um vértice-polo com quads em volta (anel par:
+   `Topo.fan`); tampa plana = grade ou patch com polo (`Topo.grid`, `poly_patch`), nunca um n-gon.
 2. **Loops seguem a forma**: anéis perpendiculares ao eixo em braço, perna, pescoço, cauda e dedos; concêntricos em
    olhos, boca e narinas; ao longo de quinas e vincos. Um loop atravessa a peça sem morrer no meio.
 3. **Contagem constante num tubo**: o mesmo número de vértices em todos os anéis dá tiras de quads sem triângulos
@@ -45,8 +46,8 @@ A engine triangula tudo: o orçamento é contado em **triângulos**.
 
 ## Mudar a densidade
 - Toda mudança de contagem cria polos; decida onde eles ficam antes.
-- Paridade manda: numa faixa, **3 → 1** e **4 → 2** fecham só com quads; **2 → 1** não (contorno ímpar) e pede um
-  triângulo ou outra redução ao lado.
+- Paridade manda: numa faixa, **3 → 1** e **4 → 2** fecham só com quads; **2 → 1** não (contorno ímpar). Nesse caso
+  mude as contagens (use 3 → 1 ou 4 → 2, ou ajuste um anel vizinho) até o contorno ficar par; triângulo não é saída.
 - **3 → 1** (ou 1 → 3) = dois 3-polos e dois 5-polos. Exemplo: costas da mão da Cuca (`cuca_hand.py`), onde 3 arestas
   da palma viram 5 nos nós dos dedos para os dedos saírem das colunas 0, 2 e 4.
 - Região de 5 lados com um 5-polo: costas e topo do ombro da Cuca (`cuca_back.py`); `solve_spokes` diz quantas
@@ -83,7 +84,7 @@ Partir de um alvo baixo e justificar cada loop. Neste repo:
 Ordem de grandeza em jogos: prop pequeno 100–1000, prop médio 1–5 mil, personagem stylized 3–10 mil.
 
 ## Checklist antes de chamar de pronto
-- Quads em tudo, exceto triângulos justificados; nenhum n-gon visível.
+- 100% quads: `topo_qa(...)["quad_only"]` é `True` (0 tris, 0 n-gons).
 - Nenhum polo 6+; polos fora das dobras.
 - Anéis fechados em volta de cada membro e articulação; contagens iguais nas emendas.
 - Sem buraco, non-manifold, duplicado, winding em conflito ou face para dentro (`topo_qa`, ver `qa.md`).

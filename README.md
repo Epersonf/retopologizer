@@ -10,11 +10,12 @@ dela; cada guia aponta para o próximo.
 ## Regras inegociáveis
 1. **Retopologia é sempre manual**: cada vértice é decidido e colado (snap) na referência. Nunca QuadriFlow, Remesh,
    Instant Meshes ou Decimate para gerar a malha entregue, nem "como primeira passada" (`docs/regras-retopologia.md`).
-2. Ferramenta automática **mede e confere** (raycast, BVH, fit, QA); não gera a malha.
-3. A referência nunca é editada (Edit Mode num mesh de 500 mil tris trava o Blender) nem vai para `output/` ou o git.
-4. O Blender aberto pelo usuário (MCP, porta 9876) é **só leitura**: construir e renderizar numa cópia, no worker
+2. **Só quads**: a retopologia entregue não tem nenhum triângulo nem n-gon (`topo_qa(...)["quad_only"]`).
+3. Ferramenta automática **mede e confere** (raycast, BVH, fit, QA); não gera a malha.
+4. A referência nunca é editada (Edit Mode num mesh de 500 mil tris trava o Blender) nem vai para `output/` ou o git.
+5. O Blender aberto pelo usuário (MCP, porta 9876) é **só leitura**: construir e renderizar numa cópia, no worker
    (porta 9877) ou em one-shot (`docs/blender-automacao.md`).
-5. Arquivos com no máximo 150 linhas (separar por responsabilidade). Commit só quando o usuário pedir, nunca com
+6. Arquivos com no máximo 150 linhas (separar por responsabilidade). Commit só quando o usuário pedir, nunca com
    `Co-Authored-By` ou atribuição a IA.
 
 ## Como um especialista trabalha aqui

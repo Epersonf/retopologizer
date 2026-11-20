@@ -64,10 +64,12 @@ class Topo(TopoOps):
             j = (i + 1) % n; self.f(A[i], A[j], B[j], B[i])
 
     def fan(self, ring, tip, closed=True):
-        """Triangles from a ring to one vertex (claw tips, poles)."""
+        """Quads from a ring to one vertex (claw tips, poles): each quad takes 2 ring edges, so a closed ring needs an
+        even count (n/2 quads, the tip is an n/2-pole) and an open chain an odd vertex count. No triangles."""
         tip = self.v(tip); n = len(ring)
-        for i in range(n if closed else n - 1):
-            self.f(ring[i], ring[(i + 1) % n], tip)
+        assert (n % 2 == 0) if closed else (n % 2 == 1), "quad fan needs an even ring / odd chain: %d" % n
+        for k in range(0, n if closed else n - 1, 2):
+            self.f(ring[k], ring[k + 1], ring[(k + 2) % n], tip)
         return tip
 
     def grid(self, B, Tp, L, R, snap=True, row=None, center=None):

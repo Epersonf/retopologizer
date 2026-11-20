@@ -8,6 +8,9 @@ simples ajustadas, a tampa tinha 248 tris e perdia cintas, blocos, chanfros, cav
 Código: `tools/snap_retopo.py` (carrega `snap_surface.py` + `snap_mesh.py`), `tools/ref_part.py`,
 exemplo completo em `projects/stylized-chest/build_lid_v5.py`.
 
+> **Só quads.** A tampa v5 é anterior à regra e tem triângulos e n-gons (tampa da ponta, rim, lascas soldadas).
+> Numa peça nova, troque esses três pontos pelas versões em quads indicadas nos passos 5 e 7.
+
 ## Quando usar
 Peça com detalhe que a IA gerou (cintas, blocos, chanfros, fecho, rebites) e que precisa ficar fiel
 para o bake funcionar. Para caixas/formas simples, `mesh_lib.py` + ajuste por `compare_mesh.py` basta.
@@ -29,14 +32,17 @@ Personagens e formas orgânicas (membros, mãos, cauda): `retopo-llm.md`.
    ponta. Um degrau são dois anéis no mesmo x (parede plana, sem inclinar). As pontas do anel (no
    rim) usam um raio **horizontal** na parede (`wall_y`): o raio inclinado oscila ±1,5 cm na
    rugosidade da IA. Todo vértice é projetado na ref (snap), nunca digitado.
-5. **Tiras** `Mesh.strip(A, B)` entre anéis vizinhos, tampa da ponta como n-gon, cavidade como outra
-   tira. `remove_doubles(0,002)` transforma quads-lasca de 2 mm em triângulos.
+5. **Tiras** `Mesh.strip(A, B)` entre anéis vizinhos, cavidade como outra tira. Tampa da ponta: grade de quads
+   (anel com contagem par, fechado em grade ou com um polo no meio), nunca n-gon. Quads-lasca de 2 mm: junte os
+   dois anéis num só em vez de soldar (soldar vira triângulo).
 6. **Espelho**: `Mesh.mirror_x()` = Mirror + apply + soldar o plano central. Só a metade é construída.
-7. **Rim plano** entre o laço externo e o da cavidade: `fill_flat_ring` (tessela sem cruzar e remove
-   ears de área zero). `bridge_loops` com contagens diferentes cruzou triângulos e gerou overlap de UV.
+7. **Rim plano** entre o laço externo e o da cavidade: dê aos dois laços a **mesma contagem** (mesmos ângulos) e
+   ligue com `Mesh.strip` = uma tira de quads. `fill_flat_ring` (usado na v5) triangula: não serve mais para entrega.
+   `bridge_loops` com contagens diferentes cruzou triângulos e gerou overlap de UV.
 8. **Detalhes salientes** (fecho, rebites) com `Mesh.prism(base, normal, altura, embed=4 mm, snap)`:
    a base é **projetada na nossa própria malha e afundada 4 mm** (sem face inferior); o topo fica
-   na superfície da ref; furo do fecho = `Mesh.dimple`. Base flutuando deixa o raio entrar na laje
+   na superfície da ref; furo do fecho = `Mesh.dimple`. Topo do prisma com base de 4 lados (ou par, fechado em
+   grade): topo n-gon fere a regra de só quads. Base flutuando deixa o raio entrar na laje
    e a QA acusa backface. Placas de canto sobrepostas: afastar 3 mm (coplanar = z-fight).
 9. **Conferir**: `fit_report` (erro nos dois sentidos, células sem detalhe), `section_overlay` (cortes
    ref colorida × low branca), `qa_all` (backfaces, UV, z-fight: `qa.md`), `unwrap_atlas(angle=66)` (89°
@@ -53,7 +59,7 @@ Personagens e formas orgânicas (membros, mãos, cauda): `retopo-llm.md`.
 |---|---|---|
 | peça extraída no lugar errado | ref com matrix_world girada, BVH local | BVH em mundo (`ref_part`) |
 | ilhas de UV dobradas | smart_project 89° em arcos | 66° |
-| triângulos cruzados no rim | `bridge_loops` com contagens diferentes | `fill_flat_ring` |
+| triângulos cruzados no rim | `bridge_loops` com contagens diferentes | laços com a mesma contagem + `strip` |
 | backface na laje do fecho | base flutuando | projetar na malha e afundar 4 mm |
 | quadrados pretos no Cycles | placas coplanares (z-fight) que o BVH não via | `qa_zfight` com AABB; afastar 3 mm |
 

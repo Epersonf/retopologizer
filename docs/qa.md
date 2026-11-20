@@ -17,8 +17,8 @@ levanta erro se algum teste falhar (`raise_on_fail=False` só devolve o relatór
 `topo_qa("Cuca_retopo", Ref("HiPoly"), seam_x=0.0)`: faces/tris/quads/n-gons, triângulos após triangular, buracos
 (arestas de borda), non-manifold, vértices soltos, duplicados (< 0,5 mm), winding em conflito, faces para dentro
 (contra a normal da ref), polos (3 / 5 / 6+), faces degeneradas, distância à ref.
-Esperado: buraco só na costura do espelho (`seam_x`), e zero non-manifold, duplicados, conflitos, faces para dentro
-e polos 6+.
+Esperado: `quad_only` True (0 tris, 0 n-gons: regra do repo), buraco só na costura do espelho (`seam_x`), e zero
+non-manifold, duplicados, conflitos, faces para dentro e polos 6+.
 
 ## Forma (fiel à referência)
 - `fit_report(low, ref)`: novo→ref (faces flutuando ou sobrando) e ref→novo (detalhe faltando) em mm, mais as células

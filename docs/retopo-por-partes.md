@@ -43,7 +43,7 @@ pé → cauda (com as escamas).
    p = part_object("LowPoly", "LowPoly_user", "Cuca_pe")   # faces novas ou alteradas nesta rodada
    topo_qa("Cuca_pe", R)                                    # seam_x=0.0 se a parte está no plano do espelho
    ```
-   Esperado: só quads (ou triângulos justificados), borda aberta só nos anéis de emenda, 0 non-manifold, 0 duplicados,
+   Esperado: `quad_only` True (0 tris, 0 n-gons), borda aberta só nos anéis de emenda, 0 non-manifold, 0 duplicados,
    0 winding em conflito, 0% de área para dentro. Faces que o artista começou para essa parte entram com
    `also=[índices]`.
 8. **Entregar só a parte**: `export_obj("Cuca_pe", r"C:/Users/epers/Desktop/cuca_pe.obj")`. Usa os eixos padrão do

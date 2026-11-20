@@ -33,6 +33,7 @@ def topo_qa(name, ref=None, seam_x=None, doubles=0.0005):
            "wire_edges": sum(1 for e in bm.edges if not e.link_faces), "loose_verts": sum(1 for v in bm.verts if not v.link_edges),
            "doubles": dbl, "winding_conflicts": wind, "poles": {k: val[k] for k in sorted(val) if k != 4},
            "degenerate_faces": sum(1 for f in bm.faces if f.calc_area() < 1e-8)}
+    rep["quad_only"] = fc[3] == 0 and fc[5] == 0          # the repo's rule: delivered retopo is quads only
     if ref is not None:
         inward, area, d = 0.0, 0.0, []
         for f in bm.faces:
