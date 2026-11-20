@@ -1,11 +1,11 @@
 """Auto-rig joints of the benchmark cases against their reference joints (error in % of the height). Writes
 output/eval.json (joints, reference, errors, bones) and output/<case>_mesh.npz for the overlay drawing.
-  "<blender.exe>" -b --factory-startup --python tools/blender_once.py -- projects/autorig-bench/evaluate.py
+  "<blender.exe>" -b --factory-startup --python tools/general/blender_once.py -- projects/autorig-bench/evaluate.py
   python projects/autorig-bench/draw.py"""
 import sys, json
 import numpy as np
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\06-rig")
 import autorig.load as LD, autorig.detect as DT
 from rig_mixamo import bones, chain
 

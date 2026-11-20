@@ -1,20 +1,21 @@
-# docs — índice
+# docs: índice por etapa do workflow
 
-Guias curtos, um assunto por arquivo; cada um aponta para o próximo. Entrada geral: `../README.md`.
-Ordem de um projeto: workflow → topologia → retopo por partes → qa → uv-bake → entrega → rigging → git.
+Uma pasta por etapa, na ordem em que um projeto avança; cada guia aponta para o próximo. Entrada geral: `../README.md`.
+Caminhos nos guias: sempre `docs/<pasta>/<arquivo>.md`, a partir da raiz do repo.
 
-| arquivo | leia quando |
-|---|---|
-| regras-retopologia.md | sempre, antes de criar qualquer malha |
-| blender-automacao.md | antes de rodar código no Blender: MCP, worker, one-shot, armadilhas |
-| workflow-retopology.md | ao começar um projeto: pastas, medir a referência, ordem das etapas, conferir a forma |
-| topologia.md | ao decidir loops, polos, contagens e orçamento (teoria do artista) |
-| retopo-por-partes.md | sempre que for retopologizar: dividir em partes, uma rodada por parte, entregar e integrar |
-| retopo-snap-mirror.md | retopo de peça dura ou prop com detalhe: anéis por ângulo + espelho (tampa do baú) |
-| retopo-llm.md | retopo de personagem ou forma orgânica com o pacote `tools/retopo` (Cuca) |
-| retopo-casca-campo.md | retopo de peça de pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
-| qa.md | para conferir a malha antes de UV, bake e export |
-| uv-bake.md | UV, mapas PBR, bake alta → baixa, artefatos |
-| entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor de ajuste, thumbnail e loja Fab |
-| rigging.md | auto-rig humanoide, rig à mão, pesos, cauda |
-| git-reproducao.md | o que commitar, regenerar `output/`, GLBs pesados |
+| pasta (etapa do pipeline) | arquivo | leia quando |
+|---|---|---|
+| 00-regras-e-ferramentas (sempre) | regras-retopologia.md | antes de criar qualquer malha |
+| | blender-automacao.md | antes de rodar código no Blender: MCP, worker, one-shot, armadilhas |
+| 01-entrada-e-medicao (0 e 1) | workflow-retopology.md | ao começar: pastas, medir a referência, ordem das etapas, conferir a forma |
+| 02-retopologia (2 e 3) | README.md | escolher o método certo para cada tipo de parte |
+| | topologia.md | decidir loops, polos, contagens e orçamento (teoria do artista) |
+| | retopo-por-partes.md | dividir o modelo, uma rodada por parte, entregar e integrar |
+| | retopo-snap-mirror.md | peça dura ou prop: anéis por ângulo + espelho (tampa do baú) |
+| | retopo-llm.md | personagem ou orgânico com o pacote `tools/02-retopologia/retopo` (Cuca) |
+| | retopo-casca-campo.md | pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
+| 03-qa (4) | qa.md | conferir a malha antes de UV, bake e export |
+| 04-uv-bake (5 e 6) | uv-bake.md | UV, mapas PBR, bake alta para baixa, artefatos |
+| 05-entrega (7 e 9) | entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor, thumbnail e loja Fab |
+| | git-reproducao.md | o que commitar, regenerar `output/`, GLBs pesados |
+| 06-rig (8) | rigging.md | auto-rig humanoide, rig à mão, pesos, cauda |

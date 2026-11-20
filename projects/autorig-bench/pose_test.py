@@ -1,12 +1,12 @@
 """Deformation check of the auto-rigged bench models (output/rigged/<case>.blend): a hard test pose (arms down and
 forward, elbows, a hip and a knee bent, the other leg out, spine twisted and bent, head turned, fingers curled, tail
 swung) rendered next to the rest pose: output/pose/<case>_<rest|pose>_<view>.png, then pose_sheet.py.
-  "<blender.exe>" -b --factory-startup --python tools/blender_once.py -- projects/autorig-bench/pose_test.py"""
+  "<blender.exe>" -b --factory-startup --python tools/general/blender_once.py -- projects/autorig-bench/pose_test.py"""
 import math, os, sys
 import bpy
 from mathutils import Matrix
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\general")
 from render_views import render_views
 
 OUT = ROOT + r"\projects\autorig-bench\output"

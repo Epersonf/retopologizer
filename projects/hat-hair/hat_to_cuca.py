@@ -3,8 +3,8 @@ mixamorig:Head bone (so a BoneAttachment3D on Head holds it with no offset), plu
 NormalCucaChapeu.png at 1024. Same FBX settings as Cuca.fbx (rig_mixamo.export_fbx: metres, axes baked). The fine fit
 is done by hand in the game's prop editor (data/cuca_props.json); here it only starts close: scaled to her head and
 the inner ceiling just above the top of her head. The bone axes did not match: the user turned it ~80/-139/-136 deg
-in the editor (docs/entrega.md, "Adereço preso à cabeça").
-  blender -b projects/hat-hair/draft/hat_baked.blend --python tools/blender_once.py -- projects/hat-hair/hat_to_cuca.py"""
+in the editor (docs/05-entrega/entrega.md, "Adereço preso à cabeça").
+  blender -b projects/hat-hair/draft/hat_baked.blend --python tools/general/blender_once.py -- projects/hat-hair/hat_to_cuca.py"""
 import os, subprocess
 import bpy
 from mathutils import Matrix, Vector

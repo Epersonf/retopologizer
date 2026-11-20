@@ -5,7 +5,7 @@ from mathutils import Vector
 _P = r"C:\Users\epers\Desktop\retopologizer\projects\stylized-tree"
 exec(open(_P + r"\snap_tree.py").read())
 exec(open(_P + r"\build_branch.py").read())
-exec(open(r"C:\Users\epers\Desktop\retopologizer\tools\snap_mesh.py").read())
+exec(open(r"C:\Users\epers\Desktop\retopologizer\tools\02-retopologia\snap_mesh.py").read())
 
 
 def snap_pt(c, d, bound, ref_r):

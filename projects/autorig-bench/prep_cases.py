@@ -1,8 +1,8 @@
-"""Benchmark cases for tools/autorig: one static mesh "Body" per case (input/<case>.blend) and the reference joints
+"""Benchmark cases for tools/06-rig/autorig: one static mesh "Body" per case (input/<case>.blend) and the reference joints
 (input/<case>_gt.json, world metres, Mixamo names without prefix). Mixamo bodies: the mesh as shown (posed by the
 file's own T-pose take) and the posed bone heads, or (_bind) the bind pose and the rest skeleton; Saci and Cuca: their
 hand-made rigs at rest.
-  python tools/blender_rpc.py --port 9877 projects/autorig-bench/prep_cases.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/autorig-bench/prep_cases.py"""
 import bpy, json, os
 IN = r"C:\Users\epers\Desktop\retopologizer\projects\autorig-bench\input"
 CHARS = r"C:\Users\epers\Documents\Repositories\Personal\Braziletto\frontend\godot-client\assets\characters"

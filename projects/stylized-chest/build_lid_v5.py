@@ -1,7 +1,7 @@
 """Lid v5: hand-retopo style. Half of the lid (x >= 0) is built from rings whose vertices are
 SNAPPED on the reference (REF_LID, lid-local space), then mirrored in X (Mirror + apply).
 Needs a REF_LID object (reference faces near the lid, in lid-local space, identity transform).
-  exec(open(ROOT+r"\tools\snap_retopo.py").read()); exec(open(this file).read()); build_lid_v5()
+  exec(open(ROOT+r"\tools\02-retopologia\snap_retopo.py").read()); exec(open(this file).read()); build_lid_v5()
 Section layout was measured on the reference (x along the hinge, y front=-, z up):
   centre strap |x|<0.055 (+14 mm), body, end block 0.225..0.31 (+22 mm), chamfer, end face x~0.326,
   cavity x<0.26 with a constant arch profile, rim plane z=0.06."""

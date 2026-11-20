@@ -1,9 +1,9 @@
 """Raw landmarks of the benchmark cases next to their reference joints (heights as fractions of H above the feet), to
-calibrate the joint rules of tools/autorig.  python tools/blender_rpc.py --port 9877 projects/autorig-bench/measure.py"""
+calibrate the joint rules of tools/06-rig/autorig.  python tools/general/blender_rpc.py --port 9877 projects/autorig-bench/measure.py"""
 import sys, importlib
 import numpy as np
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\06-rig")
 import autorig.sections as S, autorig.geodesic as G, autorig.tube as T, autorig.load as LD
 for _m in (S, G, T, LD):
     importlib.reload(_m)

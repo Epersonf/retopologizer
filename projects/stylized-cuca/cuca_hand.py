@@ -3,7 +3,7 @@
   P1, P2 palm contours with the same layout; the thumb leaves through the 6-hole at the front-bottom corner
   P2 -> P3 (knuckles, 14): 1->3 on the back of the hand (top 3 -> 5 edges: two 3-poles, two 5-poles)
   knuckle cap 5 x 2: fingers out of columns 0, 2, 4 (6-rings), web quads in columns 1 and 3
-  each digit (tools/retopo/digits.py): contours to the claw, a ring each side of the claw base, tip vertex."""
+  each digit (tools/02-retopologia/retopo/digits.py): contours to the claw, a ring each side of the claw base, tip vertex."""
 import numpy as np
 from mathutils import Vector
 

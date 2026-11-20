@@ -1,10 +1,10 @@
 """Export the rigged Cuca (cuca_rig.py) like the Saci: Cuca.fbx + AlbedoCuca.jpg (her baked albedo at 1024) in the
 Braziletto Godot client (assets/characters), plus a copy in output/. The FBX material points at the JPG next to it.
-  python tools/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_rig_export.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_rig_export.py"""
 import os, shutil, subprocess, sys, bpy
 from mathutils import Matrix
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\06-rig")
 import importlib, rig_mixamo
 importlib.reload(rig_mixamo)
 

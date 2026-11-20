@@ -2,10 +2,10 @@
 rows of a sock cap. The ring positions come from hat_field.py (level lines on the outer cloth, draft/hat_rings.npz);
 here they become vertices snapped on the reference and quads only:
   lid 12 x 12 (closed underneath) | mouth 48 -> rings 48 -> 4:2 band -> 24 -> 4:2 band -> 12 -> tip vertex (6 quads)
-  python tools/blender_rpc.py --port 9877 projects/hat-hair/hat_outer.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/hat-hair/hat_outer.py"""
 import sys
 import numpy as np
-sys.path.insert(0, r"C:\Users\epers\Desktop\retopologizer\tools")
+sys.path.insert(0, r"C:\Users\epers\Desktop\retopologizer\tools\02-retopologia")
 import importlib, retopo
 importlib.reload(retopo)
 from retopo import *

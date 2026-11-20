@@ -2,11 +2,11 @@
 (bake_robust). The retopo sits on the reference (mean 0.04 mm), so the extrusions are small: a big one makes the dome
 rays near the drooping tail hit the tail first. The lid underneath spans air: its texels are inpainted.
 Then a material with the maps goes on the low and a copy is saved as draft/hat_baked.blend (hat_uv.blend untouched).
-  worker on draft/hat_uv.blend: python tools/blender_rpc.py --port 9877 projects/hat-hair/hat_bake.py"""
+  worker on draft/hat_uv.blend: python tools/general/blender_rpc.py --port 9877 projects/hat-hair/hat_bake.py"""
 import os
 import bpy
 T_ = r"C:\Users\epers\Desktop\retopologizer\tools"
-exec(open(T_ + r"\bake_robust.py", encoding="utf-8").read())
+exec(open(T_ + r"\04-uv-bake\bake_robust.py", encoding="utf-8").read())
 P = r"C:\Users\epers\Desktop\retopologizer\projects\hat-hair"
 OUT = P + r"\output"
 LOW = "Hat_retopo"

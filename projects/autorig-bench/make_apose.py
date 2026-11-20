@@ -1,6 +1,6 @@
 """A-pose bench case from the auto-rigged female (output/rigged/female.blend): arms 40 degrees down, written like
 prep_cases.py does (input/female_apose.blend + _gt.json; the reference arm joints turned by the same angle).
-  "<blender.exe>" -b --factory-startup --python tools/blender_once.py -- projects/autorig-bench/make_apose.py"""
+  "<blender.exe>" -b --factory-startup --python tools/general/blender_once.py -- projects/autorig-bench/make_apose.py"""
 import json, math
 import bpy
 from mathutils import Matrix, Vector

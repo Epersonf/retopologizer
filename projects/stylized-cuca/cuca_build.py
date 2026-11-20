@@ -5,8 +5,8 @@ The result is Cuca_retopo + a Mirror modifier while the half is in progress."""
 import sys, bpy
 from mathutils import Vector
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-if ROOT + r"\tools" not in sys.path:
-    sys.path.insert(0, ROOT + r"\tools")
+if ROOT + r"\tools\02-retopologia" not in sys.path:
+    sys.path.insert(0, ROOT + r"\tools\02-retopologia")
 import importlib, retopo
 importlib.reload(retopo)
 from retopo import *

@@ -1,10 +1,10 @@
 """Continue the artist's own LowPoly (draft copy): the parts in PARTS are added to their mesh and written back to
 LowPoly. Their untouched mesh is kept as the mesh datablock LowPoly_user, so every run starts from it again.
-  python tools/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_user_build.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_user_build.py"""
 import sys, bpy
 from mathutils import Vector
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\02-retopologia")
 import importlib, retopo
 importlib.reload(retopo)
 from retopo import *

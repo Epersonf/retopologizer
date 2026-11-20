@@ -1,10 +1,10 @@
 """Hat measurements for the ring field (runs in Blender, worker on draft/hat-hair.blend): the hat part of the reference
 (vertices, normals, triangles, world space), the tip of the drooping tube and which vertices are on the OUTER side of
 the cloth (some ray along the normal escapes to open space without passing through the opening). Writes draft/hat_field_in.npz for hat_field.py.
-  python tools/blender_rpc.py --port 9877 projects/hat-hair/hat_measure.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/hat-hair/hat_measure.py"""
 import sys, math
 import numpy as np
-sys.path.insert(0, r"C:\Users\epers\Desktop\retopologizer\tools")
+sys.path.insert(0, r"C:\Users\epers\Desktop\retopologizer\tools\02-retopologia")
 import importlib, retopo
 importlib.reload(retopo)
 from retopo import Ref, track

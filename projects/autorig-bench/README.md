@@ -1,4 +1,4 @@
-# autorig-bench — calibração e teste do tools/autorig
+# autorig-bench — calibração e teste do tools/06-rig/autorig
 
 Casos: `male`, `female` (corpos base do Mixamo na pose da take), `male_bind`, `female_bind` (pose de bind + esqueleto
 de rest), `saci`, `cuca` (rigs feitos à mão), `female_apose` (braços 40° para baixo). `input/` e `output/` são gerados
@@ -16,6 +16,6 @@ de rest), `saci`, `cuca` (rigs feitos à mão), `female_apose` (braços 40° par
 
 ```
 B="C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe"
-"$B" -b --factory-startup --python tools/blender_once.py -- projects/autorig-bench/evaluate.py && python projects/autorig-bench/draw.py
-"$B" -b --factory-startup --python tools/autorig/cli.py -- projects/autorig-bench/input/cuca.blend out.fbx --blend out.blend
+"$B" -b --factory-startup --python tools/general/blender_once.py -- projects/autorig-bench/evaluate.py && python projects/autorig-bench/draw.py
+"$B" -b --factory-startup --python tools/06-rig/autorig/cli.py -- projects/autorig-bench/input/cuca.blend out.fbx --blend out.blend
 ```

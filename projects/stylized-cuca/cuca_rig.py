@@ -3,11 +3,11 @@
 cuca.blend. Joints in world metres, measured on the LowPoly sections (she faces -Y, her LEFT is +X): limb centres
 (contour.centred / track), elbow and knee on their middle loops, wrist on the narrowest ring, hip joint on the thigh
 axis inside the skirt. The tail bends on every other gap between the scutes, so each scute stays on one bone.
-  python tools/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_rig.py"""
+  python tools/general/blender_rpc.py --port 9877 projects/stylized-cuca/cuca_rig.py"""
 import sys, bpy
 from mathutils import Vector
 ROOT = r"C:\Users\epers\Desktop\retopologizer"
-sys.path.insert(0, ROOT + r"\tools")
+sys.path.insert(0, ROOT + r"\tools\02-retopologia"); sys.path.insert(0, ROOT + r"\tools\06-rig")
 import importlib, rig_mixamo
 importlib.reload(rig_mixamo)
 from retopo import Ref, centred

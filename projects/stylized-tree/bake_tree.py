@@ -4,8 +4,8 @@ import bpy, json, os
 T = r"C:\Users\epers\Desktop\retopologizer\tools"
 P = r"C:\Users\epers\Desktop\retopologizer\projects\stylized-tree"
 OUT = P + r"\output"; os.makedirs(OUT, exist_ok=True)
-exec(open(T + r"\bake_robust.py").read())
-exec(open(T + r"\wire_material.py").read())
+exec(open(T + r"\04-uv-bake\bake_robust.py").read())
+exec(open(T + r"\05-entrega\wire_material.py").read())
 
 LOW = ["tree_twig"]
 bpy.data.objects["REF_tree_highpoly"].hide_select = False  # hide_select impede o selected-to-active
