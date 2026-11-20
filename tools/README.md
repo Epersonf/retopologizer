@@ -27,6 +27,9 @@ Método snap + espelho: `docs/retopo-snap-mirror.md`.
 | make_lean_blend.py | dentro do Blender | .blend enxuto p/ git (sem ref, imagens empacotadas) |
 | export_from_blend.py | `blender -b` | regenera PNGs + FBX a partir do .blend enxuto |
 | verify_inputs.py | `python` | confere GLBs pesados (sha256 em inputs.json) |
+| blender_once.py | `blender -b --python blender_once.py -- script.py` | roda um script de worker sem worker no ar; resultado na linha `RESULT_JSON:` |
+| rig_mixamo.py | dentro do Blender | armature com nomes Mixamo a partir das juntas, skin por bone heat (máx. 4), export FBX p/ Godot |
+| autorig/ | `blender -b --python autorig/cli.py -- modelo saida.fbx` | auto-rig humanoide estilo Mixamo (juntas pela malha, dedos, cauda, skin, QA); ver autorig/README.md |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.2.3).
 Uso no MCP: `exec(open(r"<caminho>").read())`. Fluxo completo: docs/workflow-retopology.md.
