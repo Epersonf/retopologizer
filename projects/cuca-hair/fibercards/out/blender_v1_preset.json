@@ -18,27 +18,27 @@
   },
   {
    "pos": 0.45,
-   "color": "#d6b566"
+   "color": "#d9b96c"
   },
   {
    "pos": 1,
-   "color": "#f4e3a8"
+   "color": "#f6e7b0"
   }
  ],
  "glossiness": 0.11,
  "sheen": 0.3,
- "root_thickness": 0.012,
- "tip_thickness": 0.003,
+ "root_thickness": 0.026,
+ "tip_thickness": 0.01,
  "fixed_length_size": true,
  "combined_length": 20,
  "minimum_length": 1,
  "maximum_length": 14,
  "spread_amount_offset": 22.4,
- "clump_root": 250,
- "clump_tip": 900,
- "hairline_shape": 0.8,
+ "clump_root": 300,
+ "clump_tip": 1500,
+ "hairline_shape": 0.7,
  "enable_frizz_hair": true,
- "frizz_scale": 1.2,
+ "frizz_scale": 1.6,
  "frizz_curve_enabled": false,
  "frizz_curve_points": [
   {
@@ -55,16 +55,16 @@
   }
  ],
  "enable_hair_curl": true,
- "curl_count": 1.6,
- "curl_amount": 9.0,
- "curl_scale": 1.2,
+ "curl_count": 1.2,
+ "curl_amount": 12.0,
+ "curl_scale": 1.4,
  "curl_shape": 0.0,
  "messiness_scale": 1.0,
  "spawn_enabled": true,
- "spawn_radius_ratio_x": 0.17,
+ "spawn_radius_ratio_x": 0.22,
  "spawn_radius_ratio_y": 0.05,
  "spawn_tilt_deg": -6,
- "hair_amount_max": 70,
- "hair_amount_min_percent": 0.06,
+ "hair_amount_max": 130,
+ "hair_amount_min_percent": 0.1,
  "hair_amount_curve": "quad"
 }

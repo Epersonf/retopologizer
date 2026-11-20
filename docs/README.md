@@ -20,3 +20,4 @@ Caminhos nos guias: sempre `docs/<pasta>/<arquivo>.md`, a partir da raiz do repo
 | 05-entrega (7 e 9) | entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor, thumbnail e loja Fab |
 | | git-reproducao.md | o que commitar, regenerar `output/`, GLBs pesados |
 | 06-rig (8) | rigging.md | auto-rig humanoide, rig à mão, pesos, cauda |
+| 07-fibercards (alternativa ao cabelo em malha) | fibercards.md | folha de fiber cards (cor + normal) gerada e renderizada no Blender |

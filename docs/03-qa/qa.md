@@ -48,6 +48,12 @@ levanta erro se algum teste falhar (`raise_on_fail=False` só devolve o relatór
 Esperado: `quad_only` True (0 tris, 0 n-gons: regra do repo), buraco só na costura do espelho (`seam_x`), e zero
 non-manifold, duplicados, conflitos, faces para dentro e polos 6+.
 
+## Marcar e relatar (`qa_mark.py`, `qa_report.py`; ideias do add-on TopoToolkit do usuário)
+- `qa_mark("Obj", select="border")`: grava atributos booleanos `qa_border`, `qa_nonmanifold`, `qa_wire`, `qa_doubles`, `qa_tris`, `qa_ngons`, `qa_degenerate`, `qa_pole_3..8/n` e seleciona um tipo
+  (`select="poles"` pega todos os polos). Salve o `.blend`: ao abrir em Edit Mode os defeitos aparecem selecionados. `remove_marks("Obj")` apaga os atributos.
+- `qa_report("Obj", "x.html", ref=..., battery=True)`: um arquivo com contagens, arestas órfãs/borda/múltiplas, valência (polo 3..8 e N > 8), doubles, as linhas da bateria e vistas inline. `.txt` e `.csv` também.
+- Polos não reprovam nada na bateria (nenhum defeito apontado pelo usuário era de polo); aparecem no relatório e na marcação.
+
 ## Forma (fiel à referência)
 - `fit_report(low, ref)`: novo→ref (faces flutuando ou sobrando) e ref→novo (detalhe faltando) em mm, mais as células
   de 5 cm onde a ref está mais longe.

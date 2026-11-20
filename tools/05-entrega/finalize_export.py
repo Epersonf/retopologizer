@@ -1,5 +1,7 @@
 """Finalize low-poly objects: collections, UVs, material, budget check, blend save, FBX export.
 Inside Blender: exec(open(...).read()); finalize(["chest_base","chest_lid"], "REF_...", fbx, blend, budget=2000)
+After the export it writes the model's QA report (tools/03-qa/qa_report.py: counts, poles, edge types, the battery's lines against `ref`, views) as HTML next to the
+FBX (<fbx name>_report.html); report=False skips it, report="path.html" chooses the file, report_battery=False leaves the battery lines out.
 """
 import bpy, math
 
@@ -13,7 +15,7 @@ def _uv(ob):
     bpy.ops.object.mode_set(mode='OBJECT')
 
 
-def finalize(names, ref_name, fbx_path, blend_path, budget=2000, mat_name="chest_mat"):
+def finalize(names, ref_name, fbx_path, blend_path, budget=2000, mat_name="chest_mat", report=True, report_battery=True):
     sc = bpy.context.scene
     col_lp = bpy.data.collections.get("LOWPOLY") or bpy.data.collections.new("LOWPOLY")
     col_ref = bpy.data.collections.get("REFERENCE") or bpy.data.collections.new("REFERENCE")
@@ -42,5 +44,10 @@ def finalize(names, ref_name, fbx_path, blend_path, budget=2000, mat_name="chest
     bpy.ops.export_scene.fbx(filepath=fbx_path, use_selection=True, apply_scale_options='FBX_SCALE_ALL',
                              axis_forward='-Z', axis_up='Y', mesh_smooth_type='FACE',
                              add_leaf_bones=False, bake_space_transform=False)
+    out = {"tris_total": total, "budget": budget, "fbx": fbx_path, "blend": blend_path}
+    if report:                                                     # the report of the finished model (temporary copies are removed before the .blend is saved)
+        exec(open(r"C:/Users/epers/Desktop/retopologizer/tools/03-qa/qa_report.py", encoding="utf-8").read(), globals())
+        rp = report if isinstance(report, str) else fbx_path.rsplit(".", 1)[0] + "_report.html"
+        r = qa_report_parts(names, rp, ref=ref_name, battery=report_battery); out["report"] = rp; out["qa_pass"] = r["pass"]
     bpy.ops.wm.save_as_mainfile(filepath=blend_path)
-    return {"tris_total": total, "budget": budget, "fbx": fbx_path, "blend": blend_path}
+    return out

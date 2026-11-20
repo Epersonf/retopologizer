@@ -60,6 +60,8 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 | qa_strict.py | dentro do Blender | portão de tolerância zero: nenhum raio de 400 direções pode bater no verso de uma face; `heal_flipped` relaxa dobras e levanta erro se sobrar |
 | qa_floating.py | dentro do Blender | nenhuma peça solta flutuando: grupos de partes que se tocam; devolve a lacuna e o ponto a alcançar |
 | qa_zfight.py | dentro do Blender | faces quase paralelas sobrepostas a < 1 mm, broad phase por AABB |
+| qa_mark.py | dentro do Blender | aponta os defeitos na própria malha (ideia do add-on TopoToolkit): atributos `qa_*` (borda, não-manifold, órfã, doubles, tris, n-gons, polos 3..N) e seleciona um tipo, então o `.blend` abre no Edit Mode com eles marcados |
+| qa_report.py | dentro do Blender | relatório de um objeto em HTML (tabelas + vistas inline), TXT ou CSV: contagens, tipos de aresta, histograma de valência, linhas da bateria (`battery=True`) |
 
 ## 04-uv-bake/
 | arquivo | onde roda | para quê |
@@ -85,3 +87,10 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | auto-rig humanoide estilo Mixamo (`autorig/README.md`) |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).
+
+## 07-fibercards/ (cabelo em planos com textura de fios)
+| arquivo | onde roda | para quê |
+|---|---|---|
+| fibercards.py | `python` | folha de fiber cards: gera os fios (como o app fiber-card-gen), chama o Blender e escreve `<tag>_color.png`, `_normal.png`, `_preview.png`, `_preset.json` |
+| fc_blender.py | Blender one-shot (chamado por fibercards.py) | fios em tubos, câmera ortográfica, Cycles com fundo transparente |
+| fc_strands.py, fc_params.py | `python` | fios do card e estado/preset (`BLONDE`); mesmas chaves do JSON do app |

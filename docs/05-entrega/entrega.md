@@ -3,8 +3,8 @@
 ## Prop (estático)
 - `wire_and_export(lows, mat_name, outdir, prefix, fbx_name, maps=(...))` (`wire_material.py`): liga os PNGs num
   Principled e exporta **só os low-poly** (seleção). A referência nunca vai para `output/`.
-- `finalize(lows, ref, fbx, blend, budget=2000)` (`finalize_export.py`): coleções, UV, material, confere o orçamento,
-  salva o `.blend` e exporta.
+- `finalize(lows, ref, fbx, blend, budget=2000, report=True)` (`finalize_export.py`): coleções, UV, material, confere o orçamento,
+  salva o `.blend`, exporta e escreve `<fbx>_report.html` (`qa_report.py`: contagens, polos, linhas da bateria contra a ref, vistas; `report=False` pula, `report="x.html"` escolhe o arquivo).
 - PNGs e FBX em `projects/<nome>/output/`; `.blend` de trabalho em `draft/`; o enxuto na raiz do projeto
   (`docs/05-entrega/git-reproducao.md`).
 - Nunca `img.reload()` antes de exportar: o que o artista pintou no Blender mora na imagem empacotada do `.blend`, e
