@@ -12,9 +12,10 @@ Inside Blender: exec(open(ROOT+r"\tools\03-qa\qa_suite.py").read())
   r = qa_suite("LowPoly", ref="HairFull", only=None, skip=(), fast=False, budget=3000)   # r["pass"], r["lines"], r["raw"][check]
 Command line (worker on 9877): python -I tools/03-qa/qa.py LowPoly --ref HairFull [--only shape,fit] [--skip strict] [--fast] [--json]"""
 import bpy, time
-ROOT_QA = r"C:\Users\epers\Desktop\retopologizer\tools\03-qa"
+import os
+ROOT_QA = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools", "03-qa")
 for _f in ("qa_faces", "qa_strict", "qa_shape", "qa_floating", "qa_attach", "qa_local", "qa_fit", "qa_mesh"):
-    exec(open(ROOT_QA + "\\" + _f + ".py", encoding="utf-8").read())
+    exec(open(ROOT_QA + "/" + _f + ".py", encoding="utf-8").read())
 ORDER = ["mesh", "budget", "shape", "floating", "attach", "local", "strict", "fit"]
 HINT = {"mesh": "open border = hole: close it; winding: rebuild the part with outward winding; duplicates: merge",
         "budget": "drop the smallest tubes or coarsen the shell counts", "shape": "heal_spikes(); tube: raise min radius / blunt tip",

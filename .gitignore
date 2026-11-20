@@ -1,6 +1,9 @@
-# heavy / derived: see docs/git-reproducao.md
+# heavy / derived: see docs/git-reproduction.md
 projects/*/input/
 projects/*/output/
 projects/*/draft/
 __pycache__/
 *.blend1
+
+# personal / local work: scripts worth sharing live in examples/
+projects/

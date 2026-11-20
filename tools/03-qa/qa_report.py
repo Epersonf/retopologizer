@@ -5,8 +5,8 @@ fmt: "html" (tables + images), "txt", "csv". Inside Blender:
   qa_report("LowPoly", r"C:/out/lowpoly_report.html", ref="HairFull", battery=True, fast=True, views=("front", "back", "right", "persp"))     # -> {"path", "stats", "pass"}"""
 import bpy, bmesh, base64, csv, datetime, io, os, tempfile
 from collections import Counter
-ROOT_QA = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() else r"C:\Users\epers\Desktop\retopologizer\tools\03-qa"
-exec(open(ROOT_QA + r"\qa_mark.py", encoding="utf-8").read()); exec(open(ROOT_QA + r"\..\general\render_views.py", encoding="utf-8").read())
+ROOT_QA = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() else os.path.join(os.environ.get("RETOPOLOGIZER_ROOT", os.getcwd()), "tools", "03-qa")
+exec(open(ROOT_QA + "/qa_mark.py", encoding="utf-8").read()); exec(open(ROOT_QA + "/../general/render_views.py", encoding="utf-8").read())
 
 
 def topo_stats(name):
@@ -20,7 +20,7 @@ def topo_stats(name):
 def qa_report(name, path, ref=None, battery=False, fast=True, views=("front", "back", "right", "persp"), fmt=None, res=420):
     fmt = fmt or os.path.splitext(path)[1].lstrip(".").lower() or "html"; s = topo_stats(name); lines, ok = [], None
     if battery:
-        exec(open(ROOT_QA + r"\qa_suite.py", encoding="utf-8").read(), globals()); q = qa_suite(name, ref=ref, fast=fast); lines, ok = q["lines"], q["pass"]
+        exec(open(ROOT_QA + "/qa_suite.py", encoding="utf-8").read(), globals()); q = qa_suite(name, ref=ref, fast=fast); lines, ok = q["lines"], q["pass"]
     when = datetime.datetime.now().strftime("%Y-%m-%d %H:%M"); body = ""
     if fmt == "csv":
         o = io.StringIO(); w = csv.writer(o); w.writerow(["object", name]); w.writerow(["date", when])

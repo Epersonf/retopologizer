@@ -1,96 +1,100 @@
-# tools/: índice por etapa do workflow
+# tools/: index by workflow stage
 
-Mesmas pastas de `docs/`. Cada arquivo começa com um docstring de uso (assinaturas e exemplos). Como rodar o Blender:
-`docs/00-regras-e-ferramentas/blender-automacao.md`. Fluxo de um projeto: `docs/01-entrada-e-medicao/workflow-retopology.md`.
+Same folders as `docs/`. Each file starts with a usage docstring (signatures and examples). How to run Blender:
+`docs/00-rules-and-tools/blender-automation.md`. Flow of a project: `docs/01-input-and-measurement/workflow-retopology.md`.
 
-**Regra:** a ferramenta fica na pasta da etapa que a usa. Se é usada por mais de uma etapa (ou por todas), vai em
-`general/`. Ao criar ferramenta nova, ponha na etapa dela; se uma segunda etapa passar a usá-la, mova para `general/`
-e atualize os caminhos (`grep -rn "tools.<pasta>.<nome>"`).
+**Rule:** a tool lives in the folder of the stage that uses it. If it is used by more than one stage (or by all), it goes in
+`general/`. When creating a new tool, put it in its own stage; if a second stage starts using it, move it to `general/`
+and update the paths (`grep -rn "tools.<folder>.<name>"`).
 
-"dentro do Blender" = carregar com `exec(open(r"<repo>\tools\<pasta>\x.py", encoding="utf-8").read())` (MCP, worker ou
-one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) são importados: ponha a pasta deles no
-`sys.path` (`<repo>\tools\02-retopologia` para `retopo`, `<repo>\tools\06-rig` para `autorig` e `rig_mixamo`).
+"inside Blender" = load with `exec(open(r"<repo>\tools\<folder>\x.py", encoding="utf-8").read())` (MCP, worker or
+one-shot) and call the function. The packages (`retopo/`, `autorig/`, `rig_mixamo`) are imported: put their folder on
+`sys.path` (`<repo>\tools\02-retopology` for `retopo`, `<repo>\tools\06-rig` for `autorig` and `rig_mixamo`).
 
-## general/: usadas por mais de uma etapa
-| arquivo | onde roda | para quê |
+`<repo>` is your clone of this repository. Tools that load other tools find the repo root from their own location, or from the
+`RETOPOLOGIZER_ROOT` environment variable, or, inside Blender without `__file__`, from the current directory: run from the
+repo root or set `RETOPOLOGIZER_ROOT`.
+
+## general/: used by more than one stage
+| file | where it runs | what for |
 |---|---|---|
-| blender_rpc.py | `python` | cliente do socket (MCP 9876 ou worker 9877): roda um arquivo ou `-c "código"`, imprime `result` |
-| blender_worker.py | `blender -b cópia.blend --python tools/general/blender_worker.py -- 9877` | Blender headless com o protocolo do MCP |
-| blender_once.py | `blender -b --factory-startup --python tools/general/blender_once.py -- script.py` | roda um script sem worker; resultado em `RESULT_JSON:` |
-| cycles_gpu.py | dentro do Blender | `use_gpu()`: Cycles na GPU; chamar antes de todo bake/render (bake e thumbnail) |
-| render_views.py | dentro do Blender | vistas workbench (front/back/left/right/top/persp); `fit_to` fixa o enquadramento |
-| ref_part.py | dentro do Blender | recorta a parte da ref que pertence a uma peça, no espaço local dela |
-| slice_plot.py | `python` (matplotlib) | cortes da ref em PNG com grade em cm; `--low` sobrepõe a retopo |
-| qa_uv.py | dentro do Blender | overlap, limites 0–1, gap entre ilhas; `unwrap_atlas` (QA e UV/bake) |
+| blender_rpc.py | `python` | socket client (MCP 9876 or worker 9877): runs a file or `-c "código"`, prints `result` |
+| blender_worker.py | `blender -b cópia.blend --python tools/general/blender_worker.py -- 9877` | headless Blender with the MCP protocol |
+| blender_once.py | `blender -b --factory-startup --python tools/general/blender_once.py -- script.py` | runs a script without a worker; result in `RESULT_JSON:` |
+| cycles_gpu.py | inside Blender | `use_gpu()`: Cycles on the GPU; call before every bake/render (bake and thumbnail) |
+| render_views.py | inside Blender | workbench views (front/back/left/right/top/persp); `fit_to` fixes the framing |
+| ref_part.py | inside Blender | crops the part of the ref that belongs to a piece, in the piece's local space |
+| slice_plot.py | `python` (matplotlib) | ref cross-sections as PNG with a cm grid; `--low` overlays the retopo |
+| qa_uv.py | inside Blender | overlap, 0–1 bounds, gap between islands; `unwrap_atlas` (QA and UV/bake) |
 
-## 01-entrada-e-medicao/
-| arquivo | onde roda | para quê |
+## 01-input-and-measurement/
+| file | where it runs | what for |
 |---|---|---|
-| inspect_glb.py | `blender --background --python inspect_glb.py -- model.glb` | tris/verts, bbox, materiais e 3 perfis de silhueta |
-| slice_profile.py | dentro do Blender | bbox por fatia ao longo de um eixo (numpy, sem Edit Mode) |
+| inspect_glb.py | `blender --background --python inspect_glb.py -- model.glb` | tris/verts, bbox, materials and 3 silhouette profiles |
+| slice_profile.py | inside Blender | bbox per slice along an axis (numpy, no Edit Mode) |
 
-## 02-retopologia/ (construir à mão e conferir a forma)
-| arquivo | onde roda | para quê |
+## 02-retopology/ (build by hand and check the shape)
+| file | where it runs | what for |
 |---|---|---|
-| mesh_lib.py | dentro do Blender | props simples: `box`, `loft`, `rect_sweep`, `prism`, `pentagon`, `to_object` |
-| snap_retopo.py | dentro do Blender | peças duras: carrega os três abaixo (`docs/02-retopologia/retopo-snap-mirror.md`) |
-| snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` na ref; `simplify` |
+| mesh_lib.py | inside Blender | simple props: `box`, `loft`, `rect_sweep`, `prism`, `pentagon`, `to_object` |
+| snap_retopo.py | inside Blender | hard-surface pieces: loads the three below (`docs/02-retopology/retopo-snap-mirror.md`) |
+| snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` on the ref; `simplify` |
 | snap_mesh.py | via snap_retopo | `Mesh`: `v`, `f`, `strip`, `cap`, `prism`, `dimple`, `fill_flat_ring`, `mirror_x`, `to_object` |
-| snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: anel de corte por raycast do centro |
-| retopo/ | dentro do Blender (`import retopo`) | personagens e orgânicos: `Ref`, `Topo`, contornos, patches, dedos, `lock` (tubo por madeixa, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
-| compare_mesh.py | dentro do Blender | distância ref↔novo (mm e % da diagonal) nos dois sentidos + pontos críticos |
-| fit_report.py | dentro do Blender | erro novo→ref e ref→novo (mm) + células de 5 cm onde falta detalhe |
-| overlay.py | `python` (PIL) | silhuetas ref × novo: vermelho só ref, ciano só novo, cinza os dois |
-| section_overlay.py | dentro do Blender | PNG de cortes: ref colorida × low branca |
-| wire_overlay.py | dentro do Blender | render workbench + wireframe da low (só arestas visíveis) |
-| label_png.py | `python` (PIL) | escreve os índices dos vértices no PNG do wire_overlay |
+| snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: cross-section ring by raycast from the center |
+| retopo/ | inside Blender (`import retopo`) | characters and organics: `Ref`, `Topo`, contours, patches, digits, `lock` (tube per hair lock, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
+| compare_mesh.py | inside Blender | ref↔new distance (mm and % of the diagonal) in both directions + critical points |
+| fit_report.py | inside Blender | new→ref and ref→new error (mm) + 5 cm cells where detail is missing |
+| overlay.py | `python` (PIL) | ref × new silhouettes: red ref only, cyan new only, gray both |
+| section_overlay.py | inside Blender | cross-section PNG: colored ref × white low |
+| wire_overlay.py | inside Blender | workbench render + low wireframe (visible edges only) |
+| label_png.py | `python` (PIL) | writes the vertex indices on the wire_overlay PNG |
 
 ## 03-qa/
-| arquivo | onde roda | para quê |
+| file | where it runs | what for |
 |---|---|---|
-| qa_all.py | dentro do Blender | portão único: backfaces + UV (2048 e 4096) + z-fighting; levanta erro se falhar |
-| qa_faces.py | dentro do Blender | raycast de 400 direções: nenhuma backface exposta; `fix_flipped` |
-| qa_shape.py | dentro do Blender | formas feias: espinhos, tubos de ponta fina, tubos finos, faces estreitas; `heal_spikes` |
-| qa.py | linha de comando (worker 9877) | **a bateria**: roda todos os testes e imprime uma linha por teste + `fix:` + onde (`--only`, `--skip`, `--fast`, `--json`) |
-| qa_suite.py | dentro do Blender | `qa_suite(nome, ref=..)`: a bateria como função (mesh, budget, shape, floating, attach, local, strict, fit) |
-| qa_mesh.py | dentro do Blender | quads, borda aberta, non-manifold, winding, duplicados, degeneradas |
-| qa_local.py | dentro do Blender | normal invertida vista de perto (frestas, dobras, tampa de tubo furando) |
-| qa_attach.py | dentro do Blender | tubo conectado só por encosto / tampa fora do pai ("ponta solta apesar de conectada") |
-| qa_fit.py | dentro do Blender | fidelidade à ref: só o visível: IoU de silhueta em 14 direções, buracos (ref sem cobertura), caroços que a ref não tem (profundidade do primeiro hit) |
-| qa_strict.py | dentro do Blender | portão de tolerância zero: nenhum raio de 400 direções pode bater no verso de uma face; `heal_flipped` relaxa dobras e levanta erro se sobrar |
-| qa_floating.py | dentro do Blender | nenhuma peça solta flutuando: grupos de partes que se tocam; devolve a lacuna e o ponto a alcançar |
-| qa_zfight.py | dentro do Blender | faces quase paralelas sobrepostas a < 1 mm, broad phase por AABB |
-| qa_mark.py | dentro do Blender | aponta os defeitos na própria malha (ideia do add-on TopoToolkit): atributos `qa_*` (borda, não-manifold, órfã, doubles, tris, n-gons, polos 3..N) e seleciona um tipo, então o `.blend` abre no Edit Mode com eles marcados |
-| qa_report.py | dentro do Blender | relatório de um objeto em HTML (tabelas + vistas inline), TXT ou CSV: contagens, tipos de aresta, histograma de valência, linhas da bateria (`battery=True`) |
+| qa_all.py | inside Blender | single gate: backfaces + UV (2048 and 4096) + z-fighting; raises an error on failure |
+| qa_faces.py | inside Blender | raycast in 400 directions: no exposed backface; `fix_flipped` |
+| qa_shape.py | inside Blender | ugly shapes: spikes, thin-tipped tubes, thin tubes, narrow faces; `heal_spikes` |
+| qa.py | command line (worker 9877) | **the battery**: runs all tests and prints one line per test + `fix:` + where (`--only`, `--skip`, `--fast`, `--json`) |
+| qa_suite.py | inside Blender | `qa_suite(nome, ref=..)`: the battery as a function (mesh, budget, shape, floating, attach, local, strict, fit) |
+| qa_mesh.py | inside Blender | quads, open border, non-manifold, winding, duplicates, degenerates |
+| qa_local.py | inside Blender | inverted normal seen up close (gaps, folds, tube cap poking through) |
+| qa_attach.py | inside Blender | tube connected only by touching / cap outside the parent ("loose tip despite being connected") |
+| qa_fit.py | inside Blender | fidelity to the ref, visible part only: silhouette IoU in 14 directions, holes (ref without coverage), bumps the ref does not have (first-hit depth) |
+| qa_strict.py | inside Blender | zero-tolerance gate: no ray out of 400 directions may hit the back of a face; `heal_flipped` relaxes folds and raises an error if any remain |
+| qa_floating.py | inside Blender | no loose piece floating: groups of parts that touch; returns the gap and the point to reach |
+| qa_zfight.py | inside Blender | nearly parallel faces overlapping at < 1 mm, AABB broad phase |
+| qa_mark.py | inside Blender | points out defects on the mesh itself (idea from the TopoToolkit add-on): `qa_*` attributes (border, non-manifold, orphan, doubles, tris, n-gons, poles 3..N) and selects one type, so the `.blend` opens in Edit Mode with them marked |
+| qa_report.py | inside Blender | report of an object as HTML (tables + inline views), TXT or CSV: counts, edge types, valence histogram, battery rows (`battery=True`) |
 
 ## 04-uv-bake/
-| arquivo | onde roda | para quê |
+| file | where it runs | what for |
 |---|---|---|
-| bake_robust.py | dentro do Blender | bake com validação por texel, re-bake multi-passada, inpaint por ilha |
-| bake_maps.py | dentro do Blender | bake simples de 5 mapas high→low numa imagem (cage opcional) |
-| bake_inpaint.py | numpy puro | inpaint e dilate restritos à ilha UV |
+| bake_robust.py | inside Blender | bake with per-texel validation, multi-pass re-bake, per-island inpaint |
+| bake_maps.py | inside Blender | simple bake of 5 high→low maps into one image (optional cage) |
+| bake_inpaint.py | pure numpy | inpaint and dilate restricted to the UV island |
 
-## 05-entrega/
-| arquivo | onde roda | para quê |
+## 05-delivery/
+| file | where it runs | what for |
 |---|---|---|
-| wire_material.py | dentro do Blender | liga os PNGs num Principled e exporta o FBX só dos low-poly |
-| finalize_export.py | dentro do Blender | coleções, UV, material, orçamento, `.blend` e FBX |
-| render_thumbnail.py | dentro do Blender | thumbnail 1920x1080 para loja (Cycles, estúdio) |
-| make_lean_blend.py | dentro do Blender | `.blend` enxuto para o git (sem a ref, imagens empacotadas) |
-| export_from_blend.py | `blender -b <projeto>.blend -P export_from_blend.py -- outdir prefixo` | regenera PNGs + FBX a partir do `.blend` enxuto |
-| verify_inputs.py | `python` | confere `inputs.json` (o `inputs.json` foi removido do repo, então está **obsoleta**) |
+| wire_material.py | inside Blender | wires the PNGs into a Principled material and exports the FBX of the low-polys only |
+| finalize_export.py | inside Blender | collections, UV, material, budget, `.blend` and FBX |
+| render_thumbnail.py | inside Blender | 1920x1080 store thumbnail (Cycles, studio) |
+| make_lean_blend.py | inside Blender | lean `.blend` for git (no ref, packed images) |
+| export_from_blend.py | `blender -b <projeto>.blend -P export_from_blend.py -- outdir prefixo` | regenerates PNGs + FBX from the lean `.blend` |
+| verify_inputs.py | `python` | checks `inputs.json` (`inputs.json` was removed from the repo, so it is **obsolete**) |
 
 ## 06-rig/
-| arquivo | onde roda | para quê |
+| file | where it runs | what for |
 |---|---|---|
-| rig_mixamo.py | dentro do Blender | armature com nomes Mixamo a partir das juntas, skin por bone heat (máx. 4), export FBX |
-| autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | auto-rig humanoide estilo Mixamo (`autorig/README.md`) |
+| rig_mixamo.py | inside Blender | armature with Mixamo names from the joints, skin by bone heat (max. 4), FBX export |
+| autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).
 
-## 07-fibercards/ (cabelo em planos com textura de fios)
-| arquivo | onde roda | para quê |
+## 07-fibercards/ (hair as planes with a strand texture)
+| file | where it runs | what for |
 |---|---|---|
-| fibercards.py | `python` | folha de fiber cards: gera os fios (como o app fiber-card-gen), chama o Blender e escreve `<tag>_color.png`, `_normal.png`, `_preview.png`, `_preset.json` |
-| fc_blender.py | Blender one-shot (chamado por fibercards.py) | fios em tubos, câmera ortográfica, Cycles com fundo transparente |
-| fc_strands.py, fc_params.py | `python` | fios do card e estado/preset (`BLONDE`); mesmas chaves do JSON do app |
+| fibercards.py | `python` | fiber card sheet: generates the strands (like the fiber-card-gen app), calls Blender and writes `<tag>_color.png`, `_normal.png`, `_preview.png`, `_preset.json` |
+| fc_blender.py | Blender one-shot (called by fibercards.py) | strands as tubes, orthographic camera, Cycles with a transparent background |
+| fc_strands.py, fc_params.py | `python` | card strands and state/preset (`BLONDE`); same keys as the app's JSON |

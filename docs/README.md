@@ -1,23 +1,23 @@
-# docs: índice por etapa do workflow
+# docs: index by workflow stage
 
-Uma pasta por etapa, na ordem em que um projeto avança; cada guia aponta para o próximo. Entrada geral: `../README.md`.
-Caminhos nos guias: sempre `docs/<pasta>/<arquivo>.md`, a partir da raiz do repo.
+One folder per stage, in the order a project advances; each guide points to the next. General entry point: `../README.md`.
+Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 
-| pasta (etapa do pipeline) | arquivo | leia quando |
+| folder (pipeline stage) | file | read when |
 |---|---|---|
-| 00-regras-e-ferramentas (sempre) | regras-retopologia.md | antes de criar qualquer malha |
-| | blender-automacao.md | antes de rodar código no Blender: MCP, worker, one-shot, armadilhas |
-| 01-entrada-e-medicao (0 e 1) | workflow-retopology.md | ao começar: pastas, medir a referência, ordem das etapas, conferir a forma |
-| 02-retopologia (2 e 3) | README.md | escolher o método certo para cada tipo de parte |
-| | topologia.md | decidir loops, polos, contagens e orçamento (teoria do artista) |
-| | retopo-por-partes.md | dividir o modelo, uma rodada por parte, entregar e integrar |
-| | retopo-snap-mirror.md | peça dura ou prop: anéis por ângulo + espelho (tampa do baú) |
-| | retopo-llm.md | personagem ou orgânico com o pacote `tools/02-retopologia/retopo` (Cuca) |
-| | retopo-casca-campo.md | pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
-| | retopo-tubos-cabelo.md | madeixas/tubos fundidos (cabelo): uma malha separada por tubo, detector de madeixas, orçamento de polígonos |
-| 03-qa (4) | qa.md | conferir a malha antes de UV, bake e export |
-| 04-uv-bake (5 e 6) | uv-bake.md | UV, mapas PBR, bake alta para baixa, artefatos |
-| 05-entrega (7 e 9) | entrega.md | FBX, Godot (jogo Braziletto), adereço preso à cabeça + editor, thumbnail e loja Fab |
-| | git-reproducao.md | o que commitar, regenerar `output/`, GLBs pesados |
-| 06-rig (8) | rigging.md | auto-rig humanoide, rig à mão, pesos, cauda |
-| 07-fibercards (alternativa ao cabelo em malha) | fibercards.md | folha de fiber cards (cor + normal) gerada e renderizada no Blender |
+| 00-rules-and-tools (always) | retopology-rules.md | before creating any mesh |
+| | blender-automation.md | before running code in Blender: MCP, worker, one-shot, pitfalls |
+| 01-input-and-measurement (0 and 1) | workflow-retopology.md | when starting: folders, measuring the reference, order of stages, checking the shape |
+| 02-retopology (2 and 3) | README.md | choosing the right method for each type of part |
+| | topology.md | deciding loops, poles, counts and budget (the artist's theory) |
+| | retopo-by-parts.md | splitting the model, one round per part, delivering and integrating |
+| | retopo-snap-mirror.md | hard part or prop: rings by angle + mirror (chest lid) |
+| | retopo-llm.md | character or organic with the `tools/02-retopology/retopo` package (Cuca) |
+| | retopo-shell-field.md | cloth with an opening (hat, hood, sleeve): rings by Laplace field |
+| | retopo-hair-tubes.md | fused strands/tubes (hair): one separate mesh per tube, strand detector, polygon budget |
+| 03-qa (4) | qa.md | checking the mesh before UV, bake and export |
+| 04-uv-bake (5 and 6) | uv-bake.md | UV, PBR maps, high-to-low bake, artifacts |
+| 05-delivery (7 and 9) | delivery.md | FBX, Godot (Braziletto game), prop attached to the head + editor, thumbnail and Fab store |
+| | git-reproduction.md | what to commit, regenerating `output/`, heavy GLBs |
+| 06-rig (8) | rigging.md | humanoid auto-rig, hand rig, weights, tail |
+| 07-fibercards (alternative to mesh hair) | fibercards.md | fiber card sheet (color + normal) generated and rendered in Blender |

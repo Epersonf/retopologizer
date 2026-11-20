@@ -1,70 +1,70 @@
-# QA: quando a malha está pronta
+# QA: when the mesh is ready
 
-Rodar antes da UV final, do bake e do export. Tudo dentro do Blender; cada teste devolve um dict com `pass`.
-Teoria do que é malha boa: `docs/02-retopologia/topologia.md`.
+Run before the final UV, the bake and the export. Everything inside Blender; each test returns a dict with `pass`.
+Theory of what a good mesh is: `docs/02-retopology/topology.md`.
 
-## Comando único: a bateria (`qa.py`) — comece por aqui
+## Single command: the battery (`qa.py`) — start here
 ```
-python -I tools/03-qa/qa.py LowPoly --ref HairFull            # tudo, uma linha por teste (~25 s)
-python -I tools/03-qa/qa.py LowPoly --ref HairFull --fast     # strict com 100 direções: para iterar (~8 s)
-python -I tools/03-qa/qa.py LowPoly --only fit,attach         # só alguns (--skip tira alguns; --json devolve o dict inteiro)
+python -I tools/03-qa/qa.py LowPoly --ref HairFull            # everything, one line per test (~25 s)
+python -I tools/03-qa/qa.py LowPoly --ref HairFull --fast     # strict with 100 directions: for iterating (~8 s)
+python -I tools/03-qa/qa.py LowPoly --only fit,attach         # only some (--skip drops some; --json returns the whole dict)
 ```
-Sai com código 1 se algum teste reprova; cada FAIL traz uma linha `fix:` e **onde** está o problema (coordenadas e região,
-`front-top-right` etc.), então o agente não precisa abrir 8 dicts. Dentro do Blender: `qa_suite(nome, ref=..., only=..., fast=...)`.
-Ordem (do mais barato ao mais caro): `mesh`, `budget`, `shape`, `floating`, `attach`, `local`, `strict`, `fit`.
-Fluxo do agente: **iterar com `--fast`, rodar completo uma vez antes de mostrar ao usuário**; quando o usuário apontar um
-defeito que nenhum teste pegou, escrever o teste primeiro (ele deve reprovar o arquivo ruim), depois corrigir.
+Exits with code 1 if any test fails; each FAIL carries a `fix:` line and **where** the problem is (coordinates and region,
+`front-top-right` etc.), so the agent does not need to open 8 dicts. Inside Blender: `qa_suite(name, ref=..., only=..., fast=...)`.
+Order (cheapest to most expensive): `mesh`, `budget`, `shape`, `floating`, `attach`, `local`, `strict`, `fit`.
+Agent flow: **iterate with `--fast`, run the full one once before showing it to the user**; when the user points at a
+defect that no test caught, write the test first (it must fail the bad file), then fix.
 
-## O que torna um modelo bom (o que cada teste protege)
-1. **Fiel à ref**: silhueta (IoU) de 14 direções, nada da ref sem cobertura (buraco, entalhe), nada no modelo que a ref não tem (`fit`).
-2. **Superfície limpa**: fechada, só quads, sem normal invertida vista de longe (`strict`) nem de perto, em frestas e dobras (`local`).
-3. **Peças que se seguram**: nada flutuando (`floating`) e cada peça *enterrada* no que a sustenta, não só encostada nem com a
-   tampa furando a superfície (`attach`).
-4. **Forma que lê bem**: sem espinhos, pontas de agulha, tubos finos (`shape`).
-5. **Orçamento** (`budget`).
-Passar nos cinco juntos é o mínimo; um modelo que só passa nos de superfície (1 e 2 de normais) ainda pode estar horrível.
+## What makes a model good (what each test protects)
+1. **Faithful to the ref**: silhouette (IoU) from 14 directions, nothing of the ref uncovered (hole, notch), nothing in the model that the ref lacks (`fit`).
+2. **Clean surface**: closed, quads only, no inverted normal seen from afar (`strict`) or up close, in gaps and folds (`local`).
+3. **Pieces that hold**: nothing floating (`floating`) and each piece *buried* in what supports it, not just touching or with the
+   cap piercing the surface (`attach`).
+4. **Shape that reads well**: no spikes, needle tips, thin tubes (`shape`).
+5. **Budget** (`budget`).
+Passing all five together is the minimum; a model that passes only the surface ones (1 and 2 for normals) can still look terrible.
 
-## Portão do baú (`qa_all.py`: backfaces + UV + z-fighting)
+## Chest gate (`qa_all.py`: backfaces + UV + z-fighting)
 `exec(open(r"<repo>\tools\03-qa\qa_all.py", encoding="utf-8").read()); qa_all(["chest_base", "chest_lid"])`
-levanta erro se algum teste falhar (`raise_on_fail=False` só devolve o relatório).
+raises an error if any test fails (`raise_on_fail=False` just returns the report).
 
-| teste | ferramenta | falha quando | correção |
+| test | tool | fails when | fix |
 |---|---|---|---|
-| backfaces | `qa_faces.py` | o primeiro hit de algum raio (400 direções × 200×200, cavidades abertas incluídas) é o lado de trás de uma face, o vermelho do Face Orientation; hits rasantes (\|n·d\| < 0,1) ignorados | `fix_flipped()` inverte faces vistas só por trás; face com 0 votos de frente estava enterrada: apagar |
-| **normal invertida visível (portão estrito)** | `qa_strict.py` | **qualquer** raio, de 400 direções em volta (200×200 cada), cuja primeira batida é o verso de uma face, confirmado por 4 raios vizinhos; tolerância zero, o modelo é **reprovado** (não salvar, não entregar) | `heal_flipped()` relaxa as faces reprovadas (cada vez mais forte e mais largo) e reroda; se sobrar, mudar a geometria (bordas da casca, tampa), nunca "flipar" |
-| **formas feias** (pontas, finas) | `qa_shape.py` | vértice-espinho (longe do centro dos vizinhos, razão > 0,8); tubo de ponta fina (anel final < 40 % do raio do meio); tubo fino (raio < 2,2 cm); relatório de faces estreitas (ângulo < 20° ou > 165°, aresta > 5× a menor) | `heal_spikes()` relaxa o espinho; tubo: raio mínimo, ponta só até 65 %, nunca em ponto; descartar fio < 1,3 cm |
-| **normal invertida vista de perto** | `qa_local.py` | raios saindo da frente de cada face, em hemisfério (48), batem no verso de outra face (≥ 3 votos); pontos dentro de um sólido (raiz enterrada) são ignorados. Pega dobras e tampa de tubo furando a casca, que nenhum raio de longe vê | relaxar as faces (`_relax`) no heal; enterrar a raiz do tubo mais fundo |
-| **tubo preso só por encosto** | `qa_attach.py` | a ponta de um tubo (tampa + 1º anel) não está toda dentro de outra peça, ou o ponto mais fundo está < 0,5 raio abaixo da superfície; é a "ponta solta apesar de conectada" | `hair_connect.py`: leva a ponta a 1,3 raio *abaixo* da superfície, na normal, e aprofunda 0,4 por passada |
-| **fidelidade à ref** | `qa_fit.py` | só o que o olho vê (primeiro hit de raios ortográficos, 14 direções): IoU médio < 0,88 ou pior < 0,80; > 6 % dos pixels da ref sem modelo ou com o modelo > 3 cm atrás (buraco, "deveria ser preenchido"); > 4 % dos pixels do modelo sem ref ou à frente dela > 3 cm (caroço, vale que não existe). Faces de material `headfill` (substituto da cabeça, tampas) não contam. Mostra clusters com região | cobrir o cluster com casca ou tubo; remover o que sobra |
-| **malha** | `qa_mesh.py` | tris/n-gons, borda aberta (buraco), non-manifold, winding em conflito, vértice solto, duplicado, face degenerada | fechar, refazer a peça |
-| partes flutuando | `qa_floating.py` | algum grupo de peças soltas (união por interseção ou < 3 mm) não toca o maior; esperado = nº de grupos da ref (normalmente 1) | alongar a ponta da peça até a superfície que ela devia tocar (`hair_connect.py`); **sempre rodar ao dividir um objeto em várias malhas ou montar peças separadas** |
-| z-fighting | `qa_zfight.py` | dois triângulos quase paralelos a < 1 mm com área sobreposta (placa coplanar, face dentro de face) | afastar 2–4 mm ou remover a face |
-| UV | `qa_uv.py` | overlap entre ou dentro de ilhas (a 2048 e 4096), fora de 0–1, área zero, invertida, ilhas a < 8 px | refazer a UV (`docs/04-uv-bake/uv-bake.md`) |
+| backfaces | `qa_faces.py` | the first hit of some ray (400 directions × 200×200, open cavities included) is the back side of a face, the red of Face Orientation; grazing hits (\|n·d\| < 0.1) ignored | `fix_flipped()` flips faces seen only from behind; a face with 0 front votes was buried: delete it |
+| **visible inverted normal (strict gate)** | `qa_strict.py` | **any** ray, from 400 directions around (200×200 each), whose first hit is the back of a face, confirmed by 4 neighboring rays; zero tolerance, the model is **rejected** (do not save, do not deliver) | `heal_flipped()` relaxes the rejected faces (stronger and wider each time) and reruns; if any remain, change the geometry (shell borders, cap), never "flip" |
+| **ugly shapes** (tips, thin) | `qa_shape.py` | spike vertex (far from the neighbor center, ratio > 0.8); thin-tipped tube (final ring < 40 % of the middle radius); thin tube (radius < 2.2 cm); report of narrow faces (angle < 20° or > 165°, edge > 5× the smallest) | `heal_spikes()` relaxes the spike; tube: minimum radius, tip only down to 65 %, never to a point; discard strand < 1.3 cm |
+| **inverted normal seen up close** | `qa_local.py` | rays leaving the front of each face, in a hemisphere (48), hit the back of another face (≥ 3 votes); points inside a solid (buried root) are ignored. Catches folds and tube caps piercing the shell, which no ray from afar sees | relax the faces (`_relax`) in the heal; bury the tube root deeper |
+| **tube held only by touching** | `qa_attach.py` | the tip of a tube (cap + 1st ring) is not entirely inside another piece, or the deepest point is < 0.5 radius below the surface; this is the "loose tip even though connected" | `hair_connect.py`: moves the tip to 1.3 radius *below* the surface, along the normal, and deepens 0.4 per pass |
+| **fidelity to the ref** | `qa_fit.py` | only what the eye sees (first hit of orthographic rays, 14 directions): mean IoU < 0.88 or worst < 0.80; > 6 % of the ref pixels without model or with the model > 3 cm behind (hole, "should be filled"); > 4 % of the model pixels without ref or in front of it > 3 cm (lump, valley that doesn't exist). Faces with the `headfill` material (head stand-in, caps) don't count. Shows clusters with region | cover the cluster with a shell or tube; remove what is in excess |
+| **mesh** | `qa_mesh.py` | tris/n-gons, open border (hole), non-manifold, conflicting winding, loose vertex, duplicate, degenerate face | close it, redo the piece |
+| floating parts | `qa_floating.py` | some group of loose pieces (union by intersection or < 3 mm) does not touch the largest; expected = number of groups in the ref (normally 1) | extend the piece's tip to the surface it should touch (`hair_connect.py`); **always run when splitting an object into several meshes or assembling separate pieces** |
+| z-fighting | `qa_zfight.py` | two nearly parallel triangles < 1 mm apart with overlapping area (coplanar plate, face inside face) | space 2–4 mm apart or remove the face |
+| UV | `qa_uv.py` | overlap between or within islands (at 2048 and 4096), outside 0–1, zero area, flipped, islands < 8 px apart | redo the UV (`docs/04-uv-bake/uv-bake.md`) |
 
-## Topologia (`tools/02-retopologia/retopo/qa.py`)
-`topo_qa("Cuca_retopo", Ref("HiPoly"), seam_x=0.0)`: faces/tris/quads/n-gons, triângulos após triangular, buracos
-(arestas de borda), non-manifold, vértices soltos, duplicados (< 0,5 mm), winding em conflito, faces para dentro
-(contra a normal da ref), polos (3 / 5 / 6+), faces degeneradas, distância à ref.
-Esperado: `quad_only` True (0 tris, 0 n-gons: regra do repo), buraco só na costura do espelho (`seam_x`), e zero
-non-manifold, duplicados, conflitos, faces para dentro e polos 6+.
+## Topology (`tools/02-retopology/retopo/qa.py`)
+`topo_qa("Cuca_retopo", Ref("HiPoly"), seam_x=0.0)`: faces/tris/quads/n-gons, triangles after triangulating, holes
+(border edges), non-manifold, loose vertices, duplicates (< 0.5 mm), conflicting winding, inward faces
+(against the ref normal), poles (3 / 5 / 6+), degenerate faces, distance to the ref.
+Expected: `quad_only` True (0 tris, 0 n-gons: repo rule), hole only at the mirror seam (`seam_x`), and zero
+non-manifold, duplicates, conflicts, inward faces and 6+ poles.
 
-## Marcar e relatar (`qa_mark.py`, `qa_report.py`; ideias do add-on TopoToolkit do usuário)
-- `qa_mark("Obj", select="border")`: grava atributos booleanos `qa_border`, `qa_nonmanifold`, `qa_wire`, `qa_doubles`, `qa_tris`, `qa_ngons`, `qa_degenerate`, `qa_pole_3..8/n` e seleciona um tipo
-  (`select="poles"` pega todos os polos). Salve o `.blend`: ao abrir em Edit Mode os defeitos aparecem selecionados. `remove_marks("Obj")` apaga os atributos.
-- `qa_report("Obj", "x.html", ref=..., battery=True)`: um arquivo com contagens, arestas órfãs/borda/múltiplas, valência (polo 3..8 e N > 8), doubles, as linhas da bateria e vistas inline. `.txt` e `.csv` também.
-- Polos não reprovam nada na bateria (nenhum defeito apontado pelo usuário era de polo); aparecem no relatório e na marcação.
+## Mark and report (`qa_mark.py`, `qa_report.py`; ideas from the user's TopoToolkit add-on)
+- `qa_mark("Obj", select="border")`: writes boolean attributes `qa_border`, `qa_nonmanifold`, `qa_wire`, `qa_doubles`, `qa_tris`, `qa_ngons`, `qa_degenerate`, `qa_pole_3..8/n` and selects one type
+  (`select="poles"` picks all poles). Save the `.blend`: when opened in Edit Mode the defects show up selected. `remove_marks("Obj")` deletes the attributes.
+- `qa_report("Obj", "x.html", ref=..., battery=True)`: one file with counts, orphan/border/multiple edges, valence (pole 3..8 and N > 8), doubles, the battery lines and inline views. `.txt` and `.csv` too.
+- Poles fail nothing in the battery (no defect the user pointed out was a pole); they appear in the report and in the marking.
 
-## Forma (fiel à referência)
-- `fit_report(low, ref)`: novo→ref (faces flutuando ou sobrando) e ref→novo (detalhe faltando) em mm, mais as células
-  de 5 cm onde a ref está mais longe.
-- `compare([ref], [lows], hot_k=10)` (`compare_mesh.py`): o mesmo em % da diagonal, com os pontos críticos.
-- `section_overlay` (cortes) e `overlay` (silhuetas) mostram onde está o erro.
+## Shape (faithful to the reference)
+- `fit_report(low, ref)`: new→ref (floating or excess faces) and ref→new (missing detail) in mm, plus the 5 cm
+  cells where the ref is farthest.
+- `compare([ref], [lows], hot_k=10)` (`compare_mesh.py`): the same in % of the diagonal, with the hot spots.
+- `section_overlay` (cuts) and `overlay` (silhouettes) show where the error is.
 
-## Causas que já apareceram
-- Caixas com tampa ou fundo abertos (`skip=` do `mesh_lib.box`): toda caixa fechada.
-- Peças enterradas furando a cavidade.
-- T-junction entre o fundo da tampa e as paredes depois de mexer em vértices: o raio entra pela fresta e sai por
-  trás da parede. Refazer o fundo com `bmesh.ops.bridge_loops` entre o laço externo e o da cavidade.
-- Placas coplanares com a borda saíram pretas no Cycles e `BVHTree.overlap` não as viu (ele nunca acusa triângulos
-  coplanares); por isso `qa_zfight` tem broad phase própria por AABB.
-- `recalc normals` em malha aberta pode inverter a cavidade inteira. Face Orientation vermelho = normal para dentro.
+## Causes that have shown up
+- Boxes with open lid or bottom (`skip=` of `mesh_lib.box`): every box closed.
+- Buried pieces piercing the cavity.
+- T-junction between the lid bottom and the walls after moving vertices: the ray enters through the gap and exits behind
+  the wall. Redo the bottom with `bmesh.ops.bridge_loops` between the outer loop and the cavity one.
+- Coplanar plates with the border came out black in Cycles and `BVHTree.overlap` did not see them (it never flags coplanar
+  triangles); that is why `qa_zfight` has its own AABB broad phase.
+- `recalc normals` on an open mesh can flip the whole cavity. Red Face Orientation = normal pointing inward.

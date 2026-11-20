@@ -8,7 +8,7 @@ The high object's material must have albedo / metal-rough (G=rough,B=metal) / no
 like glTF; pass it as high_mat (name). Low objects share one material and one UV atlas.
 """
 import bpy, bmesh
-exec(open(r"C:/Users/epers/Desktop/retopologizer/tools/general/cycles_gpu.py", encoding="utf-8").read())
+exec(open(os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools", "general", "cycles_gpu.py"), encoding="utf-8").read())
 
 MAPS = {  # name: (bake_type, pass_filter, colorspace, clear_color, samples)
     "basecolor": ("DIFFUSE", {"COLOR"}, "sRGB", (0, 0, 0, 1), 16),

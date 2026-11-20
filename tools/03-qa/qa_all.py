@@ -4,10 +4,11 @@ Rules: no backface visible from any outside/cavity direction (400 dirs, 200x200 
 near edge-on hits ignored below 0.1), no UV overlap/out-of-bounds/flipped, >= 8 px gap at 2048.
 """
 import bpy
-ROOT_TOOLS = r"C:\Users\epers\Desktop\retopologizer\tools"
-exec(open(ROOT_TOOLS + r"\03-qa\qa_faces.py").read())
-exec(open(ROOT_TOOLS + r"\general\qa_uv.py").read())
-exec(open(ROOT_TOOLS + r"\03-qa\qa_zfight.py").read())
+import os
+ROOT_TOOLS = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools")
+exec(open(ROOT_TOOLS + "/03-qa/qa_faces.py").read())
+exec(open(ROOT_TOOLS + "/general/qa_uv.py").read())
+exec(open(ROOT_TOOLS + "/03-qa/qa_zfight.py").read())
 
 
 def qa_all(names, raise_on_fail=True):

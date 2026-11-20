@@ -1,7 +1,7 @@
 """Cross-sections of the reference as a PNG with a cm grid, to read coordinates (runs in normal python).
   python tools/general/slice_plot.py hi_world.npz out.png z 0.60 0.65 0.70 [--box xmin xmax ymin ymax] [--low low.npz]
 Axis z: plot x,y   axis y: plot x,z   axis x: plot y,z. hi_world.npz holds V (world verts) and T (triangles),
-exported once from Blender (see docs/02-retopologia/retopo-llm.md). --low overlays a second mesh (e.g. the retopo) in black."""
+exported once from Blender (see docs/02-retopology/retopo-llm.md). --low overlays a second mesh (e.g. the retopo) in black."""
 import sys, numpy as np
 import matplotlib
 matplotlib.use("Agg")

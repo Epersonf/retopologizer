@@ -1,18 +1,18 @@
-# Fiber cards (cabelo em planos com textura de fios)
+# Fiber cards (hair as planes with a strand texture)
 
-Alternativa ao cabelo em malha: planos simples com uma textura de fios (cor + normal + alfa). A face de trás pode aparecer; no jogo o material liga
-*backface / render both sides*. Retopologia manual não se aplica: o cabelo vira planos encaixados na cabeça (projeto `projects/cuca-hair`).
+An alternative to mesh hair: simple planes with a strand texture (color + normal + alpha). The back face may show; in the game the material enables
+*backface / render both sides*. Manual retopology does not apply: the hair becomes planes fitted to the head (project `projects/cuca-hair`).
 
-## Gerar a folha de cards (`tools/07-fibercards/`)
-O gerador é uma porta do app `epersonf/fiber-card-gen` (commit `eccffc9`); o render é do Blender (Cycles, ortográfica, fundo transparente).
+## Generate the card sheet (`tools/07-fibercards/`)
+The generator is a port of the `epersonf/fiber-card-gen` app (commit `eccffc9`); the render is done by Blender (Cycles, orthographic, transparent background).
 
     python -I tools/07-fibercards/fibercards.py --out DIR --tag blonde --blonde [--seed 1] [--samples 32] [--lighting soft|flat] [--blend f.blend] [--set chave=valor ...]
 
-- `fc_params.py`: estado do app (mesmas chaves do JSON "copy state", então um preset cola no app e volta) e o preset `BLONDE`.
-- `fc_strands.py`: fios (mulberry32, disco de spawn elíptico inclinado, spread/clump, curl, frizz, Catmull-Rom centrípeta). O ruído do frizz é de valor; o app usa open-simplex.
-- `fc_blender.py`: cada fio vira um tubo de 8 lados (raio e cor por anel: gradiente raiz→ponta), uma malha por card; câmera ortográfica olhando −z.
-- `fibercards.py`: monta a folha (grade de `cardsPerSheet` cards, do mais ralo ao mais denso pela curva de quantidade) e chama o Blender. Saída: `<tag>_color.png`,
-  `<tag>_normal.png` (RGBA, `baseSize` px), `<tag>_preview.png`, `<tag>_preset.json`. 12 cards 2048 px: cerca de 8 s na GPU.
-- Cor `soft`: sol de (0,10,5) + mundo cinza, Principled com glossiness/sheen do preset; `flat`: albedo puro. Normal: normal de vista × 0.5 + 0.5, espaço cru (sem sRGB).
-- Layout do card como no app: x na largura (0 no meio da célula), y para cima a partir da borda de baixo, raiz no topo, fios descendo.
-- Variação de brilho de 5 % por fio é extensão desta porta.
+- `fc_params.py`: app state (same keys as the "copy state" JSON, so a preset pastes into the app and back) and the `BLONDE` preset.
+- `fc_strands.py`: strands (mulberry32, tilted elliptical spawn disc, spread/clump, curl, frizz, centripetal Catmull-Rom). The frizz noise is value noise; the app uses open-simplex.
+- `fc_blender.py`: each strand becomes an 8-sided tube (radius and color per ring: root→tip gradient), one mesh per card; orthographic camera looking down −z.
+- `fibercards.py`: builds the sheet (grid of `cardsPerSheet` cards, from sparsest to densest along the quantity curve) and calls Blender. Output: `<tag>_color.png`,
+  `<tag>_normal.png` (RGBA, `baseSize` px), `<tag>_preview.png`, `<tag>_preset.json`. 12 cards at 2048 px: about 8 s on the GPU.
+- `soft` color: sun at (0,10,5) + gray world, Principled with the preset's glossiness/sheen; `flat`: pure albedo. Normal: view normal × 0.5 + 0.5, raw space (no sRGB).
+- Card layout as in the app: x across the width (0 at the middle of the cell), y up from the bottom edge, root at the top, strands hanging down.
+- The 5 % per-strand brightness variation is an extension of this port.

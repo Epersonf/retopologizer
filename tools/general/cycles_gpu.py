@@ -1,7 +1,7 @@
 """Cycles on the GPU (Blender, any mode). ALWAYS call before a bake or a Cycles render: on the CPU a 2048 bake takes
 many times longer. Only scene.cycles.device = 'GPU' is not enough (above all in background/worker mode): the compute
 type has to be set in the preferences and the devices turned on.
-  exec(open(r"C:/Users/epers/Desktop/retopologizer/tools/general/cycles_gpu.py").read()); use_gpu()   # -> "OPTIX: RTX ..."
+  exec(open(r"<repo>/tools/general/cycles_gpu.py").read()); use_gpu()   # -> "OPTIX: RTX ..."
 Returns what is in use; "CPU (no GPU found)" when the PC has none (then it says so instead of failing)."""
 import bpy
 

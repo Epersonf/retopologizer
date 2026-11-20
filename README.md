@@ -1,110 +1,110 @@
 # retopologizer
 
-Transforma modelos 3D gerados por IA (Hunyuan3D e afins: 500 mil+ triângulos, malha suja, sem topologia) em assets
-de jogo: low-poly feito à mão com snap na referência, UV, texturas assadas (bake), QA, FBX, rig estilo Mixamo, Godot
-e página de loja (Fab). Tudo roda no Blender por script, comandado por um agente: você.
+Turns AI-generated 3D models (Hunyuan3D and the like: 500k+ triangles, dirty mesh, no topology) into game assets:
+hand-made low-poly with snap onto the reference, UV, baked textures, QA, FBX, Mixamo-style rig, Godot
+and a store page (Fab). Everything runs in Blender by script, driven by an agent: you.
 
-Este README é a porta de entrada. Leia as regras e o jeito de trabalhar, ache a etapa em que está e abra só o guia
-dela; cada guia aponta para o próximo.
+This README is the entry point. Read the rules and the way of working, find the stage you are at and open only its
+guide; each guide points to the next.
 
-## Regras inegociáveis
-1. **Retopologia é sempre manual**: cada vértice é decidido e colado (snap) na referência. Nunca QuadriFlow, Remesh,
-   Instant Meshes ou Decimate para gerar a malha entregue, nem "como primeira passada" (`docs/00-regras-e-ferramentas/regras-retopologia.md`).
-2. **Só quads**: a retopologia entregue não tem nenhum triângulo nem n-gon (`topo_qa(...)["quad_only"]`).
-3. Ferramenta automática **mede e confere** (raycast, BVH, fit, QA); não gera a malha.
-4. A referência nunca é editada (Edit Mode num mesh de 500 mil tris trava o Blender) nem vai para `output/` ou o git.
-5. O Blender aberto pelo usuário (MCP, porta 9876) é **só leitura**: construir e renderizar numa cópia, no worker
-   (porta 9877) ou em one-shot (`docs/00-regras-e-ferramentas/blender-automacao.md`).
-6. Arquivos com no máximo 150 linhas (separar por responsabilidade). Commit só quando o usuário pedir, nunca com
-   `Co-Authored-By` ou atribuição a IA.
+## Non-negotiable rules
+1. **Retopology is always manual**: every vertex is decided and snapped onto the reference. Never QuadriFlow, Remesh,
+   Instant Meshes or Decimate to generate the delivered mesh, not even "as a first pass" (`docs/00-rules-and-tools/retopology-rules.md`).
+2. **Quads only**: the delivered retopology has no triangles and no n-gons (`topo_qa(...)["quad_only"]`).
+3. Automatic tools **measure and check** (raycast, BVH, fit, QA); they do not generate the mesh.
+4. The reference is never edited (Edit Mode on a 500k-tri mesh freezes Blender) and never goes to `output/` or git.
+5. The Blender the user has open (MCP, port 9876) is **read-only**: build and render on a copy, in the worker
+   (port 9877) or in one-shot (`docs/00-rules-and-tools/blender-automation.md`).
+6. Files of at most 150 lines (split by responsibility). Commit only when the user asks, never with
+   `Co-Authored-By` or AI attribution.
 
-## Como um especialista trabalha aqui
-- **Medir antes de modelar**: cortes, perfis e raycasts dão as posições em metros; nada no olho.
-- **Objetivo pequeno, imagem cedo**: construir uma parte, renderizar uma vista (`wire_overlay`), mostrar, corrigir o
-  que está visivelmente errado. Rodadas longas de análise sem imagem frustram o usuário.
-- **Por partes**: proponha dividir o modelo (mão, perna sem o pé, pé, cauda...) e fazer uma parte por rodada, entregue
-  sozinha (OBJ) e integrada pelo usuário antes da próxima (`docs/02-retopologia/retopo-por-partes.md`).
-- **Conferir com número e imagem**: erro em mm (`fit_report`, `compare_mesh`), onde erra (`overlay`,
-  `section_overlay`), passa ou falha (`qa_all`, `topo_qa`).
-- **Continuar o trabalho do artista**: se o usuário começou a malha, partir dela e manter as contagens nas emendas.
-- **Tudo em script** (`projects/<nome>/*.py`), reprodutível. Depois que o usuário fez a UV, só mover vértices.
-- **Meia malha + espelho** quando há simetria; estátua torta fica "como está" (não simetrizar sem pedido).
-- **Orçamento baixo e justificado**: cada loop existe por silhueta, deformação ou bake (`docs/02-retopologia/topologia.md`).
-- Convenções: Z para cima, frente = −Y, esquerda do personagem = +X, metros.
+## How an expert works here
+- **Measure before modeling**: cuts, profiles and raycasts give the positions in meters; nothing by eye.
+- **Small goal, early image**: build one part, render one view (`wire_overlay`), show it, fix what is visibly
+  wrong. Long rounds of analysis without an image frustrate the user.
+- **By parts**: propose splitting the model (hand, leg without the foot, foot, tail...) and doing one part per round, delivered
+  on its own (OBJ) and integrated by the user before the next (`docs/02-retopology/retopo-by-parts.md`).
+- **Check with number and image**: error in mm (`fit_report`, `compare_mesh`), where it is off (`overlay`,
+  `section_overlay`), pass or fail (`qa_all`, `topo_qa`).
+- **Continue the artist's work**: if the user started the mesh, start from it and keep the counts at the seams.
+- **Everything in script** (`projects/<name>/*.py`, local, outside git; examples in `examples/`), reproducible. After the user has done the UV, only move vertices.
+- **Half mesh + mirror** when there is symmetry; a crooked statue stays "as is" (do not symmetrize unless asked).
+- **Low, justified budget**: every loop exists for silhouette, deformation or bake (`docs/02-retopology/topology.md`).
+- Conventions: Z up, front = −Y, character's left = +X, meters.
 
 ## Pipeline
-| # | etapa | resultado | ferramentas | guia em `docs/` |
+| # | stage | result | tools | guide in `docs/` |
 |---|---|---|---|---|
-| 0 | entrada | GLB em `input/`, com cópia fora do repo | `inspect_glb` | workflow-retopology |
-| 1 | entender e medir | vistas, cortes, medidas | `render_views`, `slice_profile`, `slice_plot`, `ref_part` | workflow-retopology |
-| 2 | retopologia | low-poly em quads colado na ref | `mesh_lib`, `snap_retopo`, `retopo/` | topologia, retopo-por-partes, retopo-snap-mirror, retopo-llm, retopo-casca-campo |
-| 3 | conferir forma | erro em mm, sobreposições | `fit_report`, `compare_mesh`, `overlay`, `section_overlay`, `wire_overlay` | workflow-retopology |
-| 4 | QA da malha | 0 backface, 0 z-fight, topologia limpa | `qa_all`, `topo_qa` | qa |
-| 5 | UV | atlas 0–1 sem overlap, gap ≥ 8 px | `qa_uv`, `unwrap_atlas` | uv-bake |
+| 0 | input | GLB in `input/`, with a copy outside the repo | `inspect_glb` | workflow-retopology |
+| 1 | understand and measure | views, cuts, measurements | `render_views`, `slice_profile`, `slice_plot`, `ref_part` | workflow-retopology |
+| 2 | retopology | quad low-poly snapped onto the ref | `mesh_lib`, `snap_retopo`, `retopo/` | topology, retopo-by-parts, retopo-snap-mirror, retopo-llm, retopo-shell-field |
+| 3 | check the shape | error in mm, overlaps | `fit_report`, `compare_mesh`, `overlay`, `section_overlay`, `wire_overlay` | workflow-retopology |
+| 4 | mesh QA | 0 backface, 0 z-fight, clean topology | `qa_all`, `topo_qa` | qa |
+| 5 | UV | 0–1 atlas without overlap, gap ≥ 8 px | `qa_uv`, `unwrap_atlas` | uv-bake |
 | 6 | bake | basecolor, normal, roughness, metallic, AO | `bake_robust` | uv-bake |
-| 7 | entrega | FBX + PNGs, `.blend` enxuto | `wire_material`, `make_lean_blend`, `export_from_blend` | entrega, git-reproducao |
-| 8 | rig | armature Mixamo + pesos | `autorig/`, `rig_mixamo` | rigging |
-| 9 | jogo e loja | Godot, thumbnail, descrição | `render_thumbnail` | entrega |
+| 7 | delivery | FBX + PNGs, lean `.blend` | `wire_material`, `make_lean_blend`, `export_from_blend` | delivery, git-reproduction |
+| 8 | rig | Mixamo armature + weights | `autorig/`, `rig_mixamo` | rigging |
+| 9 | game and store | Godot, thumbnail, description | `render_thumbnail` | delivery |
 
-## Preciso de… → leia
-| preciso de | leia |
+## I need... → read
+| I need | read |
 |---|---|
-| rodar código no Blender, erro do MCP ou do worker | `docs/00-regras-e-ferramentas/blender-automacao.md` |
-| começar um projeto (pastas, medir a referência, ordem das etapas) | `docs/01-entrada-e-medicao/workflow-retopology.md` |
-| decidir loops, polos, contagens, orçamento | `docs/02-retopologia/topologia.md` |
-| escolher o método de retopo por tipo de parte | `docs/02-retopologia/README.md` |
-| retopo de um modelo inteiro: dividir em partes, ordem, uma rodada, entrega em OBJ | `docs/02-retopologia/retopo-por-partes.md` |
-| retopo de peça dura ou prop (baú, tampa, caixa) | `docs/02-retopologia/retopo-snap-mirror.md` |
-| retopo de personagem ou orgânico (corpo, mão, garras, cauda) | `docs/02-retopologia/retopo-llm.md` |
-| retopo de pano com abertura (gorro, capuz, manga, ponta caída) | `docs/02-retopologia/retopo-casca-campo.md` |
-| saber se a malha está pronta | `docs/03-qa/qa.md` |
-| UV, mapas PBR, bake, manchas pretas no bake | `docs/04-uv-bake/uv-bake.md` |
-| exportar FBX, levar à Godot, thumbnail e texto da loja | `docs/05-entrega/entrega.md` |
-| pôr chapéu/adereço na cabeça de um personagem no jogo e ajustar no editor | `docs/05-entrega/entrega.md` |
-| rig humanoide, pesos, cauda | `docs/06-rig/rigging.md` |
-| o que commitar, regenerar `output/`, GLB pesado | `docs/05-entrega/git-reproducao.md` |
-| como chamar uma ferramenta | `tools/README.md` e o docstring do arquivo |
+| run code in Blender, MCP or worker error | `docs/00-rules-and-tools/blender-automation.md` |
+| start a project (folders, measure the reference, order of stages) | `docs/01-input-and-measurement/workflow-retopology.md` |
+| decide loops, poles, counts, budget | `docs/02-retopology/topology.md` |
+| choose the retopo method by type of part | `docs/02-retopology/README.md` |
+| retopo of a whole model: split into parts, order, one round, OBJ delivery | `docs/02-retopology/retopo-by-parts.md` |
+| retopo of a hard part or prop (chest, lid, box) | `docs/02-retopology/retopo-snap-mirror.md` |
+| retopo of a character or organic (body, hand, claws, tail) | `docs/02-retopology/retopo-llm.md` |
+| retopo of cloth with an opening (hat, hood, sleeve, drooping tip) | `docs/02-retopology/retopo-shell-field.md` |
+| know whether the mesh is ready | `docs/03-qa/qa.md` |
+| UV, PBR maps, bake, black spots in the bake | `docs/04-uv-bake/uv-bake.md` |
+| export FBX, take it to Godot, thumbnail and store text | `docs/05-delivery/delivery.md` |
+| put a hat/prop on a character's head in the game and adjust it in the editor | `docs/05-delivery/delivery.md` |
+| humanoid rig, weights, tail | `docs/06-rig/rigging.md` |
+| what to commit, regenerate `output/`, heavy GLB | `docs/05-delivery/git-reproduction.md` |
+| how to call a tool | `tools/README.md` and the file's docstring |
 
-## Ferramentas
-Todas em `tools/<etapa>/` (mesmas pastas de `docs/`; as usadas por mais de uma etapa em `tools/general/`), cada uma com um docstring de uso. Tabela com forma de chamar: `tools/README.md`.
-- **Rodar o Blender**: `blender_rpc` (cliente do socket), `blender_worker` (Blender headless numa cópia, porta 9877),
-  `blender_once` (roda um script e sai; resultado em `RESULT_JSON:`).
-- **Inspecionar e medir**: `inspect_glb` (tris, bbox, materiais), `render_views` (vistas workbench), `slice_profile`
-  (bbox por fatia), `slice_plot` (cortes em PNG com grade em cm, fora do Blender), `ref_part` (pedaço da ref no
-  espaço local de uma peça).
-- **Construir à mão**: `mesh_lib` (caixa, loft, sweep, prisma: props simples); `snap_retopo` com `snap_surface`,
-  `snap_mesh` e `snap_section` (anéis colados na ref + espelho: peças duras); pacote `retopo/` (Ref, Topo, contornos,
-  patches de 3 e 5 lados, dedos e garras, `topo_qa`, `part_object`/`export_obj` para separar e entregar uma parte:
-  personagens).
-- **Conferir a forma**: `fit_report` e `compare_mesh` (erro nos dois sentidos e onde falta detalhe), `overlay`
-  (silhuetas), `section_overlay` (cortes), `wire_overlay` + `label_png` (wireframe sobre a ref, com índices).
-- **QA**: `qa_all` (portão único), `qa_faces` (backfaces, `fix_flipped`), `qa_zfight`, `qa_uv` (`unwrap_atlas`).
-- **Bake**: `bake_robust` (validação por texel, re-bake, inpaint), `bake_maps` (bake simples, cage opcional),
+## Tools
+All in `tools/<stage>/` (same folders as `docs/`; those used by more than one stage in `tools/general/`), each with a usage docstring. Table with how to call them: `tools/README.md`.
+- **Running Blender**: `blender_rpc` (socket client), `blender_worker` (headless Blender on a copy, port 9877),
+  `blender_once` (runs a script and exits; result in `RESULT_JSON:`).
+- **Inspect and measure**: `inspect_glb` (tris, bbox, materials), `render_views` (workbench views), `slice_profile`
+  (bbox per slice), `slice_plot` (PNG cuts with a cm grid, outside Blender), `ref_part` (piece of the ref in a
+  part's local space).
+- **Build by hand**: `mesh_lib` (box, loft, sweep, prism: simple props); `snap_retopo` with `snap_surface`,
+  `snap_mesh` and `snap_section` (rings snapped onto the ref + mirror: hard parts); `retopo/` package (Ref, Topo, contours,
+  3- and 5-sided patches, fingers and claws, `topo_qa`, `part_object`/`export_obj` to separate and deliver a part:
+  characters).
+- **Check the shape**: `fit_report` and `compare_mesh` (error in both directions and where detail is missing), `overlay`
+  (silhouettes), `section_overlay` (cuts), `wire_overlay` + `label_png` (wireframe over the ref, with indices).
+- **QA**: `qa_all` (single gate), `qa_faces` (backfaces, `fix_flipped`), `qa_zfight`, `qa_uv` (`unwrap_atlas`).
+- **Bake**: `bake_robust` (per-texel validation, re-bake, inpaint), `bake_maps` (simple bake, optional cage),
   `bake_inpaint` (numpy).
-- **Entrega**: `wire_material` (material + FBX só dos low), `finalize_export`, `render_thumbnail` (Fab),
+- **Delivery**: `wire_material` (material + FBX of the lows only), `finalize_export`, `render_thumbnail` (Fab),
   `make_lean_blend`, `export_from_blend`.
-- **Rig**: `autorig/` (auto-rig humanoide estilo Mixamo por linha de comando), `rig_mixamo` (armature Mixamo a partir
-  de juntas, skin, FBX).
+- **Rig**: `autorig/` (Mixamo-style humanoid auto-rig from the command line), `rig_mixamo` (Mixamo armature from
+  joints, skin, FBX).
 
-## Mapa do repo
+## Repo map
 ```
-README.md           este arquivo
-docs/               guias por assunto (índice: docs/README.md)
-tools/              ferramentas por etapa, como docs/ (índice: tools/README.md); retopo/ e autorig/ são pacotes Python
-projects/<nome>/    scripts e notas do projeto (no git)
-  input/            GLB original (fora do git; guarde uma cópia fora do repo)
-  draft/            .blend de trabalho com a referência, renders, backups (fora do git)
-  output/           FBX + PNGs (fora do git; regeneráveis)
-  <nome>.blend      .blend enxuto (low-poly + texturas empacotadas), quando o projeto fecha
+README.md           this file
+docs/               guides by subject (index: docs/README.md)
+tools/              tools by stage, like docs/ (index: tools/README.md); retopo/ and autorig/ are Python packages
+projects/<name>/    scripts and notes of your project (local, outside git; models in `examples/`)
+  input/            original GLB (outside git; keep a copy outside the repo)
+  draft/            working .blend with the reference, renders, backups (outside git)
+  output/           FBX + PNGs (outside git; regenerable)
+  <name>.blend      lean .blend (low-poly + packed textures), when the project closes
 ```
 
-## Projetos (exemplos para copiar)
-| projeto | estado | estude para |
+## Projects (examples to copy)
+| project | state | study it for |
 |---|---|---|
-| stylized-chest | pronto: 813 tris em 2 peças, bake 2048, listagem Fab | prop duro com snap + espelho (`build_lid_v5.py`); README com medidas |
-| stylized-tree | pronto: 380 tris, bake | anéis em volta de eixos; ref com cascas internas (`snap_tree.py`) |
-| stylized-saci | pronto: 2864 tris, rig Mixamo, na Godot | personagem de uma perna (scripts só em `draft/`, fora do git) |
-| stylized-cuca | pronto: 3756 tris, rig com cauda, na Godot | personagem por partes com `tools/02-retopologia/retopo` (`cuca_*.py`); rig à mão (`cuca_rig.py`) |
-| stylized-cow | em andamento: tronco, pernas, cabeça e extras em anéis com snap | estátua "como está", partes em cascas separadas |
-| hat-hair | gorro pronto (960 quads, fechado embaixo, UV do usuário, bake 2048); cabelo a fazer | casca de pano por campo de Laplace (`hat_*.py`) |
-| autorig-bench | banco de teste do auto-rig (7 casos) | calibrar e validar `tools/06-rig/autorig` |
+| stylized-chest | done: 813 tris in 2 pieces, bake 2048, Fab listing | hard prop with snap + mirror (`build_lid_v5.py`); README with measurements |
+| stylized-tree | done: 380 tris, bake | rings around axes; ref with inner shells (`snap_tree.py`) |
+| stylized-saci | done: 2864 tris, Mixamo rig, in Godot | one-legged character (scripts only in `draft/`, outside git) |
+| stylized-cuca | done: 3756 tris, rig with tail, in Godot | character by parts with `tools/02-retopology/retopo` (`cuca_*.py`); hand rig (`cuca_rig.py`) |
+| stylized-cow | in progress: torso, legs, head and extras in rings with snap | "as is" statue, parts in separate shells |
+| hat-hair | hat done (960 quads, closed at the bottom, user's UV, bake 2048); hair to do | cloth shell by Laplace field (`hat_*.py`) |
+| autorig-bench | auto-rig test bench (7 cases) | calibrate and validate `tools/06-rig/autorig` |

@@ -7,9 +7,10 @@ the worst faces so geometry can be fixed where the fit is bad.
   r = bake_robust(["chest_base","chest_lid"], "REFERENCE", outdir, "chest")
 """
 import bpy, numpy as np
-T_ = r"C:\Users\epers\Desktop\retopologizer\tools"
+import os
+T_ = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools")
 for _f in ("04-uv-bake\\bake_maps.py", "general\\qa_uv.py", "04-uv-bake\\bake_inpaint.py"):
-    exec(open(T_ + "\\" + _f).read())
+    exec(open(T_ + "/" + _f).read())
 SENTINEL = 1000.0
 
 
