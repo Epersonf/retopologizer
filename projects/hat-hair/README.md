@@ -10,8 +10,9 @@ personagem = +X, metros.
 `hat_to_cuca.py`.
 
 ## Cabelo: capuz + tubos separados
-`draft/hair_lowpoly_v3.blend`, objeto `LowPoly`: 1184 quads (2368 triângulos; limite do usuário 3000), só quads, **um grupo
-conectado, nada flutuando, zero normais invertidas visíveis** (`qa_strict`, 400 direções: reprovado = não salva). Capuz 352
+**Não aprovado**: a bateria (`python -I tools/03-qa/qa.py LowPoly --ref HairFull`) reprova `attach`, `local` e `fit`; ver "Estado" em `docs/02-retopologia/retopo-tubos-cabelo.md`. Os números abaixo são do arquivo que passava só nos portões antigos.
+`draft/hair_lowpoly_v3.blend`, objeto `LowPoly`: 1176 quads (2352 triângulos; limite do usuário 3000), só quads, **um grupo
+conectado, nada flutuando, zero normais invertidas visíveis** (`qa_strict`) **e sem espinhos, pontas finas nem tubos finos** (`qa_shape`); reprovado = não salva. Capuz 352
 (dome + frente numa casca só, `hair_part.py hood 32,16,8`, tampa `hair_cap.py`, dobras curadas por `hair_heal.py`) + 19 tubos 832.
 Um comando: `python -I projects/hat-hair/hair_build.py` (worker no ar numa cópia com `HairFull`; antes `hair_locks.py 0.03` e
 `hair_locks.py 0.04 z`). Peças: `hair_tubes.py`, `hair_connect.py` (liga tubos soltos), `hair_join.py` (junta, portões, salva, exporta

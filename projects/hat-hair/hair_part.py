@@ -1,7 +1,7 @@
 """One hair shell part end to end (normal python; the worker must be up on draft/hair_work.blend with "HairFull" loaded:
 hair_proxy.py with NPZ = draft/hair_in.npz, NAME = "HairFull"):
   select faces in Blender -> clean disk (hair_shell.py) -> rings (hair_field.py) -> build in Blender
-  python -I projects/hat-hair/hair_part.py dome [counts]
+  python -I projects/hat-hair/hair_part.py dome [counts] [th_max]
 PARTS: window of directions from the head centre (azimuth from the back +y toward +x = the character's left), closing and
 opening rings for the disk, vertex counts of the rings."""
 import subprocess, sys
@@ -17,6 +17,8 @@ PARTS = {  # name: (PH, TH, CLOSE, OPEN, counts)
 }
 part = sys.argv[1]; PH, TH, CLOSE, OPEN, COUNTS = PARTS[part]
 COUNTS = sys.argv[2] if len(sys.argv) > 2 else COUNTS
+if len(sys.argv) > 3:
+    TH = (TH[0], float(sys.argv[3]))                  # polar angle limit in degrees (120 = just under the horizon; 150 = the back lobes)
 
 
 def blender(script, **g):

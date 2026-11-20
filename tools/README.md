@@ -50,6 +50,13 @@ one-shot) e chamar a função. Os pacotes (`retopo/`, `autorig/`, `rig_mixamo`) 
 |---|---|---|
 | qa_all.py | dentro do Blender | portão único: backfaces + UV (2048 e 4096) + z-fighting; levanta erro se falhar |
 | qa_faces.py | dentro do Blender | raycast de 400 direções: nenhuma backface exposta; `fix_flipped` |
+| qa_shape.py | dentro do Blender | formas feias: espinhos, tubos de ponta fina, tubos finos, faces estreitas; `heal_spikes` |
+| qa.py | linha de comando (worker 9877) | **a bateria**: roda todos os testes e imprime uma linha por teste + `fix:` + onde (`--only`, `--skip`, `--fast`, `--json`) |
+| qa_suite.py | dentro do Blender | `qa_suite(nome, ref=..)`: a bateria como função (mesh, budget, shape, floating, attach, local, strict, fit) |
+| qa_mesh.py | dentro do Blender | quads, borda aberta, non-manifold, winding, duplicados, degeneradas |
+| qa_local.py | dentro do Blender | normal invertida vista de perto (frestas, dobras, tampa de tubo furando) |
+| qa_attach.py | dentro do Blender | tubo conectado só por encosto / tampa fora do pai ("ponta solta apesar de conectada") |
+| qa_fit.py | dentro do Blender | fidelidade à ref: IoU de silhueta em 14 direções, buracos (ref sem cobertura), caroços que a ref não tem |
 | qa_strict.py | dentro do Blender | portão de tolerância zero: nenhum raio de 400 direções pode bater no verso de uma face; `heal_flipped` relaxa dobras e levanta erro se sobrar |
 | qa_floating.py | dentro do Blender | nenhuma peça solta flutuando: grupos de partes que se tocam; devolve a lacuna e o ponto a alcançar |
 | qa_zfight.py | dentro do Blender | faces quase paralelas sobrepostas a < 1 mm, broad phase por AABB |

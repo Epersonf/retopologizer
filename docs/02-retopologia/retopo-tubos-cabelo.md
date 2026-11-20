@@ -1,6 +1,6 @@
 # Madeixas e tubos fundidos: uma malha separada por tubo (cabelo, tentáculo, chifre, cabo)
 
-Estado: **aprovado em direção, em ajuste** (`projects/hat-hair`: 1184 quads = 2368 tris, limite 3000: capuz 352 + 19 tubos 832).
+Estado: **aprovado em direção, em ajuste** (`projects/hat-hair`: 1176 quads = 2352 tris, limite 3000: capuz 352 + 19 tubos 824).
 Um comando refaz tudo: `hair_build.py`. **Nenhuma normal invertida visível é aceita** (ver "Portão estrito"). A primeira tentativa (malha
 ligada, por raios) foi descartada: lenta, normais invertidas.
 
@@ -45,6 +45,21 @@ significa dobra, borda aberta ou face invertida. O que causou falha aqui e a cor
 - **Raio solitário que escapa pela quina**: ruído numérico; só conta se 4 raios a 1/3 de pixel também batem no verso.
 Nunca "resolva" invertendo a face (`fix_flipped`): a face vista pelos dois lados fica vermelha do outro.
 
+## Forma feia: pontas e fios (o que incomodava e o teste)
+O usuário selecionou no Blender o que o incomodava; três tipos, todos passavam em normais e contato:
+- **Espinho na borda do capuz**: vértice da borda colado na ponta de uma madeixa da ref, esticado como agulha. Teste: razão
+  `|v - centro dos vizinhos| / aresta média` > 0,8 (sete vértices, dois eram os selecionados). Correção: `heal_spikes()` relaxa e
+  depois `heal_flipped()` de novo (um desfaz o outro: laço até os dois passarem; `hair_heal.py`).
+- **Tubo terminando em ponto**: afinamento até 35 % + vértice da tampa a 0,6 r = cone de agulha (anel final de 0,6 cm num tubo de 2,5).
+  Teste: raio do anel final < 40 % do raio do meio (BFS em camadas pelo tubo; o eixo é a linha dos centros das camadas).
+  Correção: ponta livre só até 65 % e nunca abaixo de 55 % do anel mais gordo; tampa a 0,25 r.
+- **Tubo fino**: fios de 1 cm de raio ao lado de tubos de 3 cm parecem espinhas. Cabelo grosso e fino misturados só fazem sentido
+  em cabelo preso; aqui a espessura é parecida (panturrilha mais larga que o joelho é forma real, isto não é). Correção: raio
+  mínimo 2,4 cm (`RMIN`), fios com raio mediano < 1,3 cm descartados (`RDROP`). Teste: raio do meio < 2,2 cm.
+`qa_shape.py` faz parte do portão (`hair_join.py` não salva se houver espinho, ponta fina ou tubo fino) e roda sobre qualquer modelo.
+O arquivo antigo reprovava: 7 espinhos, 16 pontas finas, 8 tubos finos; o novo passa. Quando o usuário apontar um defeito novo,
+primeiro escreva o teste que o acha (e que reprova o arquivo antigo), depois corrija.
+
 ## Nada flutua, nada fino demais
 - `qa_floating.py` devolve a lacuna e o ponto de destino; `hair_connect.py` leva a ponta mais próxima até esse ponto (+ meia
   espessura para dentro) e repete. Rode sempre ao dividir um objeto em várias malhas (`expected` = partes soltas reais da ref).
@@ -66,6 +81,26 @@ escondiam a falta). Use topo, laterais e 3/4.
 - O QA global (`topo_qa` `inward_area`) fica ~25 % no dome por causa das paredes ocas da ref; não use como critério aqui.
 - Pontas que não afinam como na ref: o raio da EDT na ponta já é pequeno, mas a suavização o apaga; por isso o afinamento
   explícito.
+
+## Estado: NÃO aprovado pela bateria (`qa.py`), e por quê
+O usuário apontou três defeitos num `hair_lowpoly_v3.blend` que passava em todos os portões antigos. Cada um virou um teste:
+| o que se via | causa | teste que acha | número no v3 |
+|---|---|---|---|
+| "deveria ser preenchido" / "vale que não existe no original" | a casca não cobre o lóbulo de trás nem o topo da frente; o leque da tampa aparece como um vale | `qa_fit` (IoU de silhueta, ref sem cobertura por região) | IoU 0,77–0,79; 9 % da ref sem cobertura (atrás-baixo, frente-topo) |
+| "normal flip" no topo de um tubo | tampa do tubo furando a superfície do pai: de longe nenhum raio vê, de perto sim | `qa_local` | 30 faces |
+| "ponta solta apesar de estar conectada" | tubo preso só por encosto (a lacuna ≤ 3 mm do `qa_floating` conta como ligado) | `qa_attach` | 8 de 13 tubos não enterrados |
+Os portões antigos (mesh, budget, shape, floating, strict) passam; os três novos reprovam. `hair_join.py` agora roda a bateria inteira e
+só salva `hair_lowpoly_v3.blend` se tudo passar (senão `hair_lowpoly_rejected.blend` + as linhas). O `v3` em disco é o último que passava só
+nos portões antigos: **não aprovado**.
+
+O que se tentou para passar e não bastou (para não repetir):
+- Raiz enterrada por extensão tangente, por ponto-alvo 1 raio abaixo da superfície, e por haste perpendicular (`hair_connect.py`:
+  ponto interno + ponto externo na normal): reduz, mas 8 tubos ficam sem tampa dentro do pai. A maioria das pontas dos fios detectados
+  está a 5–10 cm do capuz, ou seja, os tubos penduram em outros tubos e em lugar nenhum; a haste tem que atravessar um vão.
+- Juntar fios que se continuam (`hair_chain.py`, 5 cm, cos > 0,3): nenhum par se junta com esses fios.
+- Capuz até TH 135/150 (lóbulos de trás): a cobertura do capuz sozinho quase não muda e a tampa deixa de fechar sem dobra.
+Caminho provável: lóbulos de trás como tubos grossos (raio 6–8 cm, hoje o filtro RDROP/orçamento os perde) e uma tampa plana na
+altura da borda no lugar do leque; prender cada tubo ao capuz por uma haste que nasce dentro dele, nunca em outro tubo.
 
 ## Ainda em aberto
 - Silhueta sem cobertura: 10 a 16 % nas vistas (pontas de cachos, cantos). O detector em modo `z` (`hair_locks.py 0.04 z`) achou os
