@@ -32,7 +32,7 @@ cavidade e fresta entre o fundo da tampa e as paredes (T-junction após mexer no
 buracos de 4 arestas preenchidos, fundo da tampa refeito com bridge, 42 faces enterradas removidas.
 QA: 0 backfaces (400 dir × 200²), UV refeito (234 ilhas, 52% do atlas, 0 overlap a 2048/4096, gap ≥ 8 px).
 Rebake 2048 (margem 8 px). Backups: `draft/backups/v3_before_face_fix` (ignorado pelo git).
-Repo: `stylized-chest.blend` (9 MB, imagens empacotadas) + `inputs.json` (sha256 do GLB).
+Repo: `stylized-chest.blend` (9 MB, imagens empacotadas).
 
 ## v5 (tampa refeita com snap + espelho)
 Pedido: a tampa não capturava detalhes e o bake saía com artifacts. Refeita pelo método manual

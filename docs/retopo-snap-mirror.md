@@ -11,6 +11,7 @@ exemplo completo em `projects/stylized-chest/build_lid_v5.py`.
 ## Quando usar
 Peça com detalhe que a IA gerou (cintas, blocos, chanfros, fecho, rebites) e que precisa ficar fiel
 para o bake funcionar. Para caixas/formas simples, `mesh_lib.py` + ajuste por `compare_mesh.py` basta.
+Personagens e formas orgânicas (membros, mãos, cauda): `retopo-llm.md`.
 
 ## Passo a passo
 1. **Isolar a peça da referência** (`ref_part(ref, "chest_lid", "REF_LID", radius=0.06)`).
@@ -38,8 +39,8 @@ para o bake funcionar. Para caixas/formas simples, `mesh_lib.py` + ajuste por `c
    na superfície da ref; furo do fecho = `Mesh.dimple`. Base flutuando deixa o raio entrar na laje
    e a QA acusa backface. Placas de canto sobrepostas: afastar 3 mm (coplanar = z-fight).
 9. **Conferir**: `fit_report` (erro nos dois sentidos, células sem detalhe), `section_overlay` (cortes
-   ref colorida × low branca), `qa_all` (backfaces, UV, z-fight), `unwrap_atlas(angle=66)` (89° dobrou
-   ilhas do arco), depois `bake_robust`.
+   ref colorida × low branca), `qa_all` (backfaces, UV, z-fight: `qa.md`), `unwrap_atlas(angle=66)` (89°
+   dobrou ilhas do arco), depois `bake_robust` (`uv-bake.md`).
 
 ## Por que funciona
 - Snap em 100% dos vértices: a malha nasce sobre a superfície, então o bake high→low tem pouco erro.
