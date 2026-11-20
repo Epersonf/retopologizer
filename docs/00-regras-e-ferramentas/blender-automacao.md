@@ -32,6 +32,8 @@ As CLIs rodam direto: `"$B" -b --factory-startup --python tools/06-rig/autorig/c
 - GLB importado vem com `matrix_world` girada (+90° X) e `BVHTree.FromObject` é local: converta para mundo (`Ref` e
   `ref_part` já fazem).
 - Referência escondida com `hide_set` faz o bake falhar ("No valid selected objects").
+- O worker pode estar ligado a outro `.blend` que não a cópia aberta (já sobrescreveu `hat_uv.blend`, o arquivo de UV do
+  usuário, num `save_mainfile`). Antes de salvar, imprima `bpy.data.filepath`; salve só com `save_as_mainfile(filepath=<cópia>)`.
 - Arquivos sempre em UTF-8 (`open(..., encoding="utf-8")`): o padrão do Windows é cp1252.
 
 ## Mostrar ao usuário

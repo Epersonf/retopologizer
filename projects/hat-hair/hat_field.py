@@ -4,6 +4,7 @@ boundary around the opening (the cloth's edge) and 1 at the tip: its level lines
 cap and never split. Rings are level lines spaced so the quads come out square (spacing = perimeter / vertex count);
 the count halves (48 -> 24 -> 12) when the edges get short. Writes draft/hat_rings.npz.
   python projects/hat-hair/hat_field.py"""
+import sys
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
@@ -11,8 +12,9 @@ from scipy.sparse.linalg import spsolve
 from scipy.spatial import cKDTree
 
 D = r"C:\Users\epers\Desktop\retopologizer\projects\hat-hair\draft"
+NAME = sys.argv[1] if len(sys.argv) > 1 else "hat"        # hat -> draft/hat_field_in.npz; hair_dome -> hair_dome_field_in.npz
 COUNTS, MIN_EDGE, STEP_MIN = (48, 24, 12), 0.020, 0.025   # halve the count when edges get shorter than MIN_EDGE
-d = np.load(D + r"\hat_field_in.npz"); V, N, F, OUT, TIP = (d[k] for k in ("V", "N", "F", "outer", "tip"))
+d = np.load(D + "/" + NAME + "_field_in.npz"); V, N, F, OUT, TIP = (d[k] for k in ("V", "N", "F", "outer", "tip"))
 _, first, inv = np.unique(np.round(V, 6), axis=0, return_index=True, return_inverse=True)   # the GLB splits vertices
 inv = inv.ravel(); Nw = np.zeros((len(first), 3)); np.add.at(Nw, inv, N)                   # at UV seams: weld them
 Ow = np.zeros(len(first), bool); np.logical_or.at(Ow, inv, OUT)
@@ -96,7 +98,7 @@ while True:
         k += 1; n = COUNTS[k]; P, per = ring(cs[j], n, TIP - cs[j].mean(0))
     plan.append((j, n, per, P)); cur = s[j]
 rings = [ring(MOUTH, COUNTS[0], TIP - MOUTH.mean(0))[0]] + [P for *_, P in plan]
-np.savez(D + r"\hat_rings.npz", counts=np.array([COUNTS[0]] + [n for _, n, _, _ in plan]), tip=TIP,
+np.savez(D + "/" + NAME + "_rings.npz", counts=np.array([COUNTS[0]] + [n for _, n, _, _ in plan]), tip=TIP,
          flat=np.vstack(rings), sizes=np.array([len(r) for r in rings]))
 print("mouth perimeter", round(mp, 3), "total s", round(s[-1], 3), "rings", len(rings),
       "quads ~", sum(n for _, n, _, _ in plan))
