@@ -27,6 +27,11 @@ No glTF, roughness e metallic vêm num mapa só (G = roughness, B = metallic; R 
 precisa estar ligado assim (albedo, metal-rough, normal) para o bake ler os canais.
 
 ## Bake robusto — Cycles GPU (`bake_robust.py`)
+> **Sempre na GPU.** Antes de qualquer bake ou render Cycles: `use_gpu()` (`tools/cycles_gpu.py`; `bake_robust`,
+> `bake_all` e `render_thumbnail` já chamam e o relatório traz `device`). Só `scene.cycles.device = 'GPU'` não basta,
+> principalmente no worker/background: é preciso o tipo (OPTIX/CUDA/HIP...) nas preferências e os dispositivos
+> ligados. Na CPU um bake 2048 leva muitas vezes mais. Se voltar `CPU (no GPU found)`, avise o usuário.
+
 `r = bake_robust(["chest_base", "chest_lid"], "REFERENCE", outdir, "chest")`
 1. **Um bake só para todas as peças, numa imagem só**: o script junta cópias das peças (mundo, UV intacta) num objeto
    ativo temporário e faz selected-to-active. Assar peça por peça na mesma imagem apagou a primeira.
@@ -53,7 +58,8 @@ maior desvio.
 | faces pretas, normal invertida | extrusão menor que o desvio | extrusão 3–4× p95, ou cage |
 | quadrados pretos no Cycles | faces coplanares (z-fight) | `qa_zfight`, afastar 2–4 mm |
 | borrão em placas e presilhas | peça 2–3 cm além da ref (raio longe) | mover os vértices até a superfície |
-| "No valid selected objects" | referência escondida (`hide_set`) | deixar visível durante o bake |
+| "No valid selected objects" | referência escondida (`hide_set`) ou travada (`hide_select`) | visível e selecionável no bake (`bake_robust` já faz e restaura) |
+| bake lento (minutos para 2048) | Cycles na CPU | `use_gpu()` antes; conferir `device` no relatório |
 | costura marcada no normal map | quina dura sem costura de UV | costura na quina |
 
 ## Ajustar depois da UV ou do bake (sem quebrar a UV)

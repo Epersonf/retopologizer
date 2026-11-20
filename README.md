@@ -37,7 +37,7 @@ dela; cada guia aponta para o próximo.
 |---|---|---|---|---|
 | 0 | entrada | GLB em `input/`, com cópia fora do repo | `inspect_glb` | workflow-retopology |
 | 1 | entender e medir | vistas, cortes, medidas | `render_views`, `slice_profile`, `slice_plot`, `ref_part` | workflow-retopology |
-| 2 | retopologia | low-poly em quads colado na ref | `mesh_lib`, `snap_retopo`, `retopo/` | topologia, retopo-por-partes, retopo-snap-mirror, retopo-llm |
+| 2 | retopologia | low-poly em quads colado na ref | `mesh_lib`, `snap_retopo`, `retopo/` | topologia, retopo-por-partes, retopo-snap-mirror, retopo-llm, retopo-casca-campo |
 | 3 | conferir forma | erro em mm, sobreposições | `fit_report`, `compare_mesh`, `overlay`, `section_overlay`, `wire_overlay` | workflow-retopology |
 | 4 | QA da malha | 0 backface, 0 z-fight, topologia limpa | `qa_all`, `topo_qa` | qa |
 | 5 | UV | atlas 0–1 sem overlap, gap ≥ 8 px | `qa_uv`, `unwrap_atlas` | uv-bake |
@@ -55,6 +55,7 @@ dela; cada guia aponta para o próximo.
 | retopo de um modelo inteiro: dividir em partes, ordem, uma rodada, entrega em OBJ | `docs/retopo-por-partes.md` |
 | retopo de peça dura ou prop (baú, tampa, caixa) | `docs/retopo-snap-mirror.md` |
 | retopo de personagem ou orgânico (corpo, mão, garras, cauda) | `docs/retopo-llm.md` |
+| retopo de pano com abertura (gorro, capuz, manga, ponta caída) | `docs/retopo-casca-campo.md` |
 | saber se a malha está pronta | `docs/qa.md` |
 | UV, mapas PBR, bake, manchas pretas no bake | `docs/uv-bake.md` |
 | exportar FBX, levar à Godot, thumbnail e texto da loja | `docs/entrega.md` |
@@ -103,5 +104,5 @@ projects/<nome>/    scripts e notas do projeto (no git)
 | stylized-saci | pronto: 2864 tris, rig Mixamo, na Godot | personagem de uma perna (scripts só em `draft/`, fora do git) |
 | stylized-cuca | pronto: 3756 tris, rig com cauda, na Godot | personagem por partes com `tools/retopo` (`cuca_*.py`); rig à mão (`cuca_rig.py`) |
 | stylized-cow | em andamento: tronco, pernas, cabeça e extras em anéis com snap | estátua "como está", partes em cascas separadas |
-| hat-hair | não começado (só o GLB) | — |
+| hat-hair | gorro pronto (960 quads, fechado embaixo, UV do usuário, bake 2048); cabelo a fazer | casca de pano por campo de Laplace (`hat_*.py`) |
 | autorig-bench | banco de teste do auto-rig (7 casos) | calibrar e validar `tools/autorig` |

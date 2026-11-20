@@ -71,11 +71,12 @@ def bake_robust(lows, high, outdir, prefix, size=2048, schedule=((0.10, 0.20), (
                 (0.20, 0.40), (0.02, 0.04)), max_dist=0.05, stop_frac=2e-4, margin_px=8, high_mat="Material.001"):
     sc = bpy.context.scene; b = sc.render.bake
     old = (sc.cycles.samples, sc.cycles.use_denoising)
-    sc.render.engine = 'CYCLES'; sc.cycles.use_denoising = False
+    device = use_gpu(sc); sc.cycles.use_denoising = False   # GPU always: CPU bakes take ages
     b.target = 'IMAGE_TEXTURES'; b.margin = margin_px * size // 2048; b.margin_type = 'EXTEND'
     uv = qa_uv(lows, size=size, maps=True)
     ids, pid, poly_of = uv["_ids"], uv["_pid"], uv["_poly_of"]; mask = ids > 0
     Hh = bpy.data.objects[high]; Hh.hide_set(False)   # hidden ref => "No valid selected objects"
+    was_unselectable, Hh.hide_select = Hh.hide_select, False   # unselectable ref (UV session lock) => same error
     for o in [o for o in bpy.data.objects if o.name.startswith("_bake_joined")]:
         bpy.data.objects.remove(o)
     slot0 = Hh.material_slots[0].material
@@ -122,7 +123,7 @@ def bake_robust(lows, high, outdir, prefix, size=2048, schedule=((0.10, 0.20), (
         log.append({"extrusion": ex, "max_ray": mr, "invalid_after_pct": round(100 * frac, 3)})
         if frac < stop_frac:
             break
-    H_ = slot0; Hh.material_slots[0].material = slot0
+    Hh.material_slots[0].material = slot0; Hh.hide_select = was_unselectable
     left = int((mask & ~valid).sum())
     for n in final:   # repair what no setting could bake, then pad the islands
         final[n], _ = inpaint(final[n], valid, ids)
@@ -141,7 +142,7 @@ def bake_robust(lows, high, outdir, prefix, size=2048, schedule=((0.10, 0.20), (
         d = dist_map[(pid == p) & valid]
         if d.size and np.nanmean(d) > 0.012:
             bad_fit[poly_of[p]] = round(float(np.nanmean(d)) * 1000, 1)
-    return {"passes": log, "invalid_first_pass_pct": round(100 * float(first_bad.sum() / mask.sum()), 3),
+    return {"device": device, "passes": log, "invalid_first_pass_pct": round(100 * float(first_bad.sum() / mask.sum()), 3),
             "inpainted_texels": left, "worst_unbaked_faces": sorted(worst.items(), key=lambda x: -x[1])[:12],
             "poor_fit_faces_mm": sorted(bad_fit.items(), key=lambda x: -x[1])[:15],
             "_first_bad": first_bad, "_valid": valid, "_ids": ids}

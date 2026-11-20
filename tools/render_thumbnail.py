@@ -8,6 +8,7 @@ material first (wire_and_export). Painted-only albedo gets a temporary roughness
 flat; the material is put back. ALWAYS open the jpg and check framing / exposure before uploading."""
 import bpy, os
 from mathutils import Vector
+exec(open(r"C:/Users/epers/Desktop/retopologizer/tools/cycles_gpu.py", encoding="utf-8").read())
 
 RIG = (  # name, kind, location, energy(W), colour, size_x, size_y
     ("key", 'AREA', (-2.6, -2.4, 2.9), 320, (1.0, 0.9, 0.78), 4.5, 4.5),
@@ -27,11 +28,7 @@ def _settings(sc):
 def render_thumbnail(names, path, look_at=(0, 0.02, 0.40), cam=(-2.5, -3.35, 1.45), lens=85, samples=768,
                      exposure=-0.2, fstop=9.0):
     sc = bpy.context.scene; made = []; r0, o0 = _settings(sc)
-    sc.render.engine = 'CYCLES'; cy = sc.cycles
-    try:
-        sc.cycles.device = 'GPU'
-    except Exception:
-        pass
+    use_gpu(sc); cy = sc.cycles
     cy.samples = samples; cy.use_adaptive_sampling = True; cy.adaptive_threshold = 0.005
     cy.use_denoising = True; cy.denoiser = 'OPENIMAGEDENOISE'; cy.max_bounces = 10
     cy.sample_clamp_indirect = 8; cy.caustics_reflective = False; cy.caustics_refractive = False

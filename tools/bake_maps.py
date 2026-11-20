@@ -8,6 +8,7 @@ The high object's material must have albedo / metal-rough (G=rough,B=metal) / no
 like glTF; pass it as high_mat (name). Low objects share one material and one UV atlas.
 """
 import bpy, bmesh
+exec(open(r"C:/Users/epers/Desktop/retopologizer/tools/cycles_gpu.py", encoding="utf-8").read())
 
 MAPS = {  # name: (bake_type, pass_filter, colorspace, clear_color, samples)
     "basecolor": ("DIFFUSE", {"COLOR"}, "sRGB", (0, 0, 0, 1), 16),
@@ -59,7 +60,7 @@ def bake_all(lows, high, outdir, prefix, size=2048, extrusion=0.03, max_ray=0.06
              cage_dist=None, high_mat="Material.001", maps=None, margin_px=8):
     sc = bpy.context.scene; b = sc.render.bake
     old = (sc.cycles.samples, sc.cycles.use_denoising, b.use_selected_to_active, b.margin)
-    sc.render.engine = 'CYCLES'; sc.cycles.use_denoising = False
+    print("bake on", use_gpu(sc)); sc.cycles.use_denoising = False   # GPU always: CPU bakes take ages
     b.use_selected_to_active = True; b.target = 'IMAGE_TEXTURES'
     b.margin = max(1, margin_px * size // 2048); b.margin_type = 'EXTEND'  # must be < half the UV gap
     b.cage_extrusion = extrusion; b.max_ray_distance = max_ray

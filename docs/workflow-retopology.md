@@ -19,6 +19,7 @@ projects/<nome>/README.md origem, medidas, contagens, resultado, pendências
 1. **Preparar**: `blender --background --python tools/inspect_glb.py -- model.glb` → tris, bbox, materiais. Anotar a
    origem do GLB no README do projeto. Combinar o orçamento de tris com o usuário (`topologia.md`).
 2. **Importar** o GLB num `.blend` em `draft/`, nomear a referência (`REFERENCE`, `HiPoly`) e travar a seleção.
+   Já deixe o Cycles na **GPU** se o PC tiver uma (`use_gpu()` de `tools/cycles_gpu.py`; aqui: OPTIX, RTX 3060).
 3. **Entender a forma**: `render_views(names, outdir, prefix, fit_to=[ref])` (front/right/top/persp, workbench).
    Separar partes independentes (base + tampa; corpo + roupa) e fixar os eixos: **Z up, frente = −Y, esquerda do
    personagem = +X, metros**.

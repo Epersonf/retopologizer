@@ -53,6 +53,7 @@ one-shot) e chamar a função. Os pacotes `retopo/` e `autorig/` são importados
 ## Bake
 | arquivo | onde roda | para quê |
 |---|---|---|
+| cycles_gpu.py | dentro do Blender | `use_gpu()`: Cycles na GPU (OPTIX/CUDA/HIP...); chamar antes de todo bake/render |
 | bake_robust.py | dentro do Blender | bake com validação por texel (hit/backface/distância), re-bake multi-passada, inpaint por ilha |
 | bake_maps.py | dentro do Blender | bake simples de 5 mapas high→low numa imagem (junta as peças; cage opcional) |
 | bake_inpaint.py | numpy puro | inpaint e dilate restritos à ilha UV (clone automático) |

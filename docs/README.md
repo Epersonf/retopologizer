@@ -12,6 +12,7 @@ Ordem de um projeto: workflow → topologia → retopo por partes → qa → uv-
 | retopo-por-partes.md | sempre que for retopologizar: dividir em partes, uma rodada por parte, entregar e integrar |
 | retopo-snap-mirror.md | retopo de peça dura ou prop com detalhe: anéis por ângulo + espelho (tampa do baú) |
 | retopo-llm.md | retopo de personagem ou forma orgânica com o pacote `tools/retopo` (Cuca) |
+| retopo-casca-campo.md | retopo de peça de pano com abertura (gorro, capuz, manga): anéis por campo de Laplace |
 | qa.md | para conferir a malha antes de UV, bake e export |
 | uv-bake.md | UV, mapas PBR, bake alta → baixa, artefatos |
 | entrega.md | FBX, Godot (jogo Braziletto), thumbnail e descrição da loja Fab |

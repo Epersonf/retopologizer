@@ -2,7 +2,7 @@
 
 O agente faz o que o artista faz no Blender com snap e RetopoFlow: desenha anéis (contornos) em volta dos tubos,
 decide quantos vértices cada anel tem, fecha com quads e cola tudo na referência. Nenhum remesh. Exemplo completo:
-a Cuca (`projects/stylized-cuca/cuca_*.py`). Peças duras: `retopo-snap-mirror.md`. Teoria: `topologia.md`.
+a Cuca (`projects/stylized-cuca/cuca_*.py`). Peças duras: `retopo-snap-mirror.md`. Pano com abertura (gorro, capuz): `retopo-casca-campo.md`. Teoria: `topologia.md`.
 
 ## Carregar (dentro do Blender: worker ou one-shot, ver `blender-automacao.md`)
 ```python
