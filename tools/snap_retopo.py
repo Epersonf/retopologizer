@@ -13,3 +13,4 @@ share topology and can be stitched with quad strips (the usual hand-retopo ring 
 _D = r"C:\Users\epers\Desktop\retopologizer\tools"
 exec(open(_D + r"\snap_surface.py").read())
 exec(open(_D + r"\snap_mesh.py").read())
+exec(open(_D + r"\snap_section.py").read())

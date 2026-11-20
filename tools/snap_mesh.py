@@ -29,6 +29,20 @@ class Mesh:
             q = (A[i], A[i + 1], B[i + 1], B[i])
             self.f(*(q[::-1] if flip else q))
 
+    def strip_closed(self, A, B, flip=False):
+        """Quads between two closed rings with the same vertex count."""
+        n = len(A)
+        for i in range(n):
+            j = (i + 1) % n; q = (A[i], A[j], B[j], B[i]); self.f(*(q[::-1] if flip else q))
+
+    def cap(self, ring, centre=None, flip=False):
+        """Close a ring: n-gon, or a triangle fan to `centre` (point on the surface) when given."""
+        if centre is None:
+            self.f(*(ring[::-1] if flip else ring)); return
+        c = self.v(centre); n = len(ring)
+        for i in range(n):
+            t = (ring[i], ring[(i + 1) % n], c); self.f(*(t[::-1] if flip else t))
+
     def prism(self, ring, n, h, embed=0.004, top_scale=1.0, closed_top=True, snap=None):
         """Raised slab on a surface: `ring` = footprint points ON the surface, CCW seen from +n.
         Base is pushed `embed` inside (no bottom face, hidden in the wall; snap(p, n) projects it onto the shell), top at +h.
