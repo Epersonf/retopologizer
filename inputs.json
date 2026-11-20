@@ -1,9 +1,0 @@
-{
- "stylized-chest": {
-  "file": "844b92ca63d8aeedf26abfb03834aec6.glb",
-  "sha256": "8d4a6d676b5d07009be03f474058fcebf75c1c6241884600a8d496303630b3e5",
-  "bytes": 44835328,
-  "source": "Hunyuan3D generation (500k tris, 4096px PBR textures)",
-  "note": "Too heavy for git. Keep a copy outside this repo (cloud/backup). tools/verify_inputs.py checks it."
- }
-}
