@@ -13,5 +13,6 @@ Real scripts used to produce assets with this repository, cleaned up to serve as
 | `hat-hair/hair_pick.py` | cap hair: picks the reference pieces that become hair locks (quad budget) and their Bezier points | `python -I examples/hat-hair/hair_pick.py QUADS=1100` (needs the `.npz` files from `hair_pieces.py`) | `docs/02-retopology/retopo-hair-tubes.md` |
 | `hat-hair/hat_to_cuca.py` | the hat as a prop on the Cuca's `Head` bone, for the Godot client | `blender -b <hat_baked.blend> --python tools/general/blender_once.py -- examples/hat-hair/hat_to_cuca.py` | `docs/05-delivery/delivery.md` |
 | `fibercards/blonde_sheet.py` | blonde fiber card sheet (12 cards sparse → dense) for the Cuca's hair | `python -I examples/fibercards/blonde_sheet.py [out] [seed]` | `docs/07-fibercards/fibercards.md` |
+| `fibercards/head_cards.py` | cards fitted on the Cuca's head: strips with UV = sheet cell, layers dense to sparse, messy sway; needs the rig .blend and the sheet in `projects/cuca-hair` | `blender -b --factory-startup --python tools/general/blender_once.py -- examples/fibercards/head_cards.py` | `docs/07-fibercards/fibercards.md` |
 
 Variables: `RETOPOLOGIZER_ROOT` (repo root; default: current folder), `GAME_ASSETS` (folder where the game keeps characters), `BLENDER` (executable).

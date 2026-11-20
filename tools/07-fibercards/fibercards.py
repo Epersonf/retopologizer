@@ -36,7 +36,7 @@ def job_cards(s, seed):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--out", required=True); ap.add_argument("--tag", default="fibers"); ap.add_argument("--preset"); ap.add_argument("--blonde", action="store_true")
     ap.add_argument("--seed", type=int, default=1); ap.add_argument("--samples", type=int, default=32); ap.add_argument("--lighting", default="soft", choices=["soft", "flat"]); ap.add_argument("--blend"); ap.add_argument("--set", nargs="*", default=[])
-    a = ap.parse_args(); over = {k: json.loads(v) for k, v in (x.split("=", 1) for x in a.set)}; s = fc_params.load(a.preset, **({**fc_params.BLONDE} if a.blonde and not a.preset else {}), **over)
+    a = ap.parse_args(); over = {k: json.loads(v) for k, v in (x.split("=", 1) for x in a.set)}; s = fc_params.load(a.preset, **{**(fc_params.BLONDE if a.blonde and not a.preset else {}), **over})
     W, cols, rows, cards = job_cards(s, a.seed); out = Path(a.out).resolve(); out.mkdir(parents=True, exist_ok=True)
     job = {"size": W, "tag": a.tag, "out": str(out), "lighting": a.lighting, "samples": a.samples, "glossiness": s["glossiness"], "sheen": s["sheen"], "tools": str(T.parent), "blend": a.blend, "cards": cards}
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
