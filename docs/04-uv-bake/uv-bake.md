@@ -3,6 +3,17 @@
 Prerequisite: mesh approved in QA (`docs/03-qa/qa.md`). After the UV, do not run builders again (they recreate the mesh and the UV is lost):
 only move vertices.
 
+## New model with no high-poly (nothing to bake from)
+When the asset is designed here and there is no reference to bake, the texture is **painted in TextureCraft** (MCP
+`texturecraft`: `project_new`/`mesh_import` → `paint_stroke`, `resource_import`, `viewport_render` → `textures_export`),
+never a flat colour or a procedural noise left as the final. Order:
+1. **Ask the user the style before painting** (hand-painted cartoon, stylized PBR, palette, materials, wear, mood,
+   references). Do not guess; show 1-2 viewport renders and adjust before exporting.
+2. UV first (rules below, `qa_uv` passing), then import the low into TextureCraft with that UV.
+3. Export basecolor + normal (roughness/metallic/AO if the asset needs them) at the project size; the game keeps only
+   albedo and normal for metal (`docs/05-delivery/delivery.md`).
+4. Report which maps came from TextureCraft and which were not painted.
+
 ## UV
 - **One 0–1 atlas for all the asset's pieces**: one material, one texture per map, one draw call.
 - **Zero overlap**: the bake writes one texel per place; mirrored or stacked UVs don't pass `qa_uv`.
