@@ -29,6 +29,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | session_recorder.py (+ `session_actions/state/meta.py`) | `blender x.blend --python ...` or `record_session.py <blend> <sessions_dir>` | records the artist's manual session (actions, mesh, view) so the agent can continue and a model can be trained: `docs/00-rules-and-tools/session-recorder.md` |
 | session_to_dataset.py | `python` | converts a recording into a dataset episode (trigger -> actions steps), scrubs paths |
 | dataset_pack.py | `python` | puts episodes and stage records into the versioned `dataset/<stage>/<asset>/<id>` (gzip, scrubbed, index.json): `docs/00-rules-and-tools/dataset-spec.md` |
+| rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
 | blend_diff.py | inside Blender (one-shot) | what the artist changed between two saves: counts, bbox, moved vertices, thickness, UV (`compare_blends`, `edit_record`) |
 
 ## 01-input-and-measurement/
@@ -53,6 +54,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | section_overlay.py | inside Blender | cross-section PNG: colored ref × white low |
 | wire_overlay.py | inside Blender | workbench render + low wireframe (visible edges only) |
 | label_png.py | `python` (PIL) | writes the vertex indices on the wire_overlay PNG |
+| symmetrize.py | inside Blender | straighten + cut on the axis + mirror one half with identical UVs (sword): `symmetrize`, `axis_knots` |
 | skin_close.py | inside Blender | one-sided retopo skin -> closed shell: `touch_parts` (skin reaches separate parts), `close_skin` (extrude border to a plane + mirror), `pull_parts_to_shell`; `docs/08-cases/wing.md` |
 
 ## 03-qa/
@@ -79,6 +81,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | bake_robust.py | inside Blender | bake with per-texel validation, multi-pass re-bake, per-island inpaint |
 | bake_maps.py | inside Blender | simple bake of 5 high→low maps into one image (optional cage) |
 | bake_inpaint.py | pure numpy | inpaint and dilate restricted to the UV island |
+| texturecraft_cli.py | `python` | TextureCraft through the CLI: `import_maps`, `add_camera`, `paint` (`Stroke`), `export`, `render`; `docs/04-uv-bake/texturecraft-cli.md` |
 | texel_paint.py | inside Blender | procedural detail written straight into atlas texels of one material: `texels` (position + tangents per texel), `height_to_normal`, `write_map` with margin |
 
 ## 05-delivery/
@@ -87,6 +90,9 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | wire_material.py | inside Blender | wires the PNGs into a Principled material and exports the FBX of the low-polys only |
 | export_package.py | inside Blender | `wire_pbr` (with optional white Tint), `render_previews` (Cycles GPU), `export_package` (FBX + GLB + maps, animation baked) |
 | finalize_export.py | inside Blender | collections, UV, material, budget, `.blend` and FBX |
+| listing_shots.py | inside Blender | tilts/centres a long prop and renders every listing image in one call |
+| fab_package.py | `python` | one zip per format (FBX, GLB) with the textures, for the Fab upload |
+| before_after.py | `python` (PIL) | before/after sheet from two renders of the same view |
 | render_thumbnail.py | inside Blender | 1920x1080 store thumbnail (Cycles, studio) |
 | make_lean_blend.py | inside Blender | lean `.blend` for git (no ref, packed images) |
 | export_from_blend.py | `blender -b <projeto>.blend -P export_from_blend.py -- outdir prefixo` | regenerates PNGs + FBX from the lean `.blend` |

@@ -13,6 +13,7 @@ never a flat colour or a procedural noise left as the final. Order:
 3. Export basecolor + normal (roughness/metallic/AO if the asset needs them) at the project size; the game keeps only
    albedo and normal for metal (`docs/05-delivery/delivery.md`).
 4. Report which maps came from TextureCraft and which were not painted.
+   If the MCP cannot read the mesh (no file roots), use the CLI: `docs/04-uv-bake/texturecraft-cli.md`.
 
 ## UV
 - **One 0–1 atlas for all the asset's pieces**: one material, one texture per map, one draw call.

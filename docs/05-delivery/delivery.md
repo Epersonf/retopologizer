@@ -55,6 +55,8 @@ Generate at the end, with the final material wired, in `projects/<nome>/listing/
   limitations (e.g. albedo only) and generative AI notice (check Fab's current rules). Example:
   `projects/stylized-chest/listing/description.md`.
 - Albedo only: `wire_and_export(..., maps=("basecolor",))`.
+- Several images of one long prop: `listing_shots(...)` (`listing_shots.py`); before/after sheet: `before_after.py`.
+- Upload: `fab_package.py` (one zip per format) and `fab-upload.md` (the whole Publisher Portal flow).
 
 ## Rigged prop with maps (`tools/05-delivery/export_package.py`)
 `wire_pbr` wires basecolor/roughness/metallic/normal into the materials (optional white `Tint` multiplier on chosen materials), `render_previews` renders Cycles views,

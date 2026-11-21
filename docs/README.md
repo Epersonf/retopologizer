@@ -20,8 +20,11 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | retopo-hair-tubes.md | fused strands/tubes (hair): one separate mesh per tube, strand detector, polygon budget |
 | 03-qa (4) | qa.md | checking the mesh before UV, bake and export |
 | 04-uv-bake (5 and 6) | uv-bake.md | UV, PBR maps, high-to-low bake, artifacts |
+| | texturecraft-cli.md | painting/retouching in TextureCraft through the CLI (the MCP cannot read files) |
 | 05-delivery (7 and 9) | delivery.md | FBX, Godot (Braziletto game), prop attached to the head + editor, thumbnail and Fab store |
+| | fab-upload.md | publishing the listing on Fab with browser-harness: form fields, files, technical details, submit |
 | | git-reproduction.md | what to commit, regenerating `output/`, heavy GLBs |
 | 06-rig (8) | rigging.md | humanoid auto-rig, hand rig, weights, tail |
 | 07-fibercards (alternative to mesh hair) | fibercards.md | fiber card sheet (color + normal) generated and rendered in Blender |
 | 08-cases (whole pipeline, one asset) | wing.md | the wing end to end: artist's retopo, shell, UV, bake, engraved handle, rig, export; how to reproduce it |
+| | sword.md | the sword end to end: artist's shell, closing, UV, bake, symmetry, TextureCraft, game item, Fab listing |
