@@ -15,6 +15,7 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | retopo-llm.md | character or organic with the `tools/02-retopology/retopo` package (Cuca) |
 | | retopo-shell-field.md | cloth with an opening (hat, hood, sleeve): rings by Laplace field |
 | | retopo-hair-tubes.md | fused strands/tubes (hair): one separate mesh per tube, strand detector, polygon budget |
+| | retopo-tube-path.md | thin parts along a planar curve (sword guard, grip, curved blade): rings of rays with per-direction reach, buried ends |
 | 03-qa (4) | qa.md | checking the mesh before UV, bake and export |
 | 04-uv-bake (5 and 6) | uv-bake.md | UV, PBR maps, high-to-low bake, artifacts |
 | 05-delivery (7 and 9) | delivery.md | FBX, Godot (Braziletto game), prop attached to the head + editor, thumbnail and Fab store |
