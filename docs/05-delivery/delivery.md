@@ -55,3 +55,8 @@ Generate at the end, with the final material wired, in `projects/<nome>/listing/
   limitations (e.g. albedo only) and generative AI notice (check Fab's current rules). Example:
   `projects/stylized-chest/listing/description.md`.
 - Albedo only: `wire_and_export(..., maps=("basecolor",))`.
+
+## Rigged prop with maps (`tools/05-delivery/export_package.py`)
+`wire_pbr` wires basecolor/roughness/metallic/normal into the materials (optional white `Tint` multiplier on chosen materials), `render_previews` renders Cycles views,
+`export_package` writes FBX + GLB (animation baked, no leaf bones) and copies the maps next to them. FBX/glTF cannot carry the Tint: export with plain image materials and recolor with
+`albedo_color` in Godot (it multiplies the albedo); keep the Tint version in the saved `.blend`. Example: `examples/wing/s4_rig_export.py`.

@@ -26,12 +26,17 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | ref_part.py | inside Blender | crops the part of the ref that belongs to a piece, in the piece's local space |
 | slice_plot.py | `python` (matplotlib) | ref cross-sections as PNG with a cm grid; `--low` overlays the retopo |
 | qa_uv.py | inside Blender | overlap, 0–1 bounds, gap between islands; `unwrap_atlas` (QA and UV/bake) |
+| session_recorder.py (+ `session_actions/state/meta.py`) | `blender x.blend --python ...` or `record_session.py <blend> <sessions_dir>` | records the artist's manual session (actions, mesh, view) so the agent can continue and a model can be trained: `docs/00-rules-and-tools/session-recorder.md` |
+| session_to_dataset.py | `python` | converts a recording into a dataset episode (trigger -> actions steps), scrubs paths |
+| dataset_pack.py | `python` | puts episodes and stage records into the versioned `dataset/<stage>/<asset>/<id>` (gzip, scrubbed, index.json): `docs/00-rules-and-tools/dataset-spec.md` |
+| blend_diff.py | inside Blender (one-shot) | what the artist changed between two saves: counts, bbox, moved vertices, thickness, UV (`compare_blends`, `edit_record`) |
 
 ## 01-input-and-measurement/
 | file | where it runs | what for |
 |---|---|---|
 | inspect_glb.py | `blender --background --python inspect_glb.py -- model.glb` | tris/verts, bbox, materials and 3 silhouette profiles |
 | slice_profile.py | inside Blender | bbox per slice along an axis (numpy, no Edit Mode) |
+| depth_map.py | inside Blender | front/back depth maps of a relief reference on a grid (`depth_map`, `sampler`): sample the surface, choose the mirror plane, place parts |
 
 ## 02-retopology/ (build by hand and check the shape)
 | file | where it runs | what for |
@@ -48,6 +53,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | section_overlay.py | inside Blender | cross-section PNG: colored ref × white low |
 | wire_overlay.py | inside Blender | workbench render + low wireframe (visible edges only) |
 | label_png.py | `python` (PIL) | writes the vertex indices on the wire_overlay PNG |
+| skin_close.py | inside Blender | one-sided retopo skin -> closed shell: `touch_parts` (skin reaches separate parts), `close_skin` (extrude border to a plane + mirror), `pull_parts_to_shell`; `docs/08-cases/wing.md` |
 
 ## 03-qa/
 | file | where it runs | what for |
@@ -73,11 +79,13 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | bake_robust.py | inside Blender | bake with per-texel validation, multi-pass re-bake, per-island inpaint |
 | bake_maps.py | inside Blender | simple bake of 5 high→low maps into one image (optional cage) |
 | bake_inpaint.py | pure numpy | inpaint and dilate restricted to the UV island |
+| texel_paint.py | inside Blender | procedural detail written straight into atlas texels of one material: `texels` (position + tangents per texel), `height_to_normal`, `write_map` with margin |
 
 ## 05-delivery/
 | file | where it runs | what for |
 |---|---|---|
 | wire_material.py | inside Blender | wires the PNGs into a Principled material and exports the FBX of the low-polys only |
+| export_package.py | inside Blender | `wire_pbr` (with optional white Tint), `render_previews` (Cycles GPU), `export_package` (FBX + GLB + maps, animation baked) |
 | finalize_export.py | inside Blender | collections, UV, material, budget, `.blend` and FBX |
 | render_thumbnail.py | inside Blender | 1920x1080 store thumbnail (Cycles, studio) |
 | make_lean_blend.py | inside Blender | lean `.blend` for git (no ref, packed images) |
@@ -88,6 +96,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | file | where it runs | what for |
 |---|---|---|
 | rig_mixamo.py | inside Blender | armature with Mixamo names from the joints, skin by bone heat (max. 4), FBX export |
+| rig_chain.py | inside Blender | rig for a limb-like prop (wing, tail, cape): bone chain, numeric positional weights, looping flap animation |
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).

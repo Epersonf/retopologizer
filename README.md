@@ -63,6 +63,8 @@ guide; each guide points to the next.
 | put a hat/prop on a character's head in the game and adjust it in the editor | `docs/05-delivery/delivery.md` |
 | humanoid rig, weights, tail | `docs/06-rig/rigging.md` |
 | what to commit, regenerate `output/`, heavy GLB | `docs/05-delivery/git-reproduction.md` |
+| the artist retopologizes by hand and the agent continues (recording, dataset) | `docs/00-rules-and-tools/human-in-the-loop.md`, `session-recorder.md`, `dataset-spec.md` |
+| a whole asset end to end, reproducible (the wing: skin, shell, UV, bake, engraved handle, rig, export) | `docs/08-cases/wing.md`, `examples/wing/` |
 | how to call a tool | `tools/README.md` and the file's docstring |
 
 ## Tools

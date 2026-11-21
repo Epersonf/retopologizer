@@ -7,6 +7,9 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 |---|---|---|
 | 00-rules-and-tools (always) | retopology-rules.md | before creating any mesh |
 | | blender-automation.md | before running code in Blender: MCP, worker, one-shot, pitfalls |
+| | human-in-the-loop.md | the artist retopologizes by hand: record, understand, continue their mesh, lessons |
+| | session-recorder.md | recording the artist's session in Blender (what is logged, how to run, limits) |
+| | dataset-spec.md | the versioned `dataset/` (by stage and actor), fields, what is missing, publishing cautions |
 | 01-input-and-measurement (0 and 1) | workflow-retopology.md | when starting: folders, measuring the reference, order of stages, checking the shape |
 | 02-retopology (2 and 3) | README.md | choosing the right method for each type of part |
 | | topology.md | deciding loops, poles, counts and budget (the artist's theory) |
@@ -21,3 +24,4 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | git-reproduction.md | what to commit, regenerating `output/`, heavy GLBs |
 | 06-rig (8) | rigging.md | humanoid auto-rig, hand rig, weights, tail |
 | 07-fibercards (alternative to mesh hair) | fibercards.md | fiber card sheet (color + normal) generated and rendered in Blender |
+| 08-cases (whole pipeline, one asset) | wing.md | the wing end to end: artist's retopo, shell, UV, bake, engraved handle, rig, export; how to reproduce it |

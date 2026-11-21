@@ -1,0 +1,15 @@
+[
+ {
+  "id": "wing_rig01",
+  "stage": "rig",
+  "asset": "wing",
+  "actor": "agent",
+  "kind": "record",
+  "note": "agent recipe, reproduced end to end with examples/wing/run_all.py",
+  "files": [
+   "entry.json",
+   "rig_recipe.json.gz"
+  ],
+  "bytes": 615
+ }
+]

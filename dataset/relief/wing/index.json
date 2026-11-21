@@ -1,0 +1,15 @@
+[
+ {
+  "id": "wing_relief01",
+  "stage": "relief",
+  "asset": "wing",
+  "actor": "agent",
+  "kind": "record",
+  "note": "agent recipe, reproduced end to end with examples/wing/run_all.py",
+  "files": [
+   "entry.json",
+   "relief_recipe.json.gz"
+  ],
+  "bytes": 619
+ }
+]

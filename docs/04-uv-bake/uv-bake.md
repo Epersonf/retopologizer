@@ -68,3 +68,10 @@ largest deviation.
   offset per region.
 - High distance at corners = box corner against the ref's rounded bevel: expected.
 - Afterwards: `qa_all`, rebake, check again.
+
+## Procedural detail on top of the bake (`texel_paint.py`)
+When part of the low-poly is a simple stand-in for sculpted detail (the wing's handle: cylinders and bars 2-5 cm from the original), the high-to-low bake gives wrong
+colours (rays hit neighbours). Paint those texels from functions of the 3D position instead: `texels(ob, material, size)` gives world position and tangent frame per texel,
+`height_to_normal(T, fn)` turns a height function into a tangent-space normal map, `write_map(...)` writes values with a margin. Gold = value noise + engraving (darker, rougher),
+enamel masks for inlays. No UV dependence = no seams between islands. Worked example: `docs/08-cases/wing.md`, `examples/wing/pattern_cabo.py`.
+Check with a PBR render (Cycles, sky light): workbench does not show metal.

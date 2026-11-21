@@ -40,3 +40,8 @@ Show a view (`wire_overlay`), check the error in mm (`fit_report`) and `topo_qa(
 A new method that worked on a piece becomes its own guide in this folder (as happened with `retopo-shell-field.md`, from the hat):
 when to use it, the process in steps, numbers from the example, pitfalls with symptom and fix, how to adapt it to another piece.
 Then add the line to the table in section 1 and to `docs/README.md`.
+
+## Relief (wing, plaque, shield): the artist traces the front skin, then `skin_close.py`
+For a relief seen from one side, the artist retopologizes the front skin by hand (one continuous skin, strips per feather); the agent closes it with `close_skin` (extrude the border
+to a plane and mirror: the same mesh inverted, not Solidify, which crumples stepped surfaces) and makes it touch separate parts with `touch_parts`. Full case: `docs/08-cases/wing.md`.
+How to work with the artist: `docs/00-rules-and-tools/human-in-the-loop.md`.

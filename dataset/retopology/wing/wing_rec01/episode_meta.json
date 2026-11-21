@@ -1,0 +1,9 @@
+{
+ "name": "wing_rec01",
+ "source": "rec_01",
+ "steps": 0,
+ "action_counts": {},
+ "duration_s": 0,
+ "recorder": {},
+ "from_actions_jsonl": false
+}

@@ -1,0 +1,67 @@
+[
+ {
+  "id": "wing_rec01",
+  "stage": "retopology",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "episode",
+  "note": "preparation; recorder v1 did not follow the object the artist worked on",
+  "files": [
+   "entry.json",
+   "episode.jsonl.gz",
+   "episode_meta.json",
+   "final_state.json.gz",
+   "initial_state.json.gz"
+  ],
+  "bytes": 1458
+ },
+ {
+  "id": "wing_rec02",
+  "stage": "retopology",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "episode",
+  "note": "85 -> 131 vertices, artist's method first demonstration",
+  "files": [
+   "entry.json",
+   "episode.jsonl.gz",
+   "episode_meta.json",
+   "final_state.json.gz",
+   "initial_state.json.gz"
+  ],
+  "bytes": 18256
+ },
+ {
+  "id": "wing_rec03",
+  "stage": "retopology",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "episode",
+  "note": "131 -> 201 vertices",
+  "files": [
+   "entry.json",
+   "episode.jsonl.gz",
+   "episode_meta.json",
+   "final_state.json.gz",
+   "initial_state.json.gz"
+  ],
+  "bytes": 30253
+ },
+ {
+  "id": "wing_rec04",
+  "stage": "retopology",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "episode",
+  "note": "201 -> 333 vertices; front white part finished by the artist; compact recorder (keyframe every 25 changes)",
+  "files": [
+   "entry.json",
+   "episode.jsonl.gz",
+   "episode_meta.json",
+   "final_mesh.json.gz",
+   "final_state.json.gz",
+   "initial_state.json.gz"
+  ],
+  "bytes": 56111
+ }
+]

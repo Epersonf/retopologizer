@@ -15,4 +15,6 @@ Real scripts used to produce assets with this repository, cleaned up to serve as
 | `fibercards/blonde_sheet.py` | blonde fiber card sheet (12 cards sparse → dense) for the Cuca's hair | `python -I examples/fibercards/blonde_sheet.py [out] [seed]` | `docs/07-fibercards/fibercards.md` |
 | `fibercards/head_cards.py` | cards fitted on the Cuca's head: strips with UV = sheet cell, layers dense to sparse, messy sway; needs the rig .blend and the sheet in `projects/cuca-hair` | `blender -b --factory-startup --python tools/general/blender_once.py -- examples/fibercards/head_cards.py` | `docs/07-fibercards/fibercards.md` |
 
+| `wing/run_all.py` (+ `s1..s4`, `support.py`, `pattern_cabo.py`, `_cfg.py`) | the wing: artist's skin -> closed shell + handle (`prepare`), then bake -> engraved gold handle -> rig + flap -> FBX/GLB (`finish`) | `python examples/wing/run_all.py prepare --skin-blend X.blend` / `finish --uv-blend Y.blend` (`BLENDER_EXE`) | `docs/08-cases/wing.md` |
+
 Variables: `RETOPOLOGIZER_ROOT` (repo root; default: current folder), `GAME_ASSETS` (folder where the game keeps characters), `BLENDER` (executable).
