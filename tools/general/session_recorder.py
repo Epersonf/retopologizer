@@ -126,7 +126,9 @@ def tick():
         if an != S["active"]:
             S["active"] = an; log("active", name=an)
         ob = bpy.data.objects.get(FIXED) if FIXED else act
-        if ob and ob.type == 'MESH':
+        # A referência glTF pode ter milhões de polígonos; ela nunca é editada.
+        # Registrar sua malha inteira por amostra deixa o Blender sem resposta.
+        if ob and ob.type == 'MESH' and not ob.name.startswith('REFERENCE'):
             if ob.mode != S["mode"]:
                 S["mode"] = ob.mode; log("mode", mode=ob.mode)
             snapshot(ob)

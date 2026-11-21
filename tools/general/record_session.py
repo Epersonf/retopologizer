@@ -11,5 +11,11 @@ while os.path.exists(os.path.join(base, "rec_%02d" % n)) and os.listdir(os.path.
     n += 1
 rec = os.path.join(base, "rec_%02d" % n); os.makedirs(rec, exist_ok=True)
 rec_py = os.path.join(os.path.dirname(os.path.abspath(__file__)), "session_recorder.py")
-subprocess.Popen([EXE, blend, "--python", rec_py], env={**os.environ, "REC_DIR": rec}, creationflags=0x00000008 if os.name == "nt" else 0)
+startup = None
+if os.name == "nt" and os.environ.get("REC_START_MINIMIZED"):
+    startup = subprocess.STARTUPINFO()
+    startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup.wShowWindow = 7  # SW_SHOWMINNOACTIVE: deixa o Blender pronto sem tomar a tela.
+subprocess.Popen([EXE, blend, "--python", rec_py], env={**os.environ, "REC_DIR": rec},
+                 creationflags=0x00000008 if os.name == "nt" else 0, startupinfo=startup)
 print("gravando em", rec)
