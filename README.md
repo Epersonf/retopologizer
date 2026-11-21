@@ -37,7 +37,7 @@ guide; each guide points to the next.
 |---|---|---|---|---|
 | 0 | input | GLB in `input/`, with a copy outside the repo | `inspect_glb` | workflow-retopology |
 | 1 | understand and measure | views, cuts, measurements | `render_views`, `slice_profile`, `slice_plot`, `ref_part` | workflow-retopology |
-| 2 | retopology | quad low-poly snapped onto the ref | `mesh_lib`, `snap_retopo`, `retopo/` | topology, retopo-by-parts, retopo-snap-mirror, retopo-llm, retopo-shell-field |
+| 2 | retopology | quad low-poly snapped onto the ref | `mesh_lib`, `snap_retopo`, `retopo/` | topology, retopo-by-parts, retopo-snap-mirror, retopo-llm, retopo-shell-field, retopo-tube-path |
 | 3 | check the shape | error in mm, overlaps | `fit_report`, `compare_mesh`, `overlay`, `section_overlay`, `wire_overlay` | workflow-retopology |
 | 4 | mesh QA | 0 backface, 0 z-fight, clean topology | `qa_all`, `topo_qa` | qa |
 | 5 | UV | 0–1 atlas without overlap, gap ≥ 8 px | `qa_uv`, `unwrap_atlas` | uv-bake |
@@ -57,6 +57,7 @@ guide; each guide points to the next.
 | retopo of a hard part or prop (chest, lid, box) | `docs/02-retopology/retopo-snap-mirror.md` |
 | retopo of a character or organic (body, hand, claws, tail) | `docs/02-retopology/retopo-llm.md` |
 | retopo of cloth with an opening (hat, hood, sleeve, drooping tip) | `docs/02-retopology/retopo-shell-field.md` |
+| retopo of a thin part along a curve (sword guard, grip, curved blade) | `docs/02-retopology/retopo-tube-path.md` |
 | know whether the mesh is ready | `docs/03-qa/qa.md` |
 | UV, PBR maps, bake, black spots in the bake | `docs/04-uv-bake/uv-bake.md` |
 | export FBX, take it to Godot, thumbnail and store text | `docs/05-delivery/delivery.md` |
