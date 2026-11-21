@@ -48,6 +48,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | snap_mesh.py | via snap_retopo | `Mesh`: `v`, `f`, `strip`, `cap`, `prism`, `dimple`, `fill_flat_ring`, `mirror_x`, `to_object` |
 | snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: cross-section ring by raycast from the center |
 | retopo/ | inside Blender (`import retopo`) | characters and organics: `Ref`, `Topo`, contours, patches, digits, `lock` (tube per hair lock, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
+| plane_cards.py | inside Blender | each leaf/feather/cloth strip of a ref becomes one plane: `components`, `leaf_frame` (PCA frame, base/tip, outward), `cell_offset` (curvature); `docs/04-uv-bake/leaf-cards.md` |
 | compare_mesh.py | inside Blender | ref↔new distance (mm and % of the diagonal) in both directions + critical points |
 | fit_report.py | inside Blender | new→ref and ref→new error (mm) + 5 cm cells where detail is missing |
 | overlay.py | `python` (PIL) | ref × new silhouettes: red ref only, cyan new only, gray both |
@@ -82,11 +83,13 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | bake_maps.py | inside Blender | simple bake of 5 high→low maps into one image (optional cage) |
 | bake_inpaint.py | pure numpy | inpaint and dilate restricted to the UV island |
 | texturecraft_cli.py | `python` | TextureCraft through the CLI: `import_maps`, `add_camera`, `paint` (`Stroke`), `export`, `render`; `docs/04-uv-bake/texturecraft-cli.md` |
+| ortho_atlas.py | inside Blender | one piece rendered once into an atlas tile by orthographic raycast: color (ramp), alpha, normal from depth (`raster`, `to_normal`, `paste`); `docs/04-uv-bake/leaf-cards.md` |
 | texel_paint.py | inside Blender | procedural detail written straight into atlas texels of one material: `texels` (position + tangents per texel), `height_to_normal`, `write_map` with margin |
 
 ## 05-delivery/
 | file | where it runs | what for |
 |---|---|---|
+| export_game_prop.py | inside Blender | a prop that rides a bone in the game (headband, skirt): FBX in skeleton space + albedo + normal, ready for a placement equal to the inverse bone rest |
 | wire_material.py | inside Blender | wires the PNGs into a Principled material and exports the FBX of the low-polys only |
 | export_package.py | inside Blender | `wire_pbr` (with optional white Tint), `render_previews` (Cycles GPU), `export_package` (FBX + GLB + maps, animation baked) |
 | finalize_export.py | inside Blender | collections, UV, material, budget, `.blend` and FBX |

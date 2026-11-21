@@ -18,9 +18,11 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | retopo-llm.md | character or organic with the `tools/02-retopology/retopo` package (Cuca) |
 | | retopo-shell-field.md | cloth with an opening (hat, hood, sleeve): rings by Laplace field |
 | | retopo-hair-tubes.md | fused strands/tubes (hair): one separate mesh per tube, strand detector, polygon budget |
+| | retopo-ring-tubes.md | closed tube along a curved band open on one side (headband, bracelet): spine by angular slices, hull ring per slab |
 | 03-qa (4) | qa.md | checking the mesh before UV, bake and export |
 | 04-uv-bake (5 and 6) | uv-bake.md | UV, PBR maps, high-to-low bake, artifacts |
 | | texturecraft-cli.md | painting/retouching in TextureCraft through the CLI (the MCP cannot read files) |
+| | leaf-cards.md | many copies of one piece (leaves, feathers, cloth) as cutout planes: render once into an atlas, one plane per piece |
 | 05-delivery (7 and 9) | delivery.md | FBX, Godot (Braziletto game), prop attached to the head + editor, thumbnail and Fab store |
 | | fab-upload.md | publishing the listing on Fab with browser-harness: form fields, files, technical details, submit |
 | | git-reproduction.md | what to commit, regenerating `output/`, heavy GLBs |

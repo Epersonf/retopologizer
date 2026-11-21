@@ -39,3 +39,15 @@ Lessons that cost time; each one is also in the guides.
 `assets/characters/<Nome>.fbx` + `Albedo<Nome>.jpg` + `Normal<Nome>.png`; register the body in `world/human_body.gd`
 (`PATHS`, `BARE`, `BODY_BY_MODEL`) and `tools/retarget_fbx.gd`. Delete the FBX `.import` before re-retargeting a new rig
 (the script skips files that already have a bone map). See `docs/05-delivery/delivery.md`.
+
+## Headband and skirt (props that ride bones)
+The headband (forehead, 448 tris) and the skirt (228 quads, 456 tris) were done as separate props, each with its own
+UV/bake, and attached in the game to the `Head` and `Hips` bones (`BodyProps`).
+- Headband: a curved band open in front: `retopo.ring_tube`, `docs/02-retopology/retopo-ring-tubes.md`. The original had a
+  toon material only, so the albedo is one flat color and the normal is baked from the ref.
+- Skirt: leaves, drapes and belt rendered once into an atlas and rebuilt as cutout planes: `docs/04-uv-bake/leaf-cards.md`
+  (`plane_cards.py`, `ortho_atlas.py`).
+- Game: `tools/05-delivery/export_game_prop.py` writes the FBX in the skeleton space of the body (Blender front +Y; half
+  turn around Z and a 0.0354 m shift along Y), so the placement is the inverse of the bone rest. Head and Hips rests are
+  pure translations: position = inverse origin, rotation 0, scale 1.
+- Order of the scripts is in `projects/curupira/cocar_*.py` and `saia_*.py` (git-ignored project folder).
