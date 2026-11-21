@@ -23,6 +23,9 @@ How to build the rig: `docs/06-rig/rigging.md`.
 - The FBX points the material at the image next to it; a 1024 JPG albedo is enough for the game. Example:
   `examples/cuca-rig/cuca_rig_export.py`.
 
+Characters with a normal map: also drop `Normal<Nome>.png` (1024) next to the albedo; `HumanBody` wires it when it exists.
+A rig from Mixamo goes straight in (delete the FBX `.import` before retargeting a new rig): `docs/08-cases/curupira.md`.
+
 ## Prop attached to the head in the game (hat, cap, hair, pipe)
 A static FBX hung on a `BoneAttachment3D` on the `Head` bone follows the head during animation. Examples: the Saci's cap, hair
 and pipe; the Cuca's hat (`examples/hat-hair/hat_to_cuca.py`).

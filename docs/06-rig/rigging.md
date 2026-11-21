@@ -41,6 +41,13 @@ Two paths, same output: armature with `mixamorig:*` bones, weights with at most 
 The joints sit at the **center of the cross-section** of the limb. In low-poly, the joint goes to the nearest **vertex ring**:
 the bone bends where the mesh has a loop (`tools/06-rig/autorig/rings.py`).
 
+## When the auto-rig does not fit: Mixamo
+- Anatomy that breaks the rules (backwards feet: the face and the feet look different ways): the auto-rig follows the
+  face. Rig in Mixamo instead: `tools/06-rig/export_for_mixamo.py` (mesh only) -> mixamo.com -> "With Skin" FBX.
+  Mixamo follows the markers and the feet. Case and checks: `docs/08-cases/curupira.md`.
+- Deformation check of any rigged `.blend`: `tools/06-rig/pose_check.py`.
+- Never scale (or apply scale on) the armature object to resize: the skin turns into spikes.
+
 ## Weights (skin)
 - Blender's bone heat (`ARMATURE_AUTO`), then, per vertex, the 4 largest weights ≥ 0.01, normalized.
 - Vertex the heat left empty (non-manifold mesh, loose shells): weight 1 on the nearest bone.
