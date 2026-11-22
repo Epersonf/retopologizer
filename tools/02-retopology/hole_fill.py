@@ -96,12 +96,8 @@ def fill_loop(bm, loop, ref=None, fixed=(), cut_edge=None, relax=12):
             if ok:
                 bm.edges.ensure_lookup_table(); loop_cut(bm, bm.edges[ei], ref); bm.verts.ensure_lookup_table(); loop = _after_cut(bm, idx); cut = True; break
         if not cut: raise ValueError("odd loop (%d): no loop cut gives an even loop" % len(loop))
-    best = None
-    for k in range(len(loop)):                   # rotate the 4 corners round the loop and try every side split a + b = n / 2
-        for na in range(1, len(loop) // 2):
-            sc = _score(loop, k, na)
-            if best is None or sc < best[0]: best = (sc, k, na)
-    _, k, na = best; faces, new = _grid(bm, loop, k, na, ref, fixed, relax)
+    # rotate the 4 corners round the loop and try every side split a + b = n / 2
+    _, k, na = min((_score(loop, k, na), k, na) for k in range(len(loop)) for na in range(1, len(loop) // 2)); faces, new = _grid(bm, loop, k, na, ref, fixed, relax)
     return {"faces": [f.index for f in faces], "verts": [v.index for v in new], "cut": cut, "n": len(loop), "corner": k, "a": na, "b": len(loop) // 2 - na}
 
 
@@ -118,8 +114,8 @@ def _score(loop, k, na):
     return pen
 
 
-def _side(loop, start, count, rev=False):
-    n = len(loop); return [loop[(start + j) % n] for j in range(count + 1)]
+def _side(loop, start, count):
+    return [loop[(start + j) % len(loop)] for j in range(count + 1)]
 
 
 def _grid(bm, loop, k, na, ref, fixed, relax):
