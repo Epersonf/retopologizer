@@ -4,6 +4,8 @@ Stage 2 of the pipeline. Here the choice is **per part**, not for the whole mode
 (`docs/00-rules-and-tools/retopology-rules.md`): retopo is always manual, vertex by vertex with snap onto the ref;
 quads only; the automatic tool measures and checks, it does not generate the mesh; the ref is never edited.
 
+Character (body, limbs, hands, face, rig)? Start at `character-index.md`: an index of where each topic lives.
+
 ## 1. Classify the part
 | the part is... | method | guide | example in the repo |
 |---|---|---|---|

@@ -12,6 +12,7 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | dataset-spec.md | the versioned `dataset/` (by stage and actor), fields, what is missing, publishing cautions |
 | 01-input-and-measurement (0 and 1) | workflow-retopology.md | when starting: folders, measuring the reference, order of stages, checking the shape |
 | 02-retopology (2 and 3) | README.md | choosing the right method for each type of part |
+| | character-index.md | any character task: index of which section answers which question (pointers only) |
 | | topology.md | deciding loops, poles, counts and budget (the artist's theory) |
 | | retopo-by-parts.md | splitting the model, one round per part, delivering and integrating |
 | | retopo-snap-mirror.md | hard part or prop: rings by angle + mirror (chest lid) |
