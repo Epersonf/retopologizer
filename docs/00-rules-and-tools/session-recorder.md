@@ -52,3 +52,6 @@ Recordings of the old format (no `actions.jsonl`) are rebuilt from the snapshots
 - Deleted parts (crests near the legs) show the budget the artist wants: fewer faces where nothing deforms or reads.
 - The user records heavy objects (1.5M triangles): keep the recorder light (actions every change, full mesh on keyframes) and warn before opening such a blend.
 - Corrections said aloud are data too: write them in the case file the same day (`post-mortem.md`, section 4).
+
+## Sharing
+Raw recordings go to the public Hugging Face dataset, not to git: `session-sharing.md` (refs with `hf_refs.py`, upload with `hf_push.py`, limits).

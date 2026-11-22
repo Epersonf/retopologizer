@@ -37,7 +37,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | live_rings.py | `python` + user's Blender (MCP 9876) | shows rings, shrink and bridge growing live in the artist's Blender (`play`) |
 | qa_cover.py | inside Blender | `qa_coverage`: ref near the part not covered (missing/collapsed toe), calibrated on the artist's toes: `docs/03-qa/qa.md` |
 | hf_refs.py (+ hf_ref_worker.py) | `python` (launches Blender) | adds ref.npz/ref.json (60000 surface points + normals of the reference, world space) to every recording |
-| hf_push.py | `python` | uploads the raw recordings (`projects/*/session`, 2.2 GB, not in git) to a PRIVATE Hugging Face dataset repo, paths scrubbed, resumable; dry run by default |
+| hf_push.py | `python` | uploads the raw recordings (`projects/*/session`, 2.2 GB, not in git) to the Hugging Face dataset `Eperson/retopo-sessions`, paths scrubbed, resumable; dry run by default; how: `docs/00-rules-and-tools/session-sharing.md` |
 | merge_doubles.py | python | merge by distance on lists (V, F); `Topo.write` refuses vertices closer than 0.6 mm |
 | toe_fit.py | inside Blender | `fit_toes`: each toe of a transplanted fused-toe block becomes a rigid+scale body fitted (ICP) on its OWN toe of the ref |
 | face_polish.py | inside Blender | `polish`: one vertex at a time, random steps projected on the ref, kept only if twisted/inverted/crossing penalty drops |

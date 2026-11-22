@@ -92,7 +92,7 @@ for, not the delivery: say "checkpoint, UV and bake pending", never "done".
 | put a hat/prop on a character's head in the game and adjust it in the editor | `docs/05-delivery/delivery.md` |
 | humanoid rig, weights, tail | `docs/06-rig/rigging.md` |
 | what to commit, regenerate `output/`, heavy GLB | `docs/05-delivery/git-reproduction.md` |
-| the artist retopologizes by hand and the agent continues (recording, dataset) | `docs/00-rules-and-tools/human-in-the-loop.md`, `session-recorder.md`, `dataset-spec.md` |
+| the artist retopologizes by hand and the agent continues (recording, dataset) | `docs/00-rules-and-tools/human-in-the-loop.md`, `session-recorder.md`, `session-sharing.md` (upload to Hugging Face), `dataset-spec.md` |
 | a curved band open on one side (headband, bracelet) | `docs/02-retopology/retopo-ring-tubes.md` |
 | leaves, feathers or cloth strips as cutout planes with one shared texture | `docs/04-uv-bake/leaf-cards.md` |
 | a whole asset end to end, reproducible (the wing: skin, shell, UV, bake, engraved handle, rig, export) | `docs/08-cases/wing.md`, `examples/wing/` |
