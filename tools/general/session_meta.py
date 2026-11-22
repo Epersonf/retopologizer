@@ -16,8 +16,16 @@ def write_meta(out, version):
     json.dump(m, open(os.path.join(out, "meta.json"), "w", encoding="utf-8"), indent=1)
 
 
+# Malha pesada (hipoly de referência com outro nome) nunca entra no log: despejar milhões de polígonos em JSON trava o Blender.
+HEAVY = 200_000
+
+
+def is_reference(o):
+    return o.name.startswith("REFERENCE") or len(o.data.polygons) > HEAVY
+
+
 def write_checkpoint(out, n, t):
     objs = {o.name: {"verts": [list(v.co) for v in o.data.vertices], "faces": [list(p.vertices) for p in o.data.polygons],
                      "mw": [list(r) for r in o.matrix_world]}
-            for o in bpy.data.objects if o.type == 'MESH' and o.name != "REFERENCE" and o.mode != 'EDIT'}
+            for o in bpy.data.objects if o.type == 'MESH' and not is_reference(o) and o.mode != 'EDIT'}
     json.dump({"t": t, "blend": os.path.basename(bpy.data.filepath), "objects": objs}, open(os.path.join(out, "checkpoint_%03d.json" % n), "w"))

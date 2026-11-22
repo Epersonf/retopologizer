@@ -12,7 +12,7 @@ from bpy_extras import view3d_utils
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from session_actions import diff
 from session_state import js, area3d, view, snap, mesh_state
-from session_meta import write_meta, write_checkpoint
+from session_meta import write_meta, write_checkpoint, is_reference
 
 VERSION = 3
 OUT = os.environ.get("REC_DIR") or os.path.join(os.path.expanduser("~"), "blender_rec", time.strftime("%Y%m%d_%H%M%S"))
@@ -128,7 +128,7 @@ def tick():
         ob = bpy.data.objects.get(FIXED) if FIXED else act
         # A referência glTF pode ter milhões de polígonos; ela nunca é editada.
         # Registrar sua malha inteira por amostra deixa o Blender sem resposta.
-        if ob and ob.type == 'MESH' and not ob.name.startswith('REFERENCE'):
+        if ob and ob.type == 'MESH' and not is_reference(ob):
             if ob.mode != S["mode"]:
                 S["mode"] = ob.mode; log("mode", mode=ob.mode)
             snapshot(ob)
