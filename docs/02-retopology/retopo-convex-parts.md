@@ -28,7 +28,7 @@ the outer shrink does not leave through a gap.
 | `limb_ring(ref, c, axis, n, name, mode)` | one wrapped ring as an object |
 | `ring_stations(length, radius, joints=(), per_joint=3, straight=1)` | simple stations: denser at joints (use `auto` below instead) |
 | `sample_profile`, `extrema`, `auto_stations` | profile A(t), its extrema by derivative, exact stations (section 4) |
-| `limb_tube(ref, a, b, stations, n, name, up, cap, mode, joints, tol)` | rings at the stations + bridges; `stations` is a count, a list or `auto`; keeps `T.centers`, `T.profile` |
+| `limb_tube(ref, a, b, stations, n, name, up, cap, mode, joints, tol, max_rings, theta_max, k)` | rings at the stations + bridges; `stations` is a count, a list or `auto`; keeps `T.centers`, `T.profile`, `T.check` (section 4b) |
 | `bridge(T, A, B)` | faces between two rings (A, B lists of vertices) |
 
 All return a `Topo` (or write one) and are exported by `retopo`. Run `topo_qa` afterwards.
@@ -60,6 +60,27 @@ Result on the female A-pose arm (22%..100% of shoulder-wrist; elbow joint at 0.3
 (elbow crease, 37 mm), **max 0.49 (forearm bulge, 42.5 mm)**, min 0.89 (wrist, 32.7 mm), max 0.97 (hand, 36 mm); stations
 `0, .06, .25, .32, .34, .42, .49, .69, .89, .97, 1` = 11 rings, 120 quads.
 Planned inputs (not built): skin weights (50/50 zones), range of motion per joint, surface curvature; N per ring (12-16 at joints, 8 straight).
+
+## 4b. Constraints: no overlap, no deviation, no folded faces (`retopo/axes.py`)
+Stations from section 4 say *where*; the ring *planes* must also be well behaved. Notation: ring i has centre `c_i`, unit normal `n_i`,
+equivalent radius `r_i`; `d` is the limb axis (a to b); `Δ_i = |c_{i+1} - c_i|`; `δ_i = angle(n_i, n_{i+1})`.
+1. **Axis deviation.** `angle(n_i, d) <= θmax` (default 10°). A limb points one way; a torus would pass a larger θmax. Normals come from the
+   smoothed centreline tangents and are clamped toward `d` by slerp (`toward`).
+2. **No crossing.** Two planes with normals `δ` apart and centres `Δ` apart intersect about `Δ/δ` from the axis. The rings cannot
+   overlap if that is beyond the section: `Δ_i / δ_i >= k · max(r_i, r_{i+1})`, k = 1.5. A forward and a backward pass limit
+   `δ_i <= Δ_i / (k · max(r_i, r_{i+1}))` (`station_axes`).
+3. **No folded face.** For every vertex pair of neighbouring rings, `(B_k - A_k) · n_mean > 0`: each rung advances along the axis, so
+   no quad goes back and no normal flips. `check_rings` returns the minimum rung (mm) and `flipped_faces` counts faces whose normal
+   points against the outward direction (must be 0).
+4. **Retry.** If the check fails, `limb_tube` halves θmax and rebuilds (`T.check["theta_max_used"]`). `T.check` keeps `axis_dev_deg`,
+   `step_deg`, `min_rung_mm`, `min_cross_ratio`, `flipped_faces`, `ok`.
+
+**Polygon budget.** `limb_tube(..., max_rings=M)` / `auto_stations(max_rings=M)` dissolve stations until M remain. The cost of removing
+station k is `max |r(t) - line(r_{k-1}, r_{k+1})|` over its span, so small bumps go first (the extrema threshold effectively rises as the
+budget falls). The guaranteed error is monotone: fewer rings, larger error; ends and joint centres are protected.
+
+Result (female A-pose left arm): 11 rings: axis deviation 6.93°, step 4.54°, min rung 5.65 mm, min cross ratio 3.44, 0 flipped faces.
+`max_rings=6`: 6 rings, step 5.43°; `max_rings=4`: 4 rings, axis deviation 2.44°; all pass the check.
 
 ## 5. Example (Blender worker, female A-pose, left arm)
 ```python

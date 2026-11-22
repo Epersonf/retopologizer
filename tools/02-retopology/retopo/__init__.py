@@ -19,7 +19,7 @@ Inside Blender (MCP) -- importlib.reload(retopo) also reloads every submodule, i
 """
 import importlib, sys
 
-for _m in ("ref", "curves", "contour", "topo_ops", "topo", "patches", "digits", "lock", "ring_tube", "profile", "limb", "qa", "part"):
+for _m in ("ref", "curves", "contour", "topo_ops", "topo", "patches", "digits", "lock", "ring_tube", "profile", "axes", "limb", "qa", "part"):
     if __name__ + "." + _m in sys.modules:
         importlib.reload(sys.modules[__name__ + "." + _m])
 
@@ -31,7 +31,8 @@ from .patches import solve_spokes, poly_patch
 from .digits import digit, claw_base, spine
 from .lock import lock, stations
 from .ring_tube import arc_spine, hull_section, ring_tube
-from .profile import sample_profile, extrema, auto_stations
+from .profile import sample_profile, extrema, auto_stations, dissolve
+from .axes import station_axes, check_rings, flipped_faces
 from .limb import limb_ring, limb_tube, wrap, bridge, ring_stations
 from .qa import topo_qa
 from .part import part_object, export_obj
@@ -43,4 +44,4 @@ def reload():
 
 __all__ = ["Ref", "Topo", "topo_qa", "ring", "arc", "line", "arcline", "resample", "sample", "basis", "centroid",
            "solve_spokes", "poly_patch", "cring", "chalf", "track", "centred", "align", "frame", "co",
-           "digit", "claw_base", "spine", "lock", "stations", "arc_spine", "hull_section", "ring_tube", "sample_profile", "extrema", "auto_stations", "limb_ring", "limb_tube", "wrap", "bridge", "ring_stations", "box_ring", "at_width", "part_object", "export_obj"]
+           "digit", "claw_base", "spine", "lock", "stations", "arc_spine", "hull_section", "ring_tube", "sample_profile", "extrema", "auto_stations", "dissolve", "station_axes", "check_rings", "flipped_faces", "limb_ring", "limb_tube", "wrap", "bridge", "ring_stations", "box_ring", "at_width", "part_object", "export_obj"]

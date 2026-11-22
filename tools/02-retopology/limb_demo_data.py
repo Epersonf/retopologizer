@@ -30,5 +30,5 @@ def near(v):                                                 # only the arm: clo
 keep = {i for i, v in enumerate(V) if near(v)}
 tri = [[p for p in f.vertices] for f in M.polygons if all(p in keep for p in f.vertices)]
 json.dump({"ref_v": V, "ref_f": tri, "rings": rings, "faces": [list(p.vertices) for p in t.data.polygons], "stations": st,
-           "elbow": ef, "profile": {"t": [float(x) for x in T.profile["t"]], "r": [float(x) for x in T.profile["r"]], "raw": [float(x) for x in T.profile["raw"]]}, "extrema": info["extrema"], "joints": {"shoulder": list(a), "elbow": list(e), "wrist": list(h)}}, open(OUT, "w"))
+           "elbow": ef, "check": T.check, "profile": {"t": [float(x) for x in T.profile["t"]], "r": [float(x) for x in T.profile["r"]], "raw": [float(x) for x in T.profile["raw"]]}, "extrema": info["extrema"], "joints": {"shoulder": list(a), "elbow": list(e), "wrist": list(h)}}, open(OUT, "w"))
 result = {"rings": len(rings), "faces": len(t.data.polygons), "ref_tris": len(tri), "out": OUT}

@@ -46,7 +46,7 @@ def caption(t):
     if t < TL[1][3]: return "3. Outro ring, em outra região do braço"
     if t < TL[1][4]: return "4. Bridge: quads ligam os dois anéis"
     if t < T_BUILD: return "Um anel em cada máximo, mínimo e junta"
-    return "Resultado: %d anéis, %d quads, todos colados no braço" % (len(RG), len(FC))
+    K = D["check"]; return "Resultado: %d anéis, %d quads | desvio máx. %.1f° | avanço mín. +%.1f mm | %d faces invertidas" % (len(RG), len(FC), K["axis_dev_deg"], K["min_rung_mm"], K["flipped_faces"])
 
 
 def inset(t, ax2):
@@ -81,7 +81,7 @@ def frame(t, ax, ax2):
         if i == 0 and k < 1 and t >= ts:                                    # radial guides during the shrink
             Sc, _ = proj(C[0], yaw); [ax.plot([Sc[0], p[0]], [Sc[1], p[1]], color=(1, 1, 1, 0.25), lw=0.6) for p in S]
     inset(t, ax2)
-    ax.text(0.5, 0.06, caption(t), transform=ax.transAxes, ha="center", color="white", fontsize=18)
+    ax.text(0.5, 0.06, caption(t), transform=ax.transAxes, ha="center", color="white", fontsize=16)
 
 
 def main():

@@ -67,7 +67,24 @@ def _refine(t, r, lo, hi, tol, keep):
         keep.add(lo + k); _refine(t, r, lo, lo + k, tol, keep); _refine(t, r, lo + k, hi, tol, keep)
 
 
-def auto_stations(P, joints=(), per_joint=3, tol=0.06, prominence=0.05, return_info=False, n=12, max_aspect=3.0):
+def dissolve(t, r, ts, target, protect=()):
+    """Remove stations one by one until `target` are left. The cost of removing a station is the largest deviation of the profile
+    from the straight line between its two neighbours, so a small bump goes before a big one (a level of detail that is exact and
+    monotone: the more you dissolve, the larger the guaranteed error). Both ends and `protect` (the joint centres) stay."""
+    ts = list(ts)
+    def cost(k):
+        i0, i1, i2 = (int(np.argmin(np.abs(t - ts[q]))) for q in (k - 1, k, k + 1))
+        line = r[i0] + (r[i2] - r[i0]) * (t[i0:i2 + 1] - t[i0]) / max(t[i2] - t[i0], 1e-9)
+        return float(np.max(np.abs(r[i0:i2 + 1] - line)))
+    while len(ts) > max(target, 2):
+        c = [(cost(k), k) for k in range(1, len(ts) - 1) if ts[k] not in protect]
+        if not c:
+            break
+        ts.pop(min(c)[1])
+    return ts
+
+
+def auto_stations(P, joints=(), per_joint=3, tol=0.06, prominence=0.05, return_info=False, n=12, max_aspect=3.0, max_rings=None):
     t, r = P["t"], smooth(P["r"], 2); m = len(t); keep = {0, m - 1}
     ex = extrema(t, P["r"], prominence); keep |= {i for i, _ in ex}
     h = 0.5 * float(np.mean(r)) / P["length"]                        # joint spacing: half a radius
@@ -83,4 +100,6 @@ def auto_stations(P, joints=(), per_joint=3, tol=0.06, prominence=0.05, return_i
     for lo, hi in zip(out, out[1:]):
         k = int(math.ceil((hi - lo) / gap_max)) - 1; fill += [lo + (hi - lo) * (q + 1) / (k + 1) for q in range(k)]
     out = sorted(out + fill)
+    if max_rings and len(out) > max_rings:                                    # polygon budget: dissolve the least significant stations
+        out = dissolve(t, r, out, max_rings, protect={float(t[i]) for j_ in joints for i in [int(round(j_ * (m - 1)))]})
     return (out, {"extrema": [(float(t[i]), kind, float(r[i])) for i, kind in ex], "tolerance": tolerance}) if return_info else out

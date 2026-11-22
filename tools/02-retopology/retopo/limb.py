@@ -12,7 +12,9 @@ from mathutils import Vector
 from .contour import align, centred, frame
 from .curves import arc
 from .topo import Topo
-from .profile import sample_profile, auto_stations
+import numpy as np
+from .profile import sample_profile, auto_stations, smooth
+from .axes import station_axes, check_rings, flipped_faces
 
 
 def circle(c, axis, up, n, r):
@@ -53,25 +55,46 @@ def ring_stations(length, radius, joints=(), per_joint=3, straight=1):
     return out + [ts[-1]]
 
 
-def limb_tube(ref, a, b, stations=6, n=12, name="Tube", up=(0, 0, 1), cap=False, mode="in", joints=(), tol=0.06):
-    """stations: a count, a list of fractions, or "auto" (extrema of the area profile + joints + error tolerance `tol`, see profile.py)."""
-    a, b = Vector(a), Vector(b); d = (b - a).normalized(); T = Topo(ref)
-    if stations == "auto":
-        T.profile = sample_profile(ref, a, b, up=up); stations = auto_stations(T.profile, joints, tol=tol, n=n)
-    ts = [i / (stations - 1) for i in range(stations)] if isinstance(stations, int) else list(stations)
-    loops, prev, pc = [], None, None
-    for t in ts:
-        c = a + (b - a) * t
-        ax = d if pc is None or (c - pc).length < 1e-6 else (c - pc).normalized()
-        c = centred(ref, c, ax, up); P = wrap(ref, c, ax, n, up, mode)[1]
+def _stations_data(P, ts):
+    """Centres (smoothed centreline of the profile, jitter removed) and radii at the station fractions."""
+    C = np.array([list(c) for c in P["c"]]); C = np.stack([smooth(C[:, q], 2) for q in range(3)], 1)
+    return [Vector([float(np.interp(t, P["t"], C[:, q])) for q in range(3)]) for t in ts], [float(np.interp(t, P["t"], P["r"])) for t in ts]
+
+
+def _rings(ref, c, r, d, theta, n, up, mode, k):
+    ns = station_axes(c, r, d, theta, k); cs, loops, prev = [], [], None
+    for ci, ni in zip(c, ns):
+        ci = centred(ref, ci, ni, up); P = wrap(ref, ci, ni, n, up, mode)[1]
         P = align(P, prev) if prev else P
-        prev, pc = P, c; loops.append((T.vs(P, snap=False), c))
-    for (r0, _), (r1, _) in zip(loops, loops[1:]):
-        bridge(T, r0, r1)
+        prev = P; cs.append(ci); loops.append(P)
+    return ns, cs, loops
+
+
+def limb_tube(ref, a, b, stations=6, n=12, name="Tube", up=(0, 0, 1), cap=False, mode="in", joints=(), tol=0.06,
+              max_rings=None, theta_max=10.0, k=1.5):
+    """stations: a count, a list of fractions, or "auto" (extrema of the area profile + joints + error tolerance `tol`, see profile.py;
+    `max_rings` = polygon budget: the least significant stations are dissolved first). Ring planes lean at most `theta_max` degrees
+    from the limb axis and never cross (axes.py); if the check fails theta_max is halved until it passes (0 = parallel rings).
+    The numbers of the check are in T.check; T.profile, T.centers are kept."""
+    a, b = Vector(a), Vector(b); d = (b - a).normalized(); T = Topo(ref)
+    T.profile = P = sample_profile(ref, a, b, up=up)
+    if stations == "auto":
+        stations = auto_stations(P, joints, tol=tol, n=n, max_rings=max_rings)
+    ts = [i / (stations - 1) for i in range(stations)] if isinstance(stations, int) else list(stations)
+    c0, r0 = _stations_data(P, ts); theta = theta_max
+    while True:
+        ns, cs, loops = _rings(ref, c0, r0, d, theta, n, up, mode, k)
+        chk = check_rings(loops, cs, ns, r0, d); chk["theta_max_used"] = theta
+        if chk["ok"] or theta < 0.5:
+            break
+        theta = theta / 2 if theta > 1 else 0.0
+    rings = [T.vs(P_, snap=False) for P_ in loops]
+    for r_a, r_b in zip(rings, rings[1:]):
+        bridge(T, r_a, r_b)
     if cap:
-        for r, c in (loops[0], loops[-1]):
-            T.fan(r, c) if len(r) % 2 == 0 else None
-    T.orient(); T.write(name); T.centers = [c for _, c in loops]               # ring centres (for drawing the shrink)
+        for ring, c in ((rings[0], cs[0]), (rings[-1], cs[-1])):
+            T.fan(ring, c) if len(ring) % 2 == 0 else None
+    T.orient(); T.write(name); T.centers = cs; T.check = chk; T.check["flipped_faces"] = flipped_faces(T, cs, ns)
     return T
 
 
