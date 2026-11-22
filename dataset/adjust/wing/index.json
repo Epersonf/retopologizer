@@ -1,0 +1,15 @@
+[
+ {
+  "id": "wing_adjust01",
+  "stage": "adjust",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "record",
+  "note": "artist thinned the wing 85 -> 46 mm mean and moved the handle after the agent's closed shell (wing_11 -> wing_12)",
+  "files": [
+   "edit_record.json.gz",
+   "entry.json"
+  ],
+  "bytes": 18080
+ }
+]

@@ -1,0 +1,79 @@
+{
+ "name": "wing_rec03",
+ "source": "rec_03",
+ "steps": 551,
+ "action_counts": {
+  "select": 301,
+  "add_vertex": 76,
+  "move_vertex": 252,
+  "add_face": 69,
+  "topology_change": 7
+ },
+ "duration_s": 872.16,
+ "recorder": {
+  "recorder_version": 3,
+  "blender": "5.3.0",
+  "blend": "<user>/Desktop/retopologizer/projects/wing/draft/wing_manual_00_start.blend",
+  "blend_md5_at_start": "a875d6b1af0b68eb43061a4ef8dcd831",
+  "started": "2026-11-20T20:18:00",
+  "snap": {
+   "use_snap": true,
+   "snap_elements": [
+    "FACE"
+   ],
+   "snap_elements_base": [
+    "FACE"
+   ],
+   "snap_elements_individual": [],
+   "snap_target": "CLOSEST",
+   "use_snap_backface_culling": false,
+   "use_snap_self": true,
+   "use_mesh_automerge": false,
+   "use_proportional_edit": false,
+   "transform_pivot_point": "MEDIAN_POINT"
+  },
+  "view": {
+   "persp": "ORTHO",
+   "matrix": [
+    [
+     1.0,
+     -0.0,
+     0.0,
+     0.21244052052497864
+    ],
+    [
+     0.0,
+     -1.3435885648505064e-07,
+     1.0000001192092896,
+     -0.18979547917842865
+    ],
+    [
+     -0.0,
+     -1.0000001192092896,
+     -1.3435885648505064e-07,
+     -0.010476095601916313
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "dist": 1.3467216491699219,
+   "w": 1574,
+   "h": 860
+  },
+  "reference": {
+   "name": "REFERENCE",
+   "tris": 1500000,
+   "dims": [
+    1.0898540019989014,
+    0.5955490469932556,
+    0.11309202015399933
+   ]
+  },
+  "conventions": "Z up, front = -Y, ortho front view, meters; world coords in actions.jsonl; screen = region pixels (origin bottom-left)"
+ },
+ "from_actions_jsonl": true
+}

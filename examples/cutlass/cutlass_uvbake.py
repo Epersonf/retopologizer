@@ -1,6 +1,5 @@
 # One UV atlas for the 4 parts and bake from the reference (albedo, normal, roughness, metallic, AO).
 import bpy, os
-import os
 ROOT = os.environ.get("RETOPOLOGIZER_ROOT", os.getcwd()).replace("\\", "/").rstrip("/") + "/"
 P = ROOT + "projects/cutlass/"
 bpy.ops.wm.open_mainfile(filepath=P + "draft/cutlass_grip.blend")

@@ -26,8 +26,11 @@ projects/<name>/README.md origin, measurements, counts, result, pending items
 4. **Measure** the reference (below).
 5. **Manual retopology, by parts** (one part per round, delivered and integrated before the next:
    `docs/02-retopology/retopo-by-parts.md`), choosing the method:
-   - simple shape (box, cylinder, plank): `mesh_lib.py` (`box`, `loft`, `rect_sweep`, `prism`) with the measurements;
-   - hard part with detail: `docs/02-retopology/retopo-snap-mirror.md`;
+   - simple shape (box, cylinder, plank, smooth blade, plain ring): `mesh_lib.py` (`box`, `loft`, `rect_sweep`, `prism`) with the measurements;
+   - hard part with detail (ornaments, volutas, filigree, medallion, anything a profile cannot describe): `docs/02-retopology/retopo-snap-mirror.md`.
+     Rebuilding such a part from a few measured profiles gives a stylized look-alike, not a retopology of the ref
+     (the sword attempt ended as a "mass" at the guard, p95 14.5 mm). If you think a profile is enough, write why in the project README;
+   - **"Measure and rebuild" never means "approximate"**: every ring/vertex is snapped to the ref surface, and the error is reported in mm;
    - character or organic shape: `docs/02-retopology/retopo-llm.md`.
 6. **Check the shape** at every iteration (below) and show the user an image.
 7. **QA** (`docs/03-qa/qa.md`) → **UV and bake** (`docs/04-uv-bake/uv-bake.md`) → **delivery** (`docs/05-delivery/delivery.md`) → **rig**, if it is a character

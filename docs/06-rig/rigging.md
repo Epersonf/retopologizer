@@ -41,6 +41,13 @@ Two paths, same output: armature with `mixamorig:*` bones, weights with at most 
 The joints sit at the **center of the cross-section** of the limb. In low-poly, the joint goes to the nearest **vertex ring**:
 the bone bends where the mesh has a loop (`tools/06-rig/autorig/rings.py`).
 
+## When the auto-rig does not fit: Mixamo
+- Anatomy that breaks the rules (backwards feet: the face and the feet look different ways): the auto-rig follows the
+  face. Rig in Mixamo instead: `tools/06-rig/export_for_mixamo.py` (mesh only) -> mixamo.com -> "With Skin" FBX.
+  Mixamo follows the markers and the feet. Case and checks: `docs/08-cases/curupira.md`.
+- Deformation check of any rigged `.blend`: `tools/06-rig/pose_check.py`.
+- Never scale (or apply scale on) the armature object to resize: the skin turns into spikes.
+
 ## Weights (skin)
 - Blender's bone heat (`ARMATURE_AUTO`), then, per vertex, the 4 largest weights ≥ 0.01, normalized.
 - Vertex the heat left empty (non-manifold mesh, loose shells): weight 1 on the nearest bone.
@@ -71,3 +78,9 @@ thinnest ring.
 ## Export
 `export_fbx`: selected armature + mesh, no leaf bones, `FBX_SCALE_UNITS`, `bake_space_transform`, no animation;
 `textures=True` copies the images. Godot and where to put the FBX in the game: `docs/05-delivery/delivery.md`.
+
+## Limb-like props: wing, tail, cape (`tools/06-rig/rig_chain.py`)
+Not a humanoid: a bone chain along one axis. `build_rig` (bones: head, tail, parent), `weight_chain` (numeric weights: smooth blend of width 2*half around each joint along an axis,
+an optional region bone that takes a share, a rigid pin for the handle), `flap` (sine rotation about a world axis, each bone delayed by a fraction of the cycle: a travelling wave).
+Use numeric weights, not bone heat, when the mesh is overlapping shells (feathers + frame). Check: 0 unweighted vertices, at most 3 groups per vertex, render the extreme frames.
+Wing numbers: Root 12 deg, W1 8, W2 8, W3 7, Fan_Low -5, 24-frame loop (`docs/08-cases/wing.md`). Frame 1 of the loop is not the rest pose.

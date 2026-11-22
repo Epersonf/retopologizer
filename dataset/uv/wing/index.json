@@ -1,0 +1,15 @@
+[
+ {
+  "id": "wing_uv01",
+  "stage": "uv",
+  "asset": "wing",
+  "actor": "user",
+  "kind": "record",
+  "note": "artist's UV: one atlas, 91 islands, no overlap (joined object, WING_FEATHER 760 + WING_GOLD 120 faces)",
+  "files": [
+   "entry.json",
+   "uv_layout.json.gz"
+  ],
+  "bytes": 23995
+ }
+]

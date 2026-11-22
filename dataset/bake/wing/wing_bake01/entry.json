@@ -1,0 +1,8 @@
+{
+ "id": "wing_bake01",
+ "stage": "bake",
+ "asset": "wing",
+ "actor": "agent",
+ "kind": "record",
+ "note": "agent recipe, reproduced end to end with examples/wing/run_all.py"
+}

@@ -17,6 +17,25 @@ guide; each guide points to the next.
    (port 9877) or in one-shot (`docs/00-rules-and-tools/blender-automation.md`).
 6. Files of at most 150 lines (split by responsibility). Commit only when the user asks, never with
    `Co-Authored-By` or AI attribution.
+7. **"Do it from scratch / without the manual" does not switch rules 1-6 off.** If the user says so, confirm once what
+   they want to skip (e.g. the Fab text, not the manual retopology) before building anything.
+
+## Definition of done
+A request such as "retopologize this model" or "do the retopology of X" means the **whole pipeline up to stage 7**
+(stage 8 only if it is a character), not stage 2. Do not say "done" before every line below is true and shown:
+1. **Faithful**: the `qa.py` battery (`docs/03-qa/qa.md`) passes, `fit` included (mean IoU ≥ 0.88, worst ≥ 0.80), and
+   `fit_report` / `compare_mesh` give mean, p95 and max in mm. Ornamented parts (volutas, filigree, medallions) must
+   follow the ref's shape: if `wire_overlay` shows a part reduced to a "mass", the mesh is not ready, however clean it is.
+2. **Quads only** and clean (`topo_qa`, `qa_mesh`): 0 open borders, non-manifold, duplicates.
+3. **UV** with no overlap, inside 0-1, islands ≥ 8 px apart at 2048 (`qa_uv`). Never bake over a failing UV.
+4. **Bake** (basecolor, normal, roughness, metallic, AO) with `bake_robust`; report the invalid-texel %.
+   **New model with no high-poly**: nothing to bake, so paint the texture in **TextureCraft** and **ask the user the style
+   first** (`docs/04-uv-bake/uv-bake.md`).
+5. **Delivery**: FBX/GLB + PNGs in `output/`, lean `.blend`, project `README.md` with counts and errors.
+6. **Shown**: one `wire_overlay` image, one render with the baked texture, and a list of what was NOT checked.
+
+Stopping earlier (e.g. at the OBJ of a part, `docs/02-retopology/retopo-by-parts.md`) is a checkpoint the user asked
+for, not the delivery: say "checkpoint, UV and bake pending", never "done".
 
 ## How an expert works here
 - **Measure before modeling**: cuts, profiles and raycasts give the positions in meters; nothing by eye.
@@ -64,6 +83,10 @@ guide; each guide points to the next.
 | put a hat/prop on a character's head in the game and adjust it in the editor | `docs/05-delivery/delivery.md` |
 | humanoid rig, weights, tail | `docs/06-rig/rigging.md` |
 | what to commit, regenerate `output/`, heavy GLB | `docs/05-delivery/git-reproduction.md` |
+| the artist retopologizes by hand and the agent continues (recording, dataset) | `docs/00-rules-and-tools/human-in-the-loop.md`, `session-recorder.md`, `dataset-spec.md` |
+| a curved band open on one side (headband, bracelet) | `docs/02-retopology/retopo-ring-tubes.md` |
+| leaves, feathers or cloth strips as cutout planes with one shared texture | `docs/04-uv-bake/leaf-cards.md` |
+| a whole asset end to end, reproducible (the wing: skin, shell, UV, bake, engraved handle, rig, export) | `docs/08-cases/wing.md`, `examples/wing/` |
 | how to call a tool | `tools/README.md` and the file's docstring |
 
 ## Tools

@@ -1,0 +1,15 @@
+{
+ "name": "wing_rec02",
+ "source": "rec_02",
+ "steps": 440,
+ "action_counts": {
+  "add_vertex": 47,
+  "select": 258,
+  "move_vertex": 163,
+  "add_face": 44,
+  "topology_change": 1
+ },
+ "duration_s": 298.37,
+ "recorder": {},
+ "from_actions_jsonl": false
+}

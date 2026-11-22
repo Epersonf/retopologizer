@@ -3,6 +3,18 @@
 Prerequisite: mesh approved in QA (`docs/03-qa/qa.md`). After the UV, do not run builders again (they recreate the mesh and the UV is lost):
 only move vertices.
 
+## New model with no high-poly (nothing to bake from)
+When the asset is designed here and there is no reference to bake, the texture is **painted in TextureCraft** (MCP
+`texturecraft`: `project_new`/`mesh_import` → `paint_stroke`, `resource_import`, `viewport_render` → `textures_export`),
+never a flat colour or a procedural noise left as the final. Order:
+1. **Ask the user the style before painting** (hand-painted cartoon, stylized PBR, palette, materials, wear, mood,
+   references). Do not guess; show 1-2 viewport renders and adjust before exporting.
+2. UV first (rules below, `qa_uv` passing), then import the low into TextureCraft with that UV.
+3. Export basecolor + normal (roughness/metallic/AO if the asset needs them) at the project size; the game keeps only
+   albedo and normal for metal (`docs/05-delivery/delivery.md`).
+4. Report which maps came from TextureCraft and which were not painted.
+   If the MCP cannot read the mesh (no file roots), use the CLI: `docs/04-uv-bake/texturecraft-cli.md`.
+
 ## UV
 - **One 0–1 atlas for all the asset's pieces**: one material, one texture per map, one draw call.
 - **Zero overlap**: the bake writes one texel per place; mirrored or stacked UVs don't pass `qa_uv`.
@@ -68,3 +80,10 @@ largest deviation.
   offset per region.
 - High distance at corners = box corner against the ref's rounded bevel: expected.
 - Afterwards: `qa_all`, rebake, check again.
+
+## Procedural detail on top of the bake (`texel_paint.py`)
+When part of the low-poly is a simple stand-in for sculpted detail (the wing's handle: cylinders and bars 2-5 cm from the original), the high-to-low bake gives wrong
+colours (rays hit neighbours). Paint those texels from functions of the 3D position instead: `texels(ob, material, size)` gives world position and tangent frame per texel,
+`height_to_normal(T, fn)` turns a height function into a tangent-space normal map, `write_map(...)` writes values with a margin. Gold = value noise + engraving (darker, rougher),
+enamel masks for inlays. No UV dependence = no seams between islands. Worked example: `docs/08-cases/wing.md`, `examples/wing/pattern_cabo.py`.
+Check with a PBR render (Cycles, sky light): workbench does not show metal.

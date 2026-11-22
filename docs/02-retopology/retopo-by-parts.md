@@ -4,6 +4,10 @@ A whole model in a single round is slow, errors get mixed together and the user 
 each round has a small goal, an image in minutes and a deliverable the user approves and integrates. This is how
 Cuca's hand, leg, foot and tail came out approved, each in a few passes.
 
+> The OBJ of a part (step 8) is a **checkpoint**, not the delivery. The model is done only with the README's
+> "Definition of done" (UV, bake, QA, delivery). If the user did not ask for rounds, still work by parts but go on
+> through UV and bake before reporting.
+
 **Suggest this to the user** when the request is "retopologize the model" or when a part is not coming out well:
 propose the split and the order, and start with the part they choose. It works for any method: characters with
 `tools/02-retopology/retopo` (`docs/02-retopology/retopo-llm.md`) and hard-surface pieces with snap + mirror (`docs/02-retopology/retopo-snap-mirror.md`).

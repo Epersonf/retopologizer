@@ -26,12 +26,18 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | ref_part.py | inside Blender | crops the part of the ref that belongs to a piece, in the piece's local space |
 | slice_plot.py | `python` (matplotlib) | ref cross-sections as PNG with a cm grid; `--low` overlays the retopo |
 | qa_uv.py | inside Blender | overlap, 0–1 bounds, gap between islands; `unwrap_atlas` (QA and UV/bake) |
+| session_recorder.py (+ `session_actions/state/meta.py`) | `blender x.blend --python ...` or `record_session.py <blend> <sessions_dir>` | records the artist's manual session (actions, mesh, view) so the agent can continue and a model can be trained: `docs/00-rules-and-tools/session-recorder.md` |
+| session_to_dataset.py | `python` | converts a recording into a dataset episode (trigger -> actions steps), scrubs paths |
+| dataset_pack.py | `python` | puts episodes and stage records into the versioned `dataset/<stage>/<asset>/<id>` (gzip, scrubbed, index.json): `docs/00-rules-and-tools/dataset-spec.md` |
+| rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
+| blend_diff.py | inside Blender (one-shot) | what the artist changed between two saves: counts, bbox, moved vertices, thickness, UV (`compare_blends`, `edit_record`) |
 
 ## 01-input-and-measurement/
 | file | where it runs | what for |
 |---|---|---|
 | inspect_glb.py | `blender --background --python inspect_glb.py -- model.glb` | tris/verts, bbox, materials and 3 silhouette profiles |
 | slice_profile.py | inside Blender | bbox per slice along an axis (numpy, no Edit Mode) |
+| depth_map.py | inside Blender | front/back depth maps of a relief reference on a grid (`depth_map`, `sampler`): sample the surface, choose the mirror plane, place parts |
 
 ## 02-retopology/ (build by hand and check the shape)
 | file | where it runs | what for |
@@ -41,13 +47,17 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` on the ref; `simplify` |
 | snap_mesh.py | via snap_retopo | `Mesh`: `v`, `f`, `strip`, `cap`, `prism`, `dimple`, `fill_flat_ring`, `mirror_x`, `to_object` |
 | snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: cross-section ring by raycast from the center |
+| tube_path.py | inside Blender, after snap_retopo | thin parts along a planar curve: `build_tube(S, name, points, rings, bury=)`, `tube_ring` (`docs/02-retopology/retopo-tube-path.md`) |
 | retopo/ | inside Blender (`import retopo`) | characters and organics: `Ref`, `Topo`, contours, patches, digits, `lock` (tube per hair lock, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
+| plane_cards.py | inside Blender | each leaf/feather/cloth strip of a ref becomes one plane: `components`, `leaf_frame` (PCA frame, base/tip, outward), `cell_offset` (curvature); `docs/04-uv-bake/leaf-cards.md` |
 | compare_mesh.py | inside Blender | ref↔new distance (mm and % of the diagonal) in both directions + critical points |
 | fit_report.py | inside Blender | new→ref and ref→new error (mm) + 5 cm cells where detail is missing |
 | overlay.py | `python` (PIL) | ref × new silhouettes: red ref only, cyan new only, gray both |
 | section_overlay.py | inside Blender | cross-section PNG: colored ref × white low |
 | wire_overlay.py | inside Blender | workbench render + low wireframe (visible edges only) |
 | label_png.py | `python` (PIL) | writes the vertex indices on the wire_overlay PNG |
+| symmetrize.py | inside Blender | straighten + cut on the axis + mirror one half with identical UVs (sword): `symmetrize`, `axis_knots` |
+| skin_close.py | inside Blender | one-sided retopo skin -> closed shell: `touch_parts` (skin reaches separate parts), `close_skin` (extrude border to a plane + mirror), `pull_parts_to_shell`; `docs/08-cases/wing.md` |
 
 ## 03-qa/
 | file | where it runs | what for |
@@ -73,12 +83,20 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | bake_robust.py | inside Blender | bake with per-texel validation, multi-pass re-bake, per-island inpaint |
 | bake_maps.py | inside Blender | simple bake of 5 high→low maps into one image (optional cage) |
 | bake_inpaint.py | pure numpy | inpaint and dilate restricted to the UV island |
+| texturecraft_cli.py | `python` | TextureCraft through the CLI: `import_maps`, `add_camera`, `paint` (`Stroke`), `export`, `render`; `docs/04-uv-bake/texturecraft-cli.md` |
+| ortho_atlas.py | inside Blender | one piece rendered once into an atlas tile by orthographic raycast: color (ramp), alpha, normal from depth (`raster`, `to_normal`, `paste`); `docs/04-uv-bake/leaf-cards.md` |
+| texel_paint.py | inside Blender | procedural detail written straight into atlas texels of one material: `texels` (position + tangents per texel), `height_to_normal`, `write_map` with margin |
 
 ## 05-delivery/
 | file | where it runs | what for |
 |---|---|---|
+| export_game_prop.py | inside Blender | a prop that rides a bone in the game (headband, skirt): FBX in skeleton space + albedo + normal, ready for a placement equal to the inverse bone rest |
 | wire_material.py | inside Blender | wires the PNGs into a Principled material and exports the FBX of the low-polys only |
+| export_package.py | inside Blender | `wire_pbr` (with optional white Tint), `render_previews` (Cycles GPU), `export_package` (FBX + GLB + maps, animation baked) |
 | finalize_export.py | inside Blender | collections, UV, material, budget, `.blend` and FBX |
+| listing_shots.py | inside Blender | tilts/centres a long prop and renders every listing image in one call |
+| fab_package.py | `python` | one zip per format (FBX, GLB) with the textures, for the Fab upload |
+| before_after.py | `python` (PIL) | before/after sheet from two renders of the same view |
 | render_thumbnail.py | inside Blender | 1920x1080 store thumbnail (Cycles, studio) |
 | make_lean_blend.py | inside Blender | lean `.blend` for git (no ref, packed images) |
 | export_from_blend.py | `blender -b <projeto>.blend -P export_from_blend.py -- outdir prefixo` | regenerates PNGs + FBX from the lean `.blend` |
@@ -88,6 +106,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | file | where it runs | what for |
 |---|---|---|
 | rig_mixamo.py | inside Blender | armature with Mixamo names from the joints, skin by bone heat (max. 4), FBX export |
+| rig_chain.py | inside Blender | rig for a limb-like prop (wing, tail, cape): bone chain, numeric positional weights, looping flap animation |
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).

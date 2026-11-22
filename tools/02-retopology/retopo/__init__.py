@@ -8,6 +8,7 @@ Every vertex is placed on purpose and snapped to the reference (no automatic rem
   patches.py  solve_spokes / poly_patch: 3- or 5-sided holes filled with quads around one pole
   digits.py   digit / claw_base: finger, toe or claw grown from a root ring to its tip (claw step, tip cap)
   lock.py     lock / stations: a closed tube along a given spine (hair clumps, tentacles, horns), rings on the cross-section
+  ring_tube.py ring_tube / arc_spine / hull_section: closed tube along a curved band open on one side (headband, bracelet)
   qa.py       topo_qa: counts, holes, non-manifold, doubles, winding, inward faces, poles, distance
   part.py     part_object / export_obj: the faces of one round as their own object, OBJ for the artist
 
@@ -17,7 +18,7 @@ Inside Blender (MCP) -- importlib.reload(retopo) also reloads every submodule, i
 """
 import importlib, sys
 
-for _m in ("ref", "curves", "contour", "topo_ops", "topo", "patches", "digits", "lock", "qa", "part"):
+for _m in ("ref", "curves", "contour", "topo_ops", "topo", "patches", "digits", "lock", "ring_tube", "qa", "part"):
     if __name__ + "." + _m in sys.modules:
         importlib.reload(sys.modules[__name__ + "." + _m])
 
@@ -28,6 +29,7 @@ from .topo import Topo
 from .patches import solve_spokes, poly_patch
 from .digits import digit, claw_base, spine
 from .lock import lock, stations
+from .ring_tube import arc_spine, hull_section, ring_tube
 from .qa import topo_qa
 from .part import part_object, export_obj
 
@@ -38,4 +40,4 @@ def reload():
 
 __all__ = ["Ref", "Topo", "topo_qa", "ring", "arc", "line", "arcline", "resample", "sample", "basis", "centroid",
            "solve_spokes", "poly_patch", "cring", "chalf", "track", "centred", "align", "frame", "co",
-           "digit", "claw_base", "spine", "lock", "stations", "box_ring", "at_width", "part_object", "export_obj"]
+           "digit", "claw_base", "spine", "lock", "stations", "arc_spine", "hull_section", "ring_tube", "box_ring", "at_width", "part_object", "export_obj"]

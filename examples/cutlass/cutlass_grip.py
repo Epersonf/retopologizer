@@ -5,7 +5,7 @@ ROOT = os.environ.get("RETOPOLOGIZER_ROOT", os.getcwd()).replace("\\", "/").rstr
 P = ROOT + "projects/cutlass/"
 bpy.ops.wm.open_mainfile(filepath=P + "draft/cutlass_guard.blend")
 exec(open(ROOT + "tools/02-retopology/snap_retopo.py").read())
-exec(open(P + "tube_lib.py").read())
+exec(open(ROOT + "tools/02-retopology/tube_path.py").read())
 if "Grip" in bpy.data.objects:
     bpy.data.objects.remove(bpy.data.objects["Grip"])
 PATH = [(0.13, 0.219), (0.16, 0.205), (0.21, 0.181), (0.26, 0.153), (0.30, 0.126), (0.33, 0.110), (0.36, 0.100), (0.377, 0.095)]

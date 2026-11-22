@@ -2,11 +2,12 @@
 
 Thin parts that run along a curve lying in one plane: a sword's crossguard, knuckle bow, grip and pommel, and the
 flat curved blade itself. Each part is a run of rings along a 2D path; every ring vertex is a ray hit on the
-reference. Result on the cutlass (1.5M-tri Hunyuan3D reference): 4 meshes, 396 quads / 784 tris, quads only, blade
+reference. Result on the cutlass (1.5M-tri Hunyuan3D reference): 4 meshes, 452 quads / 904 tris, quads only, blade
 mean new→ref error 1.9 mm, guard 2.3–4.6 mm, `topo_qa` clean (no holes, no non-manifold, no winding conflicts).
 
-Code: `examples/cutlass/` (`measure_raster.py`, `blade_centerline.py`, `cutlass_blade.py`, `tube_lib.py`,
-`cutlass_guard.py`, `cutlass_grip.py`, `cutlass_uvbake.py`, `cutlass_deliver.py`).
+Code: `tools/02-retopology/tube_path.py` (`build_tube`, `tube_ring`; needs `P` with `draft/raster.npz`) and `examples/cutlass/`
+(`measure_raster.py`, `blade_centerline.py`, `cutlass_blade.py`, `cutlass_guard.py`, `cutlass_grip.py`, `cutlass_uvbake.py`,
+`cutlass_deliver.py`).
 
 ## When to use
 - The part is long and thin, and its axis is a curve in one plane (the model's plane of symmetry).
@@ -27,7 +28,7 @@ Code: `examples/cutlass/` (`measure_raster.py`, `blade_centerline.py`, `cutlass_
 4. **Blade rings** (`cutlass_blade.py`): 6 vertices (edge, end of bevel, spine; front and back), from the thickness
    profile across the blade: the bevel ends where the thickness reaches 90% of the plateau. Rings denser near the
    tip (`1 - (1-u)^1.4`). Each vertex is `S.nearest` of its raster point.
-5. **Tube rings** (`tube_lib.tube_ring`): 8 rays from the path point around the tangent, first ray at 22.5° so flat
+5. **Tube rings** (`tube_path.tube_ring`): 8 rays from the path point around the tangent, first ray at 22.5° so flat
    faces sit front/back. **The reach depends on the direction**: along ±Y nothing crosses the tube, so up to 8 cm;
    in the XZ plane the reach is the silhouette half width (+4 mm), divided by the cosine to the in-plane normal
    with a floor (`FLOOR`). An unlimited in-plane ray exits through the blade or the neighbouring tube.
@@ -42,7 +43,7 @@ Code: `examples/cutlass/` (`measure_raster.py`, `blade_centerline.py`, `cutlass_
 ## Numbers (cutlass)
 | part | rings × sides | quads | mean / p95 new→ref |
 |---|---|---|---|
-| blade | 23 × 6 (incl. 1 buried) | 130 | 1.9 / 6.0 mm |
+| blade | 22 × 6 (21 + 1 buried) | 130 | 1.9 / 6.0 mm |
 | crossguard | 9 × 8 | 70 | 4.6 / 15.6 mm |
 | knuckle bow | 12 × 8 + 2 buried | 110 | 2.3 / 10.2 mm |
 | grip + pommel | 17 × 8 + 1 buried | 142 | 4.7 / 23 mm (pommel facets) |

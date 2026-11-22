@@ -6,7 +6,7 @@ P = ROOT + "projects/cutlass/"
 from mathutils import Vector
 bpy.ops.wm.open_mainfile(filepath=P + "draft/cutlass_blade.blend")
 exec(open(ROOT + "tools/02-retopology/snap_retopo.py").read())
-exec(open(P + "tube_lib.py").read())
+exec(open(ROOT + "tools/02-retopology/tube_path.py").read())
 for n in ("Crossguard", "KnuckleBow"):
     if n in bpy.data.objects:
         bpy.data.objects.remove(bpy.data.objects[n])

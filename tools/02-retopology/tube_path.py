@@ -1,5 +1,6 @@
 # N-sided tubes along a path in the XZ plane (guard, grip), rings snapped by rays onto REFERENCE.
-# Use: exec after snap_retopo.py, with P set; build_tube(S, name, points, rings, ...). Guide: docs/02-retopology/retopo-tube-path.md
+# Use: exec after snap_retopo.py, with P set (the project folder with draft/raster.npz); build_tube(S, name, points, rings, ...).
+# Guide: docs/02-retopology/retopo-tube-path.md
 import numpy as np
 from mathutils import Vector
 d = np.load(P + "draft/raster.npz"); T = d["yf"] - d["yb"]; xs, zs = d["xs"], d["zs"]

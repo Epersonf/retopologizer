@@ -17,6 +17,7 @@ R = Ref("HiPoly"); T = Topo(R)      # ... T.strip(A, B); T.orient(); T.write("No
 | topo.py | `Topo`: bmesh builder with snap (`v`, `vs`, `f`, `strip`, `fan`, `grid`, `old`, `write`) |
 | topo_ops.py | `Topo` operations: `relax` with snap, `orient` (winding outward), `chain`, `mirror_x` |
 | lock.py | `lock` (closed tube per hair lock/tentacle/horn along a given axis), `section` (ring by exit rays with a radius window), `stations`; guide and known problems: `docs/02-retopology/retopo-hair-tubes.md` |
+| ring_tube.py | `ring_tube(T, V)` (+ `arc_spine`, `hull_section`): closed tube along a curved band open on one side; each ring is the angular hull of a thin slab of the ref; `docs/02-retopology/retopo-ring-tubes.md` |
 | patches.py | `solve_spokes` + `poly_patch`: 3- or 5-sided hole closed with quads around a pole |
 | digits.py | `digit`, `claw_base`, `spine`: finger, claw or horn grown from a ring to the tip |
 | qa.py | `topo_qa`: counts, holes, non-manifold, duplicates, winding, inward faces, poles, distance |
