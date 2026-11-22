@@ -47,6 +47,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` on the ref; `simplify` |
 | snap_mesh.py | via snap_retopo | `Mesh`: `v`, `f`, `strip`, `cap`, `prism`, `dimple`, `fill_flat_ring`, `mirror_x`, `to_object` |
 | snap_section.py | via snap_retopo | `ring(S, c, axis, up, n)`: cross-section ring by raycast from the center |
+| tube_path.py | inside Blender, after snap_retopo | thin parts along a planar curve: `load_raster`, `build_tube(S, R, name, points, rings, bury=, floor=)`, `tube_ring` (`docs/02-retopology/retopo-tube-path.md`) |
 | retopo/ | inside Blender (`import retopo`) | characters and organics: `Ref`, `Topo`, contours, patches, digits, `lock` (tube per hair lock, `section`), `topo_qa`, `part_object`/`export_obj` (`retopo/README.md`) |
 | plane_cards.py | inside Blender | each leaf/feather/cloth strip of a ref becomes one plane: `components`, `leaf_frame` (PCA frame, base/tip, outward), `cell_offset` (curvature); `docs/04-uv-bake/leaf-cards.md` |
 | compare_mesh.py | inside Blender | ref↔new distance (mm and % of the diagonal) in both directions + critical points |

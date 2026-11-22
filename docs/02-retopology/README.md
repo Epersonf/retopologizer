@@ -13,6 +13,7 @@ quads only; the automatic tool measures and checks, it does not generate the mes
 | character or organic (body, hand, claws, tail, head) | `tools/02-retopology/retopo` package (rings, patches, fingers) | `retopo-llm.md` | `projects/stylized-cuca` |
 | cloth with an opening and a crooked axis (hat, hood, sleeve, drooping tip) | rings by Laplace field | `retopo-shell-field.md` | `projects/hat-hair` |
 | many fused strands/tubes (hair, tentacles) | shell for the base + one separate mesh per tube | `retopo-hair-tubes.md` | `projects/hat-hair` |
+| thin part along a curve in one plane (crossguard, knuckle bow, grip, pommel, flat curved blade) | rings along a 2D path, rays with per-direction reach, buried ends | `retopo-tube-path.md` | `examples/cutlass` |
 | crooked or asymmetric statue | "as is", parts in separate shells, no symmetrizing | `retopo-llm.md` | `projects/stylized-cow` |
 
 Torn between two: does it fit in a **shell with an opening**? Laplace. Does it have **hard corners**? Snap + mirror. Does it **deform** or have

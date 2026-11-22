@@ -7,6 +7,7 @@ Real scripts used to produce assets with this repository, cleaned up to serve as
 | Example | Where it was applied | How to run | Doc |
 |---|---|---|---|
 | `chest-lid/build_lid_v5.py` | chest lid: half built from rings with vertices snapped to the reference, then mirrored | `exec` inside Blender after `tools/02-retopology/snap_retopo.py`; needs the `REF_LID` object | `docs/02-retopology/retopo-snap-mirror.md` |
+| `cutlass/*.py` | cartoon cutlass (904 tris, quads only): raster of the reference, curved blade rings, guard and grip as tubes, UV + bake, FBX | in order: `measure_raster`, `blade_centerline` (plain Python), `cutlass_blade`, `cutlass_guard`, `cutlass_grip`, `cutlass_uvbake`, `cutlass_deliver`; Blender ones with `blender -b --factory-startup --python tools/general/blender_once.py -- examples/cutlass/<script>.py`; needs `projects/cutlass/input/cutlass_ref.glb` | `docs/02-retopology/retopo-tube-path.md` |
 | `cuca-rig/cuca_rig.py` | Mixamo-style rig of the Cuca (fingers, tail) and automatic skin on the LowPoly | `python tools/general/blender_rpc.py --port 9877 examples/cuca-rig/cuca_rig.py` | `docs/06-rig/rigging.md` |
 | `cuca-rig/cuca_rig_export.py` | export the rigged Cuca (FBX + albedo JPG) to the game client | same, with `GAME_ASSETS=<game characters folder>` | `docs/05-delivery/delivery.md` |
 | `autorig-bench/pose_test.py` | deformation test of the auto-rigged models: hard pose next to the rest pose | `blender -b --factory-startup --python tools/general/blender_once.py -- examples/autorig-bench/pose_test.py` | `docs/06-rig/rigging.md` |
