@@ -73,3 +73,6 @@ spread differently in the rear paw, then a Laplacian relaxation that trades one 
 toes, each one is fitted by similarity ICP on its own ref toe: 0.6-1 mm mean distance), then conform/untangle with 4 mm, then `face_polish.py`
 (hill-climbing per vertex) for what is left. Result: 0 intersecting/twisted/stamped/inverted faces, claw tip 114.4 mm (ref 113.0). Parameters in `l2_run_hind.py`.
 Still open: `qa_shape` slivers 2.8% around the claw tips; the artist judges the look.
+
+## Rear toes, round 3: the artist rebuilt them on camera (2026-11-22)
+The artist deleted the toes of the rear leg and rebuilt them in 490 s with the recorder on. Full measurement: `toes-artist-analysis.md`; reasons and rules: `toes-artist-why.md`. Clean version of the artist's mesh (merge by distance + 5 vertices nudged <= 5.7 mm, 0 defects): `draft/artist_hind_clean.json`.
