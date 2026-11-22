@@ -26,3 +26,5 @@ R = Ref("HiPoly"); T = Topo(R)      # ... T.strip(A, B); T.orient(); T.write("No
 | qa.py | `topo_qa`: counts, holes, non-manifold, duplicates, winding, inward faces, poles, distance |
 | part.py | `part_object` (only the faces of the round, as its own object) and `export_obj` (OBJ of the part for the artist); see `docs/02-retopology/retopo-by-parts.md` |
 | \_\_init\_\_.py | exports everything; `importlib.reload(retopo)` reloads the submodules in the right order |
+
+See also `../hole_fill.py` (`boundary_loops`, `fill_loop`, `loop_bridge`): quad-only hole fill and loop bridge on a bmesh, snapped to the ref.
