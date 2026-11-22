@@ -22,7 +22,7 @@ guide; each guide points to the next.
 
 ## Definition of done
 A request such as "retopologize this model" or "do the retopology of X" means the **whole pipeline up to stage 7**
-(stage 8 only if it is a character), not stage 2. Do not say "done" before every line below is true and shown:
+(stage 8 only if it is a character; stages 9 and **10, the post mortem,** whenever the model is delivered to a game or a store), not stage 2. Do not say "done" before every line below is true and shown:
 1. **Faithful**: the `qa.py` battery (`docs/03-qa/qa.md`) passes, `fit` included (mean IoU ≥ 0.88, worst ≥ 0.80), and
    `fit_report` / `compare_mesh` give mean, p95 and max in mm. Ornamented parts (volutas, filigree, medallions) must
    follow the ref's shape: if `wire_overlay` shows a part reduced to a "mass", the mesh is not ready, however clean it is.
@@ -33,6 +33,9 @@ A request such as "retopologize this model" or "do the retopology of X" means th
    first** (`docs/04-uv-bake/uv-bake.md`).
 5. **Delivery**: FBX/GLB + PNGs in `output/`, lean `.blend`, project `README.md` with counts and errors.
 6. **Shown**: one `wire_overlay` image, one render with the baked texture, and a list of what was NOT checked.
+7. **Post mortem done** after the last delivery (game wired, listing submitted, files handed over): `projects/<name>/POST_MORTEM.md`, tools
+   created, old docs corrected, case written (`docs/05-delivery/post-mortem.md`, `python tools/general/post_mortem.py <name>`).
+   **Mandatory**: an asset without its post mortem is not done.
 
 Stopping earlier (e.g. at the OBJ of a part, `docs/02-retopology/retopo-by-parts.md`) is a checkpoint the user asked
 for, not the delivery: say "checkpoint, UV and bake pending", never "done".
@@ -63,7 +66,8 @@ for, not the delivery: say "checkpoint, UV and bake pending", never "done".
 | 6 | bake | basecolor, normal, roughness, metallic, AO | `bake_robust` | uv-bake |
 | 7 | delivery | FBX + PNGs, lean `.blend` | `wire_material`, `make_lean_blend`, `export_from_blend` | delivery, git-reproduction |
 | 8 | rig | Mixamo armature + weights | `autorig/`, `rig_mixamo` | rigging |
-| 9 | game and store | Godot, thumbnail, description | `render_thumbnail` | delivery |
+| 9 | game and store | Godot, thumbnail, description, listing form | `render_thumbnail`, `export_clips`, `listing_renders`, `fab_form` | delivery, fab-upload |
+| 10 | **post mortem (mandatory)** | `POST_MORTEM.md`, new tools, corrected docs, case | `post_mortem.py` | post-mortem |
 
 ## I need... → read
 | I need | read |
@@ -80,6 +84,8 @@ for, not the delivery: say "checkpoint, UV and bake pending", never "done".
 | know whether the mesh is ready | `docs/03-qa/qa.md` |
 | UV, PBR maps, bake, black spots in the bake | `docs/04-uv-bake/uv-bake.md` |
 | export FBX, take it to Godot, thumbnail and store text | `docs/05-delivery/delivery.md` |
+| the delivery is finished (game, store, handoff): what to do before saying "done" | `docs/05-delivery/post-mortem.md` |
+| an animated creature (quadruped, clips, death, mouth) | `docs/06-rig/rigging.md`, `docs/08-cases/alligator.md` |
 | put a hat/prop on a character's head in the game and adjust it in the editor | `docs/05-delivery/delivery.md` |
 | humanoid rig, weights, tail | `docs/06-rig/rigging.md` |
 | what to commit, regenerate `output/`, heavy GLB | `docs/05-delivery/git-reproduction.md` |

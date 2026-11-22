@@ -58,3 +58,21 @@ was left default or refused (tags, AI answer).
 - Fab asks for one format at a time and says a zip must contain that format's files: use one zip per format (a mixed zip was not tried); upload only FBX.
 - The scepter's Fab upload failed once (cause not recorded) and was left to the user; for the sword `upload_file` on the `input[type=file]` worked every time.
 - Do not retry a failing selector in a loop: take a screenshot and read the page text.
+
+## Animated model (alligator, 2026-11) and what changed
+- The user may already have a draft open at `/portal/listings/<id>/edit` (check `page_info()` before creating one).
+- **Ask the user first**: price (Personal/Professional, USD), the generative-AI answer, and the format list. Do not stop in the middle of the form.
+- **Category** is a tree: click the chevron of "Characters & Creatures", then "Animals", then "Other" (there is no reptile entry).
+- **Tags**: `fab_form.fab_tags([...])`; accepted 10 of 12 (`hand painted` and `game ready` are not in the catalogue, same as before).
+- **Gallery**: Upload -> Images, `upload_file("input[type=file][multiple]", jpg)` for each image, Confirm; the thumbnail input is the single (non-multiple) one.
+- **Technical details of an animated FBX**: Fab detects triangles, quads, vertices, animated, rigged and the number of animation tracks (it read 6 clips).
+  Still to fill: assets 1, LODs No, collision No, bounding box X/Y/Z in cm **Y-up** (Blender X/Z/Y), custom shaders No, UV channels 1, normal orientation OpenGL,
+  clean UV and overlapping UV (about 20 px overlap = clean No, overlapping Yes), UDIM/scanned/vertex colours No, solid/scale/IK No, baked animation Yes, characters 1.
+  Print `fab_state()` and look at the screenshot: indexes shift.
+- **GLTF/GLB/USDZ**: open the second format, choose FBX as the source, **Confirm selection** (it worked this time), wait for the 3D preview (~15 s) so "Convert files"
+  enables, then convert (~25 s: zip, glb, usdz appear).
+- **Accident**: a click by remembered coordinates after `scrollIntoView` hit the sticky "Submit for review" and the listing went to "Pending publication" before the
+  AI question was read back. `fab_form.fab_click` refuses submit and clicks elements, not coordinates; the only way to submit is `fab_submit()`.
+  Cancel submission is possible while pending; read the form back (`fab_state`, screenshots) before the user's go-ahead.
+- Run harness code through `tools/general/bh.sh` (Git Bash paths and PowerShell BOM both broke the plain command). The first call after Chrome restarts asks the
+  user to Allow remote debugging.

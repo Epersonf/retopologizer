@@ -26,8 +26,10 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | leaf-cards.md | many copies of one piece (leaves, feathers, cloth) as cutout planes: render once into an atlas, one plane per piece |
 | 05-delivery (7 and 9) | delivery.md | FBX, Godot (Braziletto game), prop attached to the head + editor, thumbnail and Fab store |
 | | fab-upload.md | publishing the listing on Fab with browser-harness: form fields, files, technical details, submit |
+| | post-mortem.md | **mandatory last stage**: after every delivery, rewrite what was learned, create tools, correct old docs |
 | | git-reproduction.md | what to commit, regenerating `output/`, heavy GLBs |
 | 06-rig (8) | rigging.md | humanoid auto-rig, hand rig, weights, tail |
 | 07-fibercards (alternative to mesh hair) | fibercards.md | fiber card sheet (color + normal) generated and rendered in Blender |
 | 08-cases (whole pipeline, one asset) | wing.md | the wing end to end: artist's retopo, shell, UV, bake, engraved handle, rig, export; how to reproduce it |
 | | sword.md | the sword end to end: artist's shell, closing, UV, bake, symmetry, TextureCraft, game item, Fab listing |
+| | alligator.md | quadruped by parts, mirrored half, why the toes failed, teeth, texture retouch, rig and clips, game, Fab, post mortem |

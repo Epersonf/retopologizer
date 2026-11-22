@@ -27,6 +27,9 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | slice_plot.py | `python` (matplotlib) | ref cross-sections as PNG with a cm grid; `--low` overlays the retopo |
 | qa_uv.py | inside Blender | overlap, 0–1 bounds, gap between islands; `unwrap_atlas` (QA and UV/bake) |
 | session_recorder.py (+ `session_actions/state/meta.py`) | `blender x.blend --python ...` or `record_session.py <blend> <sessions_dir>` | records the artist's manual session (actions, mesh, view) so the agent can continue and a model can be trained: `docs/00-rules-and-tools/session-recorder.md` |
+| bh.sh | `tools/general/bh.sh <<'PY' ... PY` | runs code in the user's Chrome through browser-harness (fixes the Git Bash path and PowerShell BOM errors) |
+| post_mortem.py | `python tools/general/post_mortem.py <project> --delivery godot,fab` | scaffolds `projects/<p>/POST_MORTEM.md` and lists what the pipeline still owes (mandatory after every delivery: `docs/05-delivery/post-mortem.md`) |
+| session_actions.py, session_meta.py, session_state.py | imported by `session_recorder.py` | diff of mesh states into actions, metadata/checkpoints, Blender state readers (no direct use) |
 | session_to_dataset.py | `python` | converts a recording into a dataset episode (trigger -> actions steps), scrubs paths |
 | dataset_pack.py | `python` | puts episodes and stage records into the versioned `dataset/<stage>/<asset>/<id>` (gzip, scrubbed, index.json): `docs/00-rules-and-tools/dataset-spec.md` |
 | rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
@@ -64,6 +67,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 |---|---|---|
 | qa_all.py | inside Blender | single gate: backfaces + UV (2048 and 4096) + z-fighting; raises an error on failure |
 | qa_faces.py | inside Blender | raycast in 400 directions: no exposed backface; `fix_flipped` |
+| qa_orient.py | inside Blender | face-orientation views like Blender's overlay (blue front, red back): a model with no red from any view is clean |
 | qa_shape.py | inside Blender | ugly shapes: spikes, thin-tipped tubes, thin tubes, narrow faces; `heal_spikes` |
 | qa.py | command line (worker 9877) | **the battery**: runs all tests and prints one line per test + `fix:` + where (`--only`, `--skip`, `--fast`, `--json`) |
 | qa_suite.py | inside Blender | `qa_suite(nome, ref=..)`: the battery as a function (mesh, budget, shape, floating, attach, local, strict, fit) |
@@ -99,6 +103,9 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | before_after.py | `python` (PIL) | before/after sheet from two renders of the same view |
 | render_thumbnail.py | inside Blender | 1920x1080 store thumbnail (Cycles, studio) |
 | make_lean_blend.py | inside Blender | lean `.blend` for git (no ref, packed images) |
+| export_clips.py | inside Blender | `export_clips`: animated creature to GLB (game clips) + FBX with every action baked (store), swapping 1024/2048 textures; refuses actions without fake user |
+| listing_renders.py | inside Blender | `pose_shots`: store images in different clips/poses (bite, walk, death) with the thumbnail studio |
+| fab_form.py | browser-harness | Fab Publisher Portal helpers (inputs dump, numbers, radios, tags, prices, safe click by text, guarded `fab_submit`): `docs/05-delivery/fab-upload.md` |
 | export_from_blend.py | `blender -b <projeto>.blend -P export_from_blend.py -- outdir prefixo` | regenerates PNGs + FBX from the lean `.blend` |
 | verify_inputs.py | `python` | checks `inputs.json` (`inputs.json` was removed from the repo, so it is **obsolete**) |
 
@@ -106,6 +113,9 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | file | where it runs | what for |
 |---|---|---|
 | rig_mixamo.py | inside Blender | armature with Mixamo names from the joints, skin by bone heat (max. 4), FBX export |
+| pose_actions.py | inside Blender | clips by script: `PoseAnim` (keyframes with fake user), `local_axis`/`rot_about`/`lift_up` (rotate in the right bone-local axis), `check_pose` (z range and bone positions at a frame); quadruped case in `docs/06-rig/rigging.md` |
+| export_for_mixamo.py | `blender -b --factory-startup --python tools/06-rig/export_for_mixamo.py -- model.blend Mesh albedo.png out.fbx` | one mesh, Y-up FBX with albedo embedded, for the Mixamo auto-rigger |
+| pose_check.py | `blender -b ... --python tools/06-rig/pose_check.py -- rigged.blend outdir` | deformation check: forced poses, front and perspective renders |
 | rig_chain.py | inside Blender | rig for a limb-like prop (wing, tail, cape): bone chain, numeric positional weights, looping flap animation |
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
 

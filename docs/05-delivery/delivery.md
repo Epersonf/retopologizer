@@ -65,3 +65,17 @@ Generate at the end, with the final material wired, in `projects/<nome>/listing/
 `wire_pbr` wires basecolor/roughness/metallic/normal into the materials (optional white `Tint` multiplier on chosen materials), `render_previews` renders Cycles views,
 `export_package` writes FBX + GLB (animation baked, no leaf bones) and copies the maps next to them. FBX/glTF cannot carry the Tint: export with plain image materials and recolor with
 `albedo_color` in Godot (it multiplies the albedo); keep the Tint version in the saved `.blend`. Example: `examples/wing/s4_rig_export.py`.
+
+## Animated creature in the game (Braziletto `Creature`)
+1. `export_clips(...)` -> `frontend/godot-client/creatures/<name>.glb` (1024 PNG textures; Godot 4.7 does not read Blender 5's JPEG).
+2. `creatures/creatures.json`: `"<shape>": {"model": "<name>.glb", "pace": 1.2, "clips": {"idle": "Idle", "walk": "Walk", "attack": "Attack", "death": "Death"}}`
+   (without `death` the box tips over; with it the clip plays through the alive/dead transition).
+3. Scenes `world/entities/creature_<shape>.tscn` (copy of an existing creature) and `monster_<shape>.tscn`; register in `EntityScenes.MONSTERS`.
+4. Species: `tools/data/species.json` (`shape`, `tint`; white tint keeps the painted colours) and the generated `data/species/<id>.tres` (edit by hand when
+   `build_data.gd` would also regenerate items/skills). Import: `godot --headless --path frontend/godot-client --import`.
+5. Test (`test/<shape>_test.gd`: shape supported, clips, bones, textured mesh) and **see it**: `godot --path frontend/godot-client res://tools/model_viewer.tscn -- --creature=<ids>`
+   (keys 2 walk, 4 attack, 6 die; `--dead --shot=<dir> --yaws=40` takes a capture). Extend that viewer, do not write another.
+6. `make godot-test` needs `godot` on PATH (copy the Steam exe to a `godot.exe` in a PATH dir for the run).
+Store listing of an animated model: `listing_renders.pose_shots` (bite close-up, walk, death) and FBX with all actions (`fab-upload.md`).
+
+After this, **do the post mortem**: `docs/05-delivery/post-mortem.md`.

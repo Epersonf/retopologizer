@@ -84,3 +84,21 @@ Not a humanoid: a bone chain along one axis. `build_rig` (bones: head, tail, par
 an optional region bone that takes a share, a rigid pin for the handle), `flap` (sine rotation about a world axis, each bone delayed by a fraction of the cycle: a travelling wave).
 Use numeric weights, not bone heat, when the mesh is overlapping shells (feathers + frame). Check: 0 unweighted vertices, at most 3 groups per vertex, render the extreme frames.
 Wing numbers: Root 12 deg, W1 8, W2 8, W3 7, Fan_Low -5, 24-frame loop (`docs/08-cases/wing.md`). Frame 1 of the loop is not the rest pose.
+
+## Quadruped / creature with clips (alligator case)
+Not Mixamo: a hand-made skeleton and numeric weights (`projects/alligator/r1_rig.py` is the alligator-specific example: islands, a chain of
+bones along the spine and tail, 4 legs of 4 bones). Bones: Root, Hips, Spine, Neck, Head, Jaw (child of Head), Tail1-6, per leg UpLeg/LowLeg/Foot/Toe.
+- **Rest pose = a pose the clips can return to.** The AI mesh had the mouth open at rest, so every clip opened it. Every clip starts from a base pose
+  (`PoseAnim(rig, base={"Jaw": (-42, 0, 0)})` closes the jaw) and keys all bones at each key frame.
+- **Clips by script** (`tools/06-rig/pose_actions.py`): `PoseAnim.new(name)` (fake user, or the clip is lost on save), `pose(frame, rot, loc)`.
+  Alligator clips (30 fps): Idle 48 f loop (breath + tail sway), Walk 24 f loop (diagonal gait FL+RR / FR+RL, spine and tail counter-sway),
+  Bite 20 f (jaw -42 -> +8 -> -44), TailAttack 30 f, Attack = Bite + TailAttack in one clip (the game's creature system plays one attack clip),
+  Death 66 f (below).
+- **Bone-local axes are not the armature's axes.** Pose-bone rotation/location use the bone's own axes (its rest roll). Find the one you want with
+  `local_axis(rig, bone, "Y")`, `rot_about(...)`, `lift_up(...)`; then verify with `check_pose(rig, mesh, frame, bones)` (z range + bone positions).
+  Never test a flip only by the mesh z range: a yaw and a roll can look the same.
+- **Death (belly up)**: Root rotates 180 deg about the animal's *length* (armature Y) and lifts by the body height so it lies on the floor, over ~16
+  frames (a quarter turn at frame 8), then the 4 legs pedal in the air (sine, decaying), the tail twitches and the jaw bats; relax at the end. The user's spec:
+  "belly to the sky, 180 deg relative to the forward axis, not the up/down axis, and thrash the legs".
+- Export: `tools/05-delivery/export_clips.py` (GLB for Godot, FBX with all actions for the store). Show **every clip** to the user in the real viewer
+  (Braziletto `tools/model_viewer.gd --creature=146,177 [--dead]`), not only a Blender render.

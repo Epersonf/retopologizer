@@ -30,3 +30,20 @@ When TextureCraft is required (new model without high-poly, or the user asks: "t
 - In `tool.material` set `height` and `normal` `enabled: false`, or each stroke flattens the normal map.
 - Metal stays out of the maps for the Braziletto game (metal with no reflections renders black in Godot).
 - Mention in the report which maps came from TextureCraft and which were not painted.
+
+## Retouching a defect: look at the normal map FIRST (alligator, leg-hole patch)
+- A texture defect that survives a base-color fix (radial fan, swirl of rainbow colors, dark disc, "dish" look) is almost always the
+  **normal map** (and the baked AO mesh map), not the albedo and not the mesh. Where the bake hit a hole or the interior of the
+  reference, the normal shows a rainbow fan. Crop `*_normal.png` and `*_ao.png` at the UV spot before touching the albedo.
+- The TextureCraft viewport and export use the **mesh-map normal** as the base surface: masking the normal image layer does nothing.
+  Fix the source maps (flat `128,128,255` normal, white AO in the patch) and `textureSet.meshMap.set` them, or clone good belly detail over it.
+- A flat color fill over a stripe/scale pattern still reads as a patch. Clone neighbouring detail (`tool.clone`) instead.
+- Check the base color, normal, AO and roughness crops of the same UV box side by side before choosing the fix.
+
+## Clone tool through the CLI (what worked for the alligator belly patch)
+- `tool.select clone`, `tool.cloneSource {x,y,viewport}` then `tool.stroke`: the source follows the stroke with a **fixed screen offset**
+  (source point = first stroke point). Re-set `cloneSource` before each stroke.
+- **Brush size is in "percent": ~16 px per unit in a 1280x800 view.** Size 20 painted a 330 px blob and wrecked the area; use 1.5-2.5 for a 25-40 px brush.
+- Shift a clean neighbour column sideways in rows (every ~18 px), then clone the painted result again for the next column.
+  Keep `normal` enabled in `tool.material` so the clone brings the belly seams too. UV-space clone (`tool.strokeUv`) did nothing: stay in 3D.
+- Seam drips from the source column: clone over them with a second pass from the clean interior.

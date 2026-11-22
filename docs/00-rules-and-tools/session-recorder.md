@@ -45,3 +45,10 @@ Recordings of the old format (no `actions.jsonl`) are rebuilt from the snapshots
 - Only the active object is recorded (if the artist switches objects, the recorder follows); the reference never enters the logs.
 - Edits made while the recorder was NOT running (UV, later shape adjustments) are recovered afterwards by comparing saves: `tools/general/blend_diff.py`
   (`edit_record`) -> `dataset_pack.py record --stage uv|adjust`.
+
+## What the alligator recordings taught (read before using one)
+- The recording shows **what the artist reuses**: the rear leg (2-toe reference) was replaced by a copy of the front leg moved back. Reuse beats fitting a bad part.
+- Vertex moves right after a scripted pass (about 620 on the head) mark what scripts cannot do (eyes, brows, toes): schedule those for the user, not for more scripts.
+- Deleted parts (crests near the legs) show the budget the artist wants: fewer faces where nothing deforms or reads.
+- The user records heavy objects (1.5M triangles): keep the recorder light (actions every change, full mesh on keyframes) and warn before opening such a blend.
+- Corrections said aloud are data too: write them in the case file the same day (`post-mortem.md`, section 4).
