@@ -11,7 +11,7 @@ Raw recordings (`projects/*/session/rec_NN`) are heavy (2.2 GB) and `projects/` 
 Options: `--no-shots` leaves the PNGs out; `--license <id>` sets the card's licence (default `cc-by-4.0`); without `--public` a NEW repo is private.
 
 ## What is uploaded
-`<project>/rec_NN/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png, ref.npz, ref.json}`; schema in the repo's README (dataset card, written by `hf_push.py`).
+`projects/<project>/rec_NN/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png, ref.npz, ref.json}`; schema in the repo's README (dataset card, written by `hf_push.py`).
 Text files are scrubbed first (Windows user name and absolute paths -> `<home>`). Recordings without actions are skipped.
 
 ## Limits (read before training)
