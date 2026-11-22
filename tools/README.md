@@ -118,6 +118,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | pose_check.py | `blender -b ... --python tools/06-rig/pose_check.py -- rigged.blend outdir` | deformation check: forced poses, front and perspective renders |
 | rig_chain.py | inside Blender | rig for a limb-like prop (wing, tail, cape): bone chain, numeric positional weights, looping flap animation |
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
+| rig_studio/ | `python tools/06-rig/rig_studio/server.py` then open http://127.0.0.1:8765 | Mixamo-style auto-rigger page: upload, orient (green arrow = front), markers (chin, wrists, elbows, knees, groin) or fully automatic, LOD, symmetry, skeleton + test pose preview, FBX download |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).
 

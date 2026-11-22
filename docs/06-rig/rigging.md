@@ -18,6 +18,8 @@ Two paths, same output: armature with `mixamorig:*` bones, weights with at most 
 - Input .fbx, .obj, .glb, .gltf or .blend; uses all meshes (body and clothes); if the model faces +Y, it is rotated.
 - Prints `AUTORIG_QA: {...}`: bones, digits found, tail, unweighted vertices, empty deforming bones.
 - Inside Blender: `rig, qa = autorig([corpo, roupa], "Nome_Rig")` (`tools/06-rig/autorig/rig.py`).
+- CLI extras: `--markers m.json` (hand-placed joints `Chin, Left/RightWrist, Left/RightElbow, Left/RightKnee, Groin`, world metres, Z up, faces -Y), `--front -Y|+Y|auto`, `--no-fingers`, `--glb out.glb`.
+- **Rig studio** (`tools/06-rig/rig_studio`): the Mixamo auto-rigger flow in a local page (Upload, Orient with a green FRONT arrow, Markers or Automatic, Preview with skeleton and test pose). Use it to test the auto-rig on a model and to place joints by hand when detection fails (the Saci case: front not identified, no way to place joints). Needs the tab in the foreground when driven by browser-harness (`Page.bringToFront`), otherwise `Input.dispatchMouseEvent` times out.
 - Accuracy against Mixamo skeletons: body joints within 0.6–0.9% of height; fingers ~0.9%. 1–2 s per character.
 - Limits: arms stuck to the body ("I-pose") do not work; mitten fingers become 1 digit; the tail stays on the
   symmetry plane; the rig comes out symmetric (`--asym` keeps each side as found). Modules and calibration: `tools/06-rig/autorig/README.md`.

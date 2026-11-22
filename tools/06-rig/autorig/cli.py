@@ -9,32 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 import bpy
 import rig_mixamo as RM
 from autorig.rig import autorig
-
-IMPORT = {".fbx": lambda p: bpy.ops.import_scene.fbx(filepath=p), ".obj": lambda p: bpy.ops.wm.obj_import(filepath=p),
-          ".glb": lambda p: bpy.ops.import_scene.gltf(filepath=p), ".gltf": lambda p: bpy.ops.import_scene.gltf(filepath=p)}
-
-
-def load(path):
-    ext = os.path.splitext(path)[1].lower()
-    if ext == ".blend":
-        bpy.ops.wm.open_mainfile(filepath=path)
-    elif ext in IMPORT:
-        bpy.ops.wm.read_factory_settings(use_empty=True); IMPORT[ext](path)
-    else:
-        raise SystemExit("autorig: unsupported input " + ext)
-    for a in [o for o in bpy.data.objects if o.type == 'ARMATURE']:
-        for c in a.children:                           # keep the meshes where they are without their old rig
-            mw = c.matrix_world.copy(); c.parent = None; c.matrix_world = mw
-        bpy.data.objects.remove(a)
-    for act in list(bpy.data.actions):                 # its animations would be baked onto the new rig
-        bpy.data.actions.remove(act)
-    meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
-    if not meshes:                                     # a .blend of loose objects (in no scene): take them all
-        meshes = [o for o in bpy.data.objects if o.type == 'MESH']
-        for o in meshes:
-            bpy.context.scene.collection.objects.link(o)
-    return meshes
-
+from autorig.load import load_model as load
 
 def main(argv):
     ap = argparse.ArgumentParser(prog="autorig")
@@ -42,13 +17,19 @@ def main(argv):
     ap.add_argument("--blend"); ap.add_argument("--name", default="Rig")
     ap.add_argument("--asym", action="store_true", help="keep each side as found (no mirror averaging)")
     ap.add_argument("--textures", action="store_true", help="copy and embed the textures in the FBX")
+    ap.add_argument("--markers", help="json file of hand-placed joints (chin, wrists, elbows, knees, groin)")
+    ap.add_argument("--front", default="auto", choices=["auto", "-Y", "+Y"], help="side the model faces (+Y is turned around)")
+    ap.add_argument("--no-fingers", action="store_true"); ap.add_argument("--glb", help="also export a glTF for the browser")
     a = ap.parse_args(argv)
     meshes = load(os.path.abspath(a.model))
     if not meshes:
         raise SystemExit("autorig: no mesh in " + a.model)
     meshes.sort(key=lambda o: -len(o.data.vertices))                  # the body first
-    rig, qa = autorig(meshes, a.name, symmetric=not a.asym)
+    rig, qa = autorig(meshes, a.name, symmetric=not a.asym, markers=a.markers and json.load(open(a.markers)),
+                    front=a.front, fingers=not a.no_fingers)
     RM.export_fbx(os.path.abspath(a.out), rig, [o.name for o in meshes], textures=a.textures)
+    if a.glb:
+        bpy.ops.export_scene.gltf(filepath=os.path.abspath(a.glb), export_format='GLB', use_selection=False)
     if a.blend:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(a.blend))
     print("AUTORIG_QA: " + json.dumps(qa), flush=True)

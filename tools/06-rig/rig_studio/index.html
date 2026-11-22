@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rig Studio</title><link rel="stylesheet" href="studio.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script></head>
+<body>
+<header><b>RIG STUDIO</b><span>retopologizer auto-rigger</span><em id="status"></em></header>
+<main>
+  <section id="stage"><canvas id="view"></canvas>
+    <div id="drop"><p>Drop a model here (FBX, OBJ, GLB)</p><label class="btn">Select character file<input id="file" type="file" accept=".fbx,.obj,.glb,.gltf" hidden></label></div>
+    <div id="orient" class="tools" hidden>
+      <button id="rotL" title="Turn left 90">&#8630;</button><button id="rotR" title="Turn right 90">&#8631;</button>
+      <button id="flip" title="Flip upside down">&#8645;</button><input id="yaw" type="number" step="5" value="0" title="Turn about the vertical (deg)"><button id="reset" title="Reset">&#10226;</button></div>
+    <div id="legend" hidden></div>
+    <div id="views" class="tools right" hidden><label class="pill"><input type="checkbox" id="free"> Free 3D</label></div>
+    <svg id="ref" hidden viewBox="0 0 120 200" width="150"><g fill="none" stroke="#8b93a1" stroke-width="3" stroke-linecap="round">
+      <circle cx="60" cy="22" r="14"/><path d="M60 36V100M60 48L20 70M60 48L100 70M20 70L8 110M100 70L112 110M60 100L45 150L42 190M60 100L75 150L78 190"/></g>
+      <g stroke="#14171c" stroke-width="1.5"><circle cx="60" cy="38" r="5" fill="#22d3ee"/><circle cx="8" cy="110" r="5" fill="#a3e635"/><circle cx="112" cy="110" r="5" fill="#a3e635"/>
+      <circle cx="20" cy="70" r="5" fill="#facc15"/><circle cx="100" cy="70" r="5" fill="#facc15"/><circle cx="45" cy="150" r="5" fill="#fb923c"/><circle cx="75" cy="150" r="5" fill="#fb923c"/><circle cx="60" cy="100" r="5" fill="#f472b6"/></g></svg><div id="busy" hidden>Rigging&hellip;</div></section>
+  <aside>
+    <ol id="steps"><li data-s="upload">Upload</li><li data-s="orient">Orient</li><li data-s="markers">Markers</li><li data-s="preview">Preview</li></ol>
+    <div id="help"></div>
+    <div id="opts" hidden>
+      <label><input type="checkbox" id="sym" checked> Use symmetry</label>
+      <label>Skeleton LOD <select id="lod"><option value="full">Standard skeleton</option><option value="nofingers">No fingers</option></select></label>
+      <label><input type="radio" name="mode" value="auto" checked> Automatic (no markers)</label>
+      <label><input type="radio" name="mode" value="manual"> Place joint markers</label></div>
+    <div id="after" hidden>
+      <label><input type="checkbox" id="bones" checked> Show skeleton</label>
+      <label><input type="checkbox" id="wave"> Test pose (arms, legs)</label>
+      <a id="dl" class="btn" download>Download FBX</a><button id="done" class="btn">Save</button><pre id="qa"></pre></div>
+    <footer><button id="back" class="btn ghost">Back</button><button id="next" class="btn">Next</button></footer></aside>
+</main>
+<script type="module" src="app.js"></script></body></html>

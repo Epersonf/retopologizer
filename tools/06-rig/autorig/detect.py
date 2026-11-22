@@ -3,25 +3,28 @@ from walks along the arm tubes, spine and head on the mirror plane between them.
 the two are averaged into a symmetric rig; a missing limb (the Saci's leg) is mirrored from the other side."""
 import numpy as np
 from .body import Body
-from . import legs as LG, arms as AR, spine as SP, hands as HD, tail as TL
+from . import legs as LG, arms as AR, spine as SP, hands as HD, tail as TL, markers as MK
 
 SIDE = {1: "Left", -1: "Right"}
 
 
-def detect(M, symmetric=True):
+def detect(M, symmetric=True, markers=None):
     """(joints {name: np.array}, Body, landmarks) for the Mesh M."""
     B = Body(M); J, info = {}, {"tips": B.tips}
     for s, v in B.tips["feet"].items():
         jl, inf = LG.leg(B, v)
+        jl = MK.apply_limb(jl, SIDE[s], markers, B.x0, symmetric)
         J.update({SIDE[s] + k: p for k, p in jl.items()}); info[SIDE[s] + "Leg"] = inf
     for s, v in B.tips["hands"].items():
         ja, inf = AR.arm(B, v, s)
+        ja = MK.apply_limb(ja, SIDE[s], markers, B.x0, symmetric)
         J.update({SIDE[s] + k: p for k, p in ja.items()}); info[SIDE[s] + "Arm"] = inf
         axis = ja["Hand"] - ja["ForeArm"]
         jh, inf = HD.hand(B, ja["Hand"], axis / np.linalg.norm(axis))
         J.update({SIDE[s] + k: p for k, p in jh.items()}); info[SIDE[s] + "Hand"] = inf
     mirror_missing(J, B.x0)
     J.update(SP.spine(B, J["LeftUpLeg"], J["RightUpLeg"], J["LeftArm"], J["RightArm"]))
+    MK.apply_body(J, markers, B.x0)
     if B.tips["tail"] is not None:
         J.update(TL.tail(B, B.tips["tail"], J["Hips"]))
     if symmetric:

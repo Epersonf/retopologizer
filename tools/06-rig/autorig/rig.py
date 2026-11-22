@@ -23,19 +23,21 @@ def skeleton(J):
     return [(n, p, n + knuckle if knuckle else None) if n.endswith("Hand") else (n, p, t) for n, p, t in B], tail
 
 
-def autorig(objects, name="Rig", symmetric=True):
+def autorig(objects, name="Rig", symmetric=True, markers=None, front="auto", fingers=True):
     """Armature `name` fitted to the mesh objects (detected on all of them together) and skinned to each one. The
     meshes get their transforms applied (world = local), and are turned to face -Y if they faced +Y."""
     facing = "-Y"
     for o in objects:
         clear(o); bake_transform(o)
     M = mesh_of(objects)
-    if faces_back(Body(M)):
+    if front == "+Y" or (front == "auto" and faces_back(Body(M))):
         facing = "+Y (turned)"
         for o in objects:
             bake_transform(o, Matrix.Rotation(math.pi, 4, 'Z'))
         M = mesh_of(objects)
-    J, body, info = detect(M, symmetric)
+    J, body, info = detect(M, symmetric, markers)
+    if not fingers:                                      # Mixamo's "No Fingers (25)"
+        J = {k: v for k, v in J.items() if not any(f in k for f in FINGERS)}
     bones, tail = skeleton(J)
     rig = RM.build(objects[0].name, name, {k: Vector(v) for k, v in J.items()}, bones, sideways=tail,
                    leaf=(0.011 * body.H, 0.028 * body.H))
