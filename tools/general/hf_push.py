@@ -8,7 +8,7 @@ Layout in the repo: projects/<project>/<rec_NN>/{actions.jsonl, events.jsonl, me
 Scrubbing: text files are copied to a temp folder with the Windows user name and absolute paths replaced (`<home>`) before upload;
 a rec already on the Hub (same file list) is skipped, so it can be re-run after every session. Empty recordings (no actions) are skipped.
 Also writes a README.md (dataset card) with the schema and the licence chosen with --license (default cc-by-4.0)."""
-import argparse, glob, json, os, re, shutil, sys, tempfile
+import argparse, glob, hashlib, json, os, re, shutil, sys, tempfile
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 TEXT = (".json", ".jsonl", ".txt", ".md")
 CARD = """---
@@ -24,7 +24,8 @@ Raw recordings of an artist retopologizing game assets by hand (Blender 5.x, `se
 - `actions.jsonl`: one line per trigger {{t, n, obj, mode, triggers, actions:[select|add_vertex|move_vertex|add_face|topology_change]}} (vertex ids, local/world coordinates).
 - `events.jsonl`: keys, mouse, operators with properties (extrude, translate, resize, rotate, loop cut, merge...), time in seconds.
 - `checkpoint_NNN.json`: full mesh snapshot at each Ctrl+S / Tab; `shot_NNNN.png`: viewport screenshots; `meta.json`: Blender version, view, snap settings.
-- `ref.npz` (+ `ref.json`): the reference the artist was following, as 60000 area-weighted surface points (`<object>__points` float32, `<object>__normals` float16) in world space, same space as the recording's `world` coordinates; `ref.json` has vertex/triangle counts, area and world matrices (made by `hf_refs.py`).
+- `projects/<project>/refs/<hash>.npz`: the reference (shared by every recording of the project that used it; each recording's `ref.json` has `ref_npz` pointing to it).
+  The reference is what the artist was following, as 60000 area-weighted surface points (`<object>__points` float32, `<object>__normals` float16) in world space, same space as the recording's `world` coordinates; the recording's `ref.json` has vertex/triangle counts, area and world matrices (made by `hf_refs.py`).
 - The last `checkpoint_NNN.json` is the final state of the edited mesh (what the artist left, not necessarily approved).
 Paths and user names are scrubbed.
 """
@@ -35,6 +36,13 @@ def scrub(src, dst, user):
     s = re.sub(r"[A-Za-z]:(\\\\|\\|/)+Users(\\\\|\\|/)+[^\\/\"']+", "<home>", s)
     if user: s = s.replace(user, "user")
     open(dst, "w", encoding="utf-8").write(s)
+
+
+def ref_path(r, name):
+    f = os.path.join(r, "ref.npz")
+    if not os.path.exists(f): return None
+    h = hashlib.md5(open(f, "rb").read()).hexdigest()[:10]
+    return "/".join(name.split("/")[:2]) + "/refs/%s.npz" % h
 
 
 def recs():
@@ -62,16 +70,26 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, "README.md"), "w", encoding="utf-8").write(CARD.format(lic=a.license))
         api.upload_file(path_or_fileobj=os.path.join(tmp, "README.md"), path_in_repo="README.md", repo_id=a.repo, repo_type="dataset")
+        from huggingface_hub import CommitOperationAdd, CommitOperationDelete
+        have = set(api.list_repo_files(a.repo, repo_type="dataset")); ops = []   # one commit for all reference changes (the Hub rate-limits commits)
         for r, name in items:
-            need_ref = os.path.exists(os.path.join(r, "ref.npz")) and (name + "/ref.npz") not in have
-            if (name + "/actions.jsonl") in have and not need_ref: print("skip", name); continue
+            shared = ref_path(r, name)   # the reference is stored once per project and content hash, not once per recording
+            if shared and shared not in have:
+                ops.append(CommitOperationAdd(shared, os.path.join(r, "ref.npz"))); have.add(shared)
+            rj = os.path.join(r, "ref.json")
+            if shared and os.path.exists(rj) and ((name + "/ref.json") not in have or (name + "/ref.npz") in have):
+                j = json.load(open(rj, encoding="utf-8")); j["ref_npz"] = shared; t = os.path.join(tmp, name.replace("/", "_") + ".ref.json")
+                open(t, "w", encoding="utf-8").write(json.dumps(j, indent=1)); ops.append(CommitOperationAdd(name + "/ref.json", t))
+            if (name + "/ref.npz") in have: ops.append(CommitOperationDelete(name + "/ref.npz")); have.discard(name + "/ref.npz")
+        if ops: api.create_commit(a.repo, ops, repo_type="dataset", commit_message="references once per project"); print("refs commit:", len(ops), "operations")
+        for r, name in items:
+            if (name + "/actions.jsonl") in have: print("skip", name); continue
             d = os.path.join(tmp, name); os.makedirs(d)
             for f in os.listdir(r):
-                if a.no_shots and f.endswith(".png"): continue
+                if (a.no_shots and f.endswith(".png")) or f in ("ref.npz", "ref.json"): continue
                 (scrub if f.endswith(TEXT) else lambda s, t, u: shutil.copy(s, t))(os.path.join(r, f), os.path.join(d, f), user)
             api.upload_folder(folder_path=d, path_in_repo=name, repo_id=a.repo, repo_type="dataset", commit_message="add " + name)
             shutil.rmtree(d); print("uploaded", name)
-
 
 if __name__ == "__main__":
     main()

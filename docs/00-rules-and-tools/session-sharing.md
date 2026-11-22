@@ -7,11 +7,11 @@ Raw recordings (`projects/*/session/rec_NN`) are heavy (2.2 GB) and `projects/` 
    the 2 biggest non-edited meshes of the .blend the recording started from). Launches Blender in the background; needs `BLENDER_EXE` or the Steam path.
 2. `hf auth login` (once, a Write token from huggingface.co/settings/tokens; the scripts never read or store a token).
 3. `python tools/general/hf_push.py --repo Eperson/retopo-sessions` : dry run, lists recordings and sizes. Add `--go --public` to upload.
-   Re-running is safe: recordings already on the Hub are skipped; one that gained a `ref.npz` is re-sent (unchanged files are deduplicated).
+   Re-running is safe: recordings already on the Hub are skipped; the reference is stored once per project and content hash (`projects/<project>/refs/<hash>.npz`), never once per recording; each `ref.json` carries `ref_npz` with that path.
 Options: `--no-shots` leaves the PNGs out; `--license <id>` sets the card's licence (default `cc-by-4.0`); without `--public` a NEW repo is private.
 
 ## What is uploaded
-`projects/<project>/rec_NN/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png, ref.npz, ref.json}`; schema in the repo's README (dataset card, written by `hf_push.py`).
+`projects/<project>/rec_NN/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png, ref.json}` + `projects/<project>/refs/<hash>.npz`; schema in the repo's README (dataset card, written by `hf_push.py`).
 Text files are scrubbed first (Windows user name and absolute paths -> `<home>`). Recordings without actions are skipped.
 
 ## Limits (read before training)
