@@ -66,3 +66,10 @@ New test `qa_faceshape` (rule 8, `docs/03-qa/qa.md`).
 `l1_build_paw.py` now loads `face_shape.py`, so `untangle` also repairs twisted/stamped/inverted faces. Front paw: clean with `max_move` 8 mm.
 Rear paw: stuck at 13 bad faces with 8 and 12 mm (the template seam is 10.7 mm from the new leg ring), clean with 20 mm (`MAX_MOVE` in `l2_run_hind.py`),
 claw tip 113.8 mm vs ref 113.0. Both paws: `qa_intersect` and `qa_faceshape` pass. `qa_shape` still reports 1 pointed vertex (claw tip) and 1.1% slivers: natural for a claw.
+
+## Rear toes, round 2 (artist, 2026-11-22): right toe good, middle worse, left "non-existent"
+Passing the tests was not enough: the 20 mm untangle had squeezed the outer toes into 5 mm blobs. Cause: one global anchor for three toes that are
+spread differently in the rear paw, then a Laplacian relaxation that trades one bad face for another. New: `toe_fit.py` (k-means splits the fused
+toes, each one is fitted by similarity ICP on its own ref toe: 0.6-1 mm mean distance), then conform/untangle with 4 mm, then `face_polish.py`
+(hill-climbing per vertex) for what is left. Result: 0 intersecting/twisted/stamped/inverted faces, claw tip 114.4 mm (ref 113.0). Parameters in `l2_run_hind.py`.
+Still open: `qa_shape` slivers 2.8% around the claw tips; the artist judges the look.

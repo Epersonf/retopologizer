@@ -35,6 +35,8 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
 | session_report.py | `python tools/general/session_report.py <rec_dir>` | reads a recording: timeline of operators, face sizes, valences, border, layers from the seam ring |
 | live_rings.py | `python` + user's Blender (MCP 9876) | shows rings, shrink and bridge growing live in the artist's Blender (`play`) |
+| toe_fit.py | inside Blender | `fit_toes`: each toe of a transplanted fused-toe block becomes a rigid+scale body fitted (ICP) on its OWN toe of the ref |
+| face_polish.py | inside Blender | `polish`: one vertex at a time, random steps projected on the ref, kept only if twisted/inverted/crossing penalty drops |
 | face_shape.py | inside Blender | `qa_faceshape`, `twisted_quads`, `stamped_pairs`, `inverted_vs_ref`: faces wrong by themselves |
 | face_intersect.py | inside Blender | exact face-vs-face intersection per loose part: `qa_intersect`, `select_faces`, `face_intersections(V, F)` |
 | live_intersect.py | inside Blender (the artist's too) | `start()`: faces cutting each other red, twisted/stamped magenta, live + count in the status bar; `stop()` |
