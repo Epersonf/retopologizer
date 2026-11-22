@@ -83,3 +83,10 @@ Open boundaries: A has ONE hole loop of 59 edges (odd: a quad-only fill is impos
 opening and the front leg's open top ring (9 free vertices); B has a 35-vertex border. Everything forward of the shoulder (chest, neck, jaw, face) and the tail
 does not exist yet. `qa_suite`: intersect pass; faceshape 2 inverted (peito (-64,-187,224) mm, orelha (-80,-389,507) mm); 11 tris + 1 heptagon (one tri at the rump, the heptagon in the head).
 Missing tools for the agent to continue alone: `hole_fill` (quad fill of an arbitrary loop with poles, parity fixed by a loop cut) and `loop_bridge` (rings between two loops with different counts). Spikes: separate leaf-card models (`docs/04-uv-bake/leaf-cards.md`).
+
+## First try of `fill_loop` on the whole front opening (2026-11-22): fails, do not repeat
+`fill_loop` on the 59-edge loop (shoulder strip + front leg ring + spine and belly axis lines; one loop cut for parity, 8 x 22 grid, 176 quads), with nearest snap and with a radial
+snap from the torso axis: 211 / 302 crossing face pairs, 152-179 bad faces (twisted, stamped, inverted). Cause: the loop is not a rectangle. A leg ring dangles from it and the
+long edge at z 330 (97 mm) sits in the middle, so a Coons grid cuts through the body and the snap folds it. A grid fill is for caps and flanks, not for a junction.
+Next: decompose by hand-chosen guide loops (or let the agent propose them and the artist approve): the leg ring bridged first (`loop_bridge`), then the chest as one clean half-ring
+(spine to belly) that rings are extruded from toward the neck. Script kept: `projects/guara-wolf/s2_fill_front.py` (untracked).
