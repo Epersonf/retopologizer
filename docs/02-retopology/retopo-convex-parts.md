@@ -101,8 +101,9 @@ taper (see section 4). Same N on all rings; a 12 -> 8 pair gives the 4 quads + 1
 ## 6. Limits (plan around them)
 - **Concave sections** (arm against torso in A-pose, ears): mode `"in"` plus the 1.25 acceptance test copes with an arm beside the torso,
   but start the tube past the shoulder (22% of the way) or the first ring catches the torso. Deep C-shapes need splitting the part.
-- **Branches** (shoulder, groin, hand with fingers): one ring cannot cover them. Use patches (`poly_patch`, `solve_spokes`) or separate
-  tubes (`lock`, `digit`).
+- **Branches** (shoulder, groin, hand with fingers, paw with toes): one ring cannot cover them. Each child is its own tube, joined at a
+  knuckle ring (fused children: `N = k*m - 2*(k-1)`, 3 of 6 = 14) or at separate roots (`digit`, `lock`): `retopo-tube-network.md` § 2.
+  `poly_patch` only closes a 3- or 5-sided hole; it is NOT how toes or fingers are made (guara-wolf case).
 - **Face**: not a tube. Eyes and mouth are concentric loops around a hole (eyelid and lip flow), the ears are concave, the cheek, nose and
   forehead quads need poles on purpose. Use the tube for skull and neck only, place eye, mouth and nose loops from a centre point on the
   local surface plane, make ears and eyelids their own parts, and fill between loops with `solve_spokes` / `poly_patch`. Do the face last,

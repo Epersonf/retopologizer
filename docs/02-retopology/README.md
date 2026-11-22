@@ -4,11 +4,12 @@ Stage 2 of the pipeline. Here the choice is **per part**, not for the whole mode
 (`docs/00-rules-and-tools/retopology-rules.md`): retopo is always manual, vertex by vertex with snap onto the ref;
 quads only; the automatic tool measures and checks, it does not generate the mesh; the ref is never edited.
 
-Character (body, limbs, hands, face, rig)? Start at `character-index.md`: an index of where each topic lives.
+Character or creature? Read `retopo-tube-network.md` first (everything is a tube, except face and ears), then `character-index.md`.
 
 ## 1. Classify the part
 | the part is... | method | guide | example in the repo |
 |---|---|---|---|
+| **organic body: limbs, paws, hands, fingers, toes, claws, neck, tail, torso, chest, breasts, horns** (everything is a tube; tubes join into one mesh) | tubes + joins, start here | `retopo-tube-network.md` (then `retopo-convex-parts.md`, `retopo-llm.md`) | `projects/guara-wolf` (paw), `stylized-cuca` |
 | hard part with corners and detail (chest, lid, box, handle) | rings by angle + mirror | `retopo-snap-mirror.md` | `projects/stylized-chest` |
 | simple prop (box, tube, prism) | `mesh_lib` (box, loft, sweep) | `tools/README.md` | `projects/stylized-chest` |
 | trunk, tube or tree around an axis | rings around the axis with snap | `retopo-snap-mirror.md` | `projects/stylized-tree` |

@@ -33,6 +33,8 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | session_to_dataset.py | `python` | converts a recording into a dataset episode (trigger -> actions steps), scrubs paths |
 | dataset_pack.py | `python` | puts episodes and stage records into the versioned `dataset/<stage>/<asset>/<id>` (gzip, scrubbed, index.json): `docs/00-rules-and-tools/dataset-spec.md` |
 | rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
+| session_report.py | `python tools/general/session_report.py <rec_dir>` | reads a recording: timeline of operators, face sizes, valences, border, layers from the seam ring |
+| live_rings.py | `python` + user's Blender (MCP 9876) | shows rings, shrink and bridge growing live in the artist's Blender (`play`) |
 | blend_diff.py | inside Blender (one-shot) | what the artist changed between two saves: counts, bbox, moved vertices, thickness, UV (`compare_blends`, `edit_record`) |
 
 ## 01-input-and-measurement/
@@ -45,6 +47,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 ## 02-retopology/ (build by hand and check the shape)
 | file | where it runs | what for |
 |---|---|---|
+| transplant.py | inside Blender | reuses an approved part elsewhere (matrix or mirror) and snaps it to the target ref: no new topology |
 | mesh_lib.py | inside Blender | simple props: `box`, `loft`, `rect_sweep`, `prism`, `pentagon`, `to_object` |
 | snap_retopo.py | inside Blender | hard-surface pieces: loads the three below (`docs/02-retopology/retopo-snap-mirror.md`) |
 | snap_surface.py | via snap_retopo | `Surface`: `nearest`, `ray`, `outer`, `inner` on the ref; `simplify` |

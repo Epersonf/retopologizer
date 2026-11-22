@@ -8,12 +8,15 @@ where they stopped, and does the stages that scripts do well (shell, bake, relie
    artist which view to use (orthographic front) before they start. Never open the file they are editing for your own work: the Blender they have open is theirs.
 2. **Artist works, saves, tells you.** Make a backup copy of their saved file first (`*_user_<n>.blend`); never overwrite it.
 3. **Analyze**: convert the recording (`session_to_dataset.py`), render the saved mesh over the reference (`wire_overlay`), look at the image, and describe the method
-   in numbers (strip size, how rows join, where it starts). Reconstruct what they did, not what you would have done.
+   in numbers (strip size, how rows join, where it starts): `python tools/general/session_report.py <rec_dir>` gives the timeline, counts and valences. Reconstruct what they did, not what you would have done.
 4. **Continue THEIR mesh**: append to their object (same vertices, same counts at the seams). A new mesh next to theirs is not a continuation; we got that wrong once and
    the artist said so ("you should have continued from mine").
 5. **Show an image, early**: one view, the problem circled. If the artist circles something, fix exactly that and re-render; long analysis without an image frustrates.
 6. **After the artist's UV, only move vertices.** Re-running a builder recreates the mesh and loses the UV. Bake, textures and rig are layered on top.
 7. **Compare saves** to learn their adjustments (`tools/general/blend_diff.py`): they may have joined objects, thinned the wing, moved the handle.
+
+## Lessons from the guara-wolf paw
+The artist redid the toes the agent had made (mitten with dome caps). Their recording showed a known pattern (knuckle ring of 14, three toes of 6 extruded): `docs/08-cases/guara-wolf.md`. Apply the documented pattern before inventing one.
 
 ## Lessons from the wing
 - Automatic retopo attempts (feather layers, ring extrusion, chain sweep) were rejected; the artist's demonstrations plus careful continuation worked.

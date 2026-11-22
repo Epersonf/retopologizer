@@ -11,6 +11,7 @@
 - New model with no high-poly (nothing to bake): paint a good texture in TextureCraft, and ask the user the style
   (look, palette, materials, references) BEFORE painting (`docs/04-uv-bake/uv-bake.md`).
 - "From scratch / without the manual" does not turn these rules off: ask what exactly to skip.
+- Organic parts are tubes that join into one mesh (face and ears excepted): read `docs/02-retopology/retopo-tube-network.md`, show a 5-line plan, never alter an approved ring, check the extent in mm (not only `topo_qa`).
 - 150-line limit per file; no Co-Authored-By.
 - **Post mortem is mandatory** after every delivery (game, store, handoff): `docs/05-delivery/post-mortem.md`, `python tools/general/post_mortem.py <project>`.
   Reread the user's corrections and recordings, write `projects/<p>/POST_MORTEM.md`, create or extend tools, correct the old docs, then say "done".

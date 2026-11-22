@@ -27,6 +27,8 @@ On Cuca, the artist made the head, torso and arms. The rounds were: hand → leg
 foot → tail (with the scales).
 
 ## One round
+0. **Plan, 5 lines, shown before building**: pattern used (file + section, e.g. `retopo-tube-network.md` § 2), seam ring (indices, count),
+   what is reused (`transplant.py`), what will be measured, deviations from the guide and why. Never alter a ring the artist approved.
 1. **Current base**: copy the user's latest `.blend` (`draft/cuca.blend` → `draft/cuca_retopo_vN.blend`), open
    it in the worker and switch to `OBJECT`. They may have edited the mesh since the last round: no stale indices.
 2. **Keep their mesh untouched** as a datablock (`LowPoly_user`, fake user). It is the starting point of each
@@ -47,6 +49,8 @@ foot → tail (with the scales).
    p = part_object("LowPoly", "LowPoly_user", "Cuca_pe")   # faces new or changed in this round
    topo_qa("Cuca_pe", R)                                    # seam_x=0.0 if the part is on the mirror plane
    ```
+   Also the SHAPE, in mm: `fit_report(part, ref)` and the extent of the part along each axis, low vs reference (tips of toes, claws, tail
+   must match to a few mm; `topo_qa` clean is not enough).
    Expected: `quad_only` True (0 tris, 0 n-gons), open border only on the seam rings, 0 non-manifold, 0 duplicates,
    0 conflicting winding, 0% inward area. Faces the artist started for this part come in with
    `also=[indices]`.

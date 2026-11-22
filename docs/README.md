@@ -14,6 +14,7 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | 02-retopology (2 and 3) | README.md | choosing the right method for each type of part |
 | | character-index.md | any character task: index of which section answers which question (pointers only) |
 | | topology.md | deciding loops, poles, counts and budget (the artist's theory) |
+| | retopo-tube-network.md | read first for organic parts: everything is a tube; how tubes join (fused toes 14 to 3x6); plan before building |
 | | retopo-by-parts.md | splitting the model, one round per part, delivering and integrating |
 | | retopo-snap-mirror.md | hard part or prop: rings by angle + mirror (chest lid) |
 | | retopo-llm.md | character or organic with the `tools/02-retopology/retopo` package (Cuca) |
@@ -35,3 +36,4 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | 08-cases (whole pipeline, one asset) | wing.md | the wing end to end: artist's retopo, shell, UV, bake, engraved handle, rig, export; how to reproduce it |
 | | sword.md | the sword end to end: artist's shell, closing, UV, bake, symmetry, TextureCraft, game item, Fab listing |
 | | alligator.md | quadruped by parts, mirrored half, why the toes failed, teeth, texture retouch, rig and clips, game, Fab, post mortem |
+| | guara-wolf.md | fused toes: what the agent got wrong, the artist's recorded method (14-ring knuckle, 3 toes of 6) |

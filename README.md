@@ -48,6 +48,8 @@ for, not the delivery: say "checkpoint, UV and bake pending", never "done".
   on its own (OBJ) and integrated by the user before the next (`docs/02-retopology/retopo-by-parts.md`).
 - **Check with number and image**: error in mm (`fit_report`, `compare_mesh`), where it is off (`overlay`,
   `section_overlay`), pass or fail (`qa_all`, `topo_qa`).
+- **Apply the documented pattern first**: for organic parts everything is a tube and tubes join into one mesh (`docs/02-retopology/retopo-tube-network.md`).
+  Write a 5-line plan (pattern, seam ring, reuse, measures, deviations) and get a yes before building; never alter a ring the artist approved.
 - **Continue the artist's work**: if the user started the mesh, start from it and keep the counts at the seams.
 - **Everything in script** (`projects/<name>/*.py`, local, outside git; examples in `examples/`), reproducible. After the user has done the UV, only move vertices.
 - **Half mesh + mirror** when there is symmetry; a crooked statue stays "as is" (do not symmetrize unless asked).
@@ -76,6 +78,7 @@ for, not the delivery: say "checkpoint, UV and bake pending", never "done".
 | start a project (folders, measure the reference, order of stages) | `docs/01-input-and-measurement/workflow-retopology.md` |
 | decide loops, poles, counts, budget | `docs/02-retopology/topology.md` |
 | choose the retopo method by type of part | `docs/02-retopology/README.md` |
+| organic body (limbs, paws, fingers, toes, neck, tail, chest): tubes that join | `docs/02-retopology/retopo-tube-network.md` |
 | retopo of a whole model: split into parts, order, one round, OBJ delivery | `docs/02-retopology/retopo-by-parts.md` |
 | retopo of a hard part or prop (chest, lid, box) | `docs/02-retopology/retopo-snap-mirror.md` |
 | retopo of a character or organic (body, hand, claws, tail) | `docs/02-retopology/retopo-llm.md` |
