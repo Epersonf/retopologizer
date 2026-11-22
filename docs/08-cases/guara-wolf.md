@@ -90,3 +90,8 @@ snap from the torso axis: 211 / 302 crossing face pairs, 152-179 bad faces (twis
 long edge at z 330 (97 mm) sits in the middle, so a Coons grid cuts through the body and the snap folds it. A grid fill is for caps and flanks, not for a junction.
 Next: decompose by hand-chosen guide loops (or let the agent propose them and the artist approve): the leg ring bridged first (`loop_bridge`), then the chest as one clean half-ring
 (spine to belly) that rings are extruded from toward the neck. Script kept: `projects/guara-wolf/s2_fill_front.py` (untracked).
+
+## State after the artist's rec_05 (2026-11-22) and the agent's second try
+Half mesh 809 v / 761 f, ONE border loop (106 edges, 56 of them on the mirror plane). After the Mirror only 3 holes remain: nape + ears (58 edges, x +-111, y -420..-142), throat (16 edges, y -353..-197) and tail root (32 edges, y 265..468).
+`seam_close.fill_half` + `face_polish`: throat closed (10 quads, 0 crossings, no new twisted/inverted face, <= 11 mm from the ref), saved as `draft/guara_auto_02.blend` (the artist's file is untouched).
+Nape (166 crossing pairs) and tail root (15): fail, same cause as the shoulder: the hole wraps the ears / is a long slot. Their guide loops are the artist's call.

@@ -33,11 +33,6 @@ def boundary_loops(bm, strict=False):
     return out
 
 
-def pinches(bm):
-    """Vertices where a boundary touches itself (more than 2 boundary edges): fix these by hand before filling."""
-    return [v.index for v in bm.verts if sum(x.is_boundary for x in v.link_edges) > 2]
-
-
 def _ring(edge):
     """Edges opposite each other through quads, starting at `edge` (a loop-cut ring); stops at a non-quad or the border."""
     ring, seen = [edge], {edge.index}
@@ -138,11 +133,15 @@ def _grid(bm, loop, k, na, ref, fixed, relax):
         for j in range(nb):
             faces.append(bm.faces.new((G[i][j], G[i + 1][j], G[i + 1][j + 1], G[i][j + 1])))
     # winding: a boundary edge a->b used by an old face must be b->a in the new one
-    e0 = bm.edges.get((S0[0], S0[1])); old = [f for f in e0.link_faces if f not in faces][0]; new_f = [f for f in e0.link_faces if f in faces][0]
     def fwd(f, a, b):
         vs = list(f.verts); return any(vs[i] is a and vs[(i + 1) % len(vs)] is b for i in range(len(vs)))
-    if fwd(old, S0[0], S0[1]) == fwd(new_f, S0[0], S0[1]):
-        for f in faces: f.normal_flip()
+    for a, b in zip(loop, loop[1:] + loop[:1]):         # an edge of the loop that an old face uses (new plane edges have none)
+        e0 = bm.edges.get((a, b)); old = [f for f in e0.link_faces if f not in faces]
+        if old:
+            nf = [f for f in e0.link_faces if f in faces][0]
+            if fwd(old[0], a, b) == fwd(nf, a, b):
+                for f in faces: f.normal_flip()
+            break
     bm.verts.index_update(); bm.edges.index_update(); bm.faces.index_update()
     _snap_relax(new, ref, set(fixed), relax)
     return faces, new
