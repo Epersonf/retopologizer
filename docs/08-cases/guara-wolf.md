@@ -76,3 +76,10 @@ Still open: `qa_shape` slivers 2.8% around the claw tips; the artist judges the 
 
 ## Rear toes, round 3: the artist rebuilt them on camera (2026-11-22)
 The artist deleted the toes of the rear leg and rebuilt them in 490 s with the recorder on. Full measurement: `toes-artist-analysis.md`; reasons and rules: `toes-artist-why.md`. Clean version of the artist's mesh (merge by distance + 5 vertices nudged <= 5.7 mm, 0 defects): `draft/artist_hind_clean.json`.
+
+## Whole-body state after rec_03 (2026-11-22, agent's reading of the saved `guara_mirror.blend`)
+Right half: 697 vertices, 652 faces in 2 parts. Part A (608 v): both legs, hip, rump, tail base, flank and belly strips; part B (89 v): top of head and ears.
+Open boundaries: A has ONE hole loop of 59 edges (odd: a quad-only fill is impossible without a loop cut or a triangle) that holds the shoulder, chest and the neck
+opening and the front leg's open top ring (9 free vertices); B has a 35-vertex border. Everything forward of the shoulder (chest, neck, jaw, face) and the tail
+does not exist yet. `qa_suite`: intersect pass; faceshape 2 inverted (peito (-64,-187,224) mm, orelha (-80,-389,507) mm); 11 tris + 1 heptagon (one tri at the rump, the heptagon in the head).
+Missing tools for the agent to continue alone: `hole_fill` (quad fill of an arbitrary loop with poles, parity fixed by a loop cut) and `loop_bridge` (rings between two loops with different counts). Spikes: separate leaf-card models (`docs/04-uv-bake/leaf-cards.md`).
