@@ -3,6 +3,7 @@ r"""Sends the raw recordings (projects/*/session/rec_NN) to a Hugging Face DATAS
   python tools/general/hf_push.py --repo <user>/retopo-sessions                 # dry run: lists what would go and how big
   python tools/general/hf_push.py --repo <user>/retopo-sessions --go            # uploads, PRIVATE repo by default
   python tools/general/hf_push.py --repo ... --go --public                      # only if you decide to publish
+  python tools/general/hf_refs.py                                              # first: adds ref.npz to every recording (needs Blender)
 Layout in the repo: <project>/<rec_NN>/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png}.
 Scrubbing: text files are copied to a temp folder with the Windows user name and absolute paths replaced (`<home>`) before upload;
 a rec already on the Hub (same file list) is skipped, so it can be re-run after every session. Empty recordings (no actions) are skipped.
@@ -20,7 +21,9 @@ Raw recordings of an artist retopologizing game assets by hand (Blender 5.x, `se
 - `actions.jsonl`: one line per trigger {{t, n, obj, mode, triggers, actions:[select|add_vertex|move_vertex|add_face|topology_change]}} (vertex ids, local/world coordinates).
 - `events.jsonl`: keys, mouse, operators with properties (extrude, translate, resize, rotate, loop cut, merge...), time in seconds.
 - `checkpoint_NNN.json`: full mesh snapshot at each Ctrl+S / Tab; `shot_NNNN.png`: viewport screenshots; `meta.json`: Blender version, view, snap settings.
-Paths and user names are scrubbed. Reference meshes are NOT included.
+- `ref.npz` (+ `ref.json`): the reference the artist was following, as 60000 area-weighted surface points (`<object>__points` float32, `<object>__normals` float16) in world space, same space as the recording's `world` coordinates; `ref.json` has vertex/triangle counts, area and world matrices (made by `hf_refs.py`).
+- The last `checkpoint_NNN.json` is the final state of the edited mesh (what the artist left, not necessarily approved).
+Paths and user names are scrubbed.
 """
 
 
@@ -51,12 +54,14 @@ def main():
     from huggingface_hub import HfApi
     api = HfApi(); who = api.whoami()["name"]; print("logged in as", who)
     api.create_repo(a.repo, repo_type="dataset", private=not a.public, exist_ok=True)
+    if a.public: api.update_repo_settings(a.repo, repo_type="dataset", private=False)   # create_repo(exist_ok) does not change visibility
     have = set(api.list_repo_files(a.repo, repo_type="dataset"))
     with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, "README.md"), "w", encoding="utf-8").write(CARD.format(lic=a.license))
         api.upload_file(path_or_fileobj=os.path.join(tmp, "README.md"), path_in_repo="README.md", repo_id=a.repo, repo_type="dataset")
         for r, name in items:
-            if any(h.startswith(name + "/actions.jsonl") for h in have): print("skip", name); continue
+            need_ref = os.path.exists(os.path.join(r, "ref.npz")) and (name + "/ref.npz") not in have
+            if (name + "/actions.jsonl") in have and not need_ref: print("skip", name); continue
             d = os.path.join(tmp, name); os.makedirs(d)
             for f in os.listdir(r):
                 if a.no_shots and f.endswith(".png"): continue
