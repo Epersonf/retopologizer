@@ -59,7 +59,7 @@ Build only after the artist says yes. If you feel like deviating, that is the mo
 - `boundary_loops(bm)` ordered border loops (pinched ones are skipped; `pinches(bm)` lists them: fix by hand first).
 - `fill_loop(bm, loop, ref)` quads only. Tries every corner placement and side split (a + b = n / 2) and keeps the one with corners at the real turns and square cells;
   a Coons grid, snapped to the ref, old vertices never move. An odd loop gets one loop cut first (the cheapest quad strip whose cut makes it even).
-- `loop_bridge(bm, A, B, ref, rings)` quad strip between two loops with the same count, snapped rings in between, start and direction chosen by total rung length.
+- `loop_bridge(bm, A, B, ref, rings)` (file `loop_bridge.py`) quad strip between two loops with the same count, snapped rings in between, start and direction chosen by total rung length.
   Different counts raise: the count change is a pole pair made by hand (section 2).
 - Checked: a hole in a sphere (8 quads, closed), an odd 35-edge loop of the wolf (cut + 77 quads, 0 crossings, centres 2 mm from the ref), a face loop of the wolf's hind leg removed and rebuilt (28 quads, 0.6 mm, 0 new defects).
 - Limits: a grid fill suits a hole that is topologically one rectangle (a cap, a flank); a hole with a leg ring on its border is not one: join that leg with `loop_bridge` first.

@@ -2,7 +2,7 @@ r"""Test of tools/02-retopology/hole_fill.py (blender -b --python test_hole_fill
 closed; a ring removed from a cylinder is rebuilt by loop_bridge; an odd hole is fixed with a loop cut. Prints 'ok' lines and raises on failure."""
 import bmesh, math, os
 from mathutils import Vector
-exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "02-retopology", "hole_fill.py"), encoding="utf-8").read())
+for _f in ("hole_fill.py", "loop_bridge.py"): exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "02-retopology", _f), encoding="utf-8").read())
 
 
 def closed(bm): return all(len(e.link_faces) == 2 for e in bm.edges)
