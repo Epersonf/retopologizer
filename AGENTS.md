@@ -12,7 +12,7 @@
   (look, palette, materials, references) BEFORE painting (`docs/04-uv-bake/uv-bake.md`).
 - "From scratch / without the manual" does not turn these rules off: ask what exactly to skip.
 - Organic parts are tubes that join into one mesh (face and ears excepted): read `docs/02-retopology/retopo-tube-network.md`, show a 5-line plan, never alter an approved ring, check the extent in mm (not only `topo_qa`).
-- **No face may intersect another face of the same loose part**, ever (`qa_intersect`, `topo_qa`, `Topo.write` stop on it; run `tools/general/live_intersect.py` while working): `docs/03-qa/qa.md`.
+- **No face may intersect another face of the same loose part, nor be twisted/stamped/inverted** (`qa_intersect`, `qa_faceshape`, `topo_qa`, `Topo.write` stop on it; run `tools/general/live_intersect.py` while working): `docs/03-qa/qa.md`.
 - 150-line limit per file; no Co-Authored-By.
 - **Post mortem is mandatory** after every delivery (game, store, handoff): `docs/05-delivery/post-mortem.md`, `python tools/general/post_mortem.py <project>`.
   Reread the user's corrections and recordings, write `projects/<p>/POST_MORTEM.md`, create or extend tools, correct the old docs, then say "done".

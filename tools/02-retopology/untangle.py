@@ -1,4 +1,4 @@
-r"""Removes faces that cut through each other (and edges shorter than min_edge = collapsed tips) by moving ONLY the vertices of the offending faces (and their neighbours): relax toward
+r"""Removes faces that cut through each other, twisted/stamped/inverted faces (face_shape.py, exec it first) (and edges shorter than min_edge = collapsed tips) by moving ONLY the vertices of the offending faces (and their neighbours): relax toward
 the neighbour average, project back on the ref, re-test; the radius grows if it does not clear. Topology never changes, `fixed` never moves.
 Inside Blender, after transplant.py / conform, or whenever qa_intersect fails:
   exec(open(r"<repo>\tools\general\face_intersect.py", encoding="utf-8").read())
@@ -13,8 +13,14 @@ def untangle(V, F, ref, fixed=(), rounds=60, lam=0.5, maxd=0.02, min_edge=0.0008
     for f in F:
         for i, a in enumerate(f): nb[a].add(f[(i + 1) % len(f)]); nb[f[(i + 1) % len(f)]].add(a)
 
-    def bad(P):
-        pr = test(P, F); return pr, {v for a, b in pr for f in (a, b) for v in F[f]}
+    def bad(P):  # cruzamentos + quads torcidos + faces estampadas + faces olhando para dentro da ref
+        pr = list(test(P, F)); fs = {x for p in pr for x in p[:2]}
+        sh = globals().get("twisted_quads")
+        if sh:
+            tw = twisted_quads(P, F); st = stamped_pairs(P, F); inv = inverted_vs_ref(P, F, ref) if ref else []
+            pr += [(a, a) for a, _ in tw] + [(a, b) for a, b, _ in st] + [(a, a) for a, _ in inv]
+            fs |= {a for a, _ in tw} | {x for p in st for x in p[:2]} | {a for a, _ in inv}
+        return pr, {v for f in fs for v in F[f]}
     edges = {tuple(sorted((a, f[(i + 1) % len(f)]))) for f in F for i, a in enumerate(f)}
 
     def spread(P):  # aresta menor que min_edge (vertices quase coincidentes) vira degenerada: afasta os dois

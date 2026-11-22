@@ -17,5 +17,8 @@
    of the geometry, not of looks: the mesh is rejected. Detect with `qa_intersect` (zero tolerance, in `qa.py`, `topo_qa` and
    `Topo.write`) and keep `tools/general/live_intersect.py` running while you work: faces cutting each other turn red. Never "fix"
    by hiding it (smoothing until the number is 0 can throw tips onto another part: check the distance to the ref afterwards).
-8. Statue in "as is" mode: if the reference is crooked/asymmetric, the user fixes it later; do not symmetrize
+8. **No twisted, stamped or inverted face**, even when nothing crosses and every vertex sits on the surface: a quad whose two triangles are
+   folded onto each other (cosine < 0), two faces pressed back to back, a face looking INTO the model. `qa_faceshape` (zero tolerance, same
+   places as rule 7; magenta in `live_intersect.py`). A zero count after an automatic fix proves nothing: look at the image and the distances.
+9. Statue in "as is" mode: if the reference is crooked/asymmetric, the user fixes it later; do not symmetrize
    or edit the reference without being asked.

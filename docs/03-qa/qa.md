@@ -32,6 +32,18 @@ part are reported as `cross_part`, not failed. `select_faces(obj, r["faces"])` s
 (max_move limit) and the distance to the ref must be checked afterwards. While working: `live_intersect.py` paints them red and writes the
 count in the status bar. Also run inside `topo_qa` (`self_intersections`) and `Topo.write` (raises).
 
+## Face shape (`qa_faceshape`, zero tolerance): twisted, stamped, inverted faces
+Guara-wolf rear paw: a toe tip had quads folded onto themselves although no face crossed another and every vertex was 0 mm from the surface
+(distance to the ref cannot see it: corners on different sheets). `face_shape.py` (core of `qa_faceshape`):
+| test | rule | calibration (artist's paw good / agent's rear paw bad) |
+|---|---|---|
+| twisted | min cosine between the normals of the two triangulations of a quad < 0 (bow-tie, quad folded on itself = "two faces stamped") | +0.16 / -0.99, -0.88, -0.84 |
+| inverted | face normal . normal of the ref surface under it < -0.2 (the face looks into the model); needs `ref` | +0.22 / -0.88, -0.84 |
+| stamped | two faces of one part, no shared vertex, opposite normals, overlapping, closer than 0.35 x the smaller edge (heuristic: thin margin, 0.43 on the artist's mesh) | 0.43 / 0.20-0.38 |
+The tests do not replace the others: `qa_intersect` finds crossings, this finds faces that are wrong by themselves. Also in `topo_qa`
+(`twisted_quads`, `stamped_faces`, `inverted_vs_ref`), `Topo.write` (raises), `untangle` (repairs them) and `live_intersect.py` (magenta).
+`tools/03-qa/test_intersect.py` is the regression: bad meshes must fail, good ones pass; run it after touching either module.
+
 ## Chest gate (`qa_all.py`: backfaces + UV + z-fighting)
 `exec(open(r"<repo>\tools\03-qa\qa_all.py", encoding="utf-8").read()); qa_all(["chest_base", "chest_lid"])`
 raises an error if any test fails (`raise_on_fail=False` just returns the report).

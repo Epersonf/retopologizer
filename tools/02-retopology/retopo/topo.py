@@ -122,7 +122,10 @@ class Topo(TopoOps):
             raise RuntimeError(name + " is in Edit Mode: leave it before writing")
         self.bm.to_mesh(o.data); o.data.update()
         if check:  # faces cutting each other are never acceptable in a retopology: stop here, do not hand it on
-            from .qa import _self_intersections
+            from .qa import _self_intersections, _face_shape
+            s = _face_shape(self.bm, self.ref)
+            if s["twisted_quads"] or s["stamped_faces"] or s["inverted_vs_ref"]:
+                raise RuntimeError("%s: twisted/stamped/inverted faces %s. Fix before continuing." % (name, s["bad_shape_faces"][:12]))
             r = _self_intersections(self.bm)
             if r["self_intersections"]:
                 raise RuntimeError("%s: %d face pairs intersect (faces %s). Fix before continuing (write(check=False) only to inspect)." % (name, r["self_intersections"], r["intersecting_faces"][:12]))

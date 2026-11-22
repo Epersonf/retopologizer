@@ -55,3 +55,9 @@ rigid fit, not anchored to the NEW leg's seam ring, then pulled onto the surface
 `transplant.anchor` (ring Procrustes; rear paw: ICP for the toe direction, then translation only), `conform(max_move)`, `untangle(max_move)`.
 Front paw: 0 pairs, claws at y -324.7 (ref -326.0), 0.0% inward. Rear paw: 0 pairs, claws at 114.9 (ref 113.0), 0.4% inward; the outer toe tip is still irregular.
 New: `qa_intersect` (battery, `topo_qa`, `Topo.write` raises), `live_intersect.py`, `untangle.py`, rule 7 in `retopology-rules.md`.
+
+## Error 2: twisted quads at the rear toe tip (artist, 2026-11-22)
+After the intersection fix the artist selected one toe tip and said it was not fitted to the toe and two faces were "stamped on each other". No test saw it:
+nothing crossed and all vertices were 0 mm from the surface. Numbers: face 170 had its two triangles folded onto each other (cosine -0.99), 168 and 171
+too (-0.88, -0.84); faces 127 and 178 looked into the toe (normal vs surface -0.88, -0.84); 127 was 2-3 mm behind 170-172. The front paw had one (face 120).
+New test `qa_faceshape` (rule 8, `docs/03-qa/qa.md`).

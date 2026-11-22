@@ -19,6 +19,17 @@ def _self_intersections(bm):
     return {"self_intersections": len(same), "intersecting_faces": sorted({f for ab in same for f in ab})[:40]}
 
 
+def _face_shape(bm, ref=None):
+    """Twisted quads, stamped faces and (with ref) faces looking into the model (tools/general/face_shape.py)."""
+    import os
+    g = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")), "tools", "general", "face_shape.py")
+    ns = {"__name__": "face_shape"}; exec(open(g, encoding="utf-8").read(), ns)
+    V = [v.co.copy() for v in bm.verts]; F = [[v.index for v in f.verts] for f in bm.faces]
+    tw, st = ns["twisted_quads"](V, F), ns["stamped_pairs"](V, F); inv = ns["inverted_vs_ref"](V, F, ref) if ref is not None else []
+    return {"twisted_quads": len(tw), "stamped_faces": len(st), "inverted_vs_ref": len(inv),
+            "bad_shape_faces": sorted({a for a, _ in tw} | {a for a, _ in inv} | {x for p in st for x in p[:2]})[:40]}
+
+
 def topo_qa(name, ref=None, seam_x=None, doubles=0.0005):
     bm = bmesh.new(); bm.from_mesh(bpy.data.objects[name].data); M = bpy.data.objects[name].matrix_world
     bm.transform(M); bm.normal_update()
@@ -44,7 +55,7 @@ def topo_qa(name, ref=None, seam_x=None, doubles=0.0005):
            "wire_edges": sum(1 for e in bm.edges if not e.link_faces), "loose_verts": sum(1 for v in bm.verts if not v.link_edges),
            "doubles": dbl, "winding_conflicts": wind, "poles": {k: val[k] for k in sorted(val) if k != 4},
            "degenerate_faces": sum(1 for f in bm.faces if f.calc_area() < 1e-8)}
-    rep.update(_self_intersections(bm))
+    rep.update(_self_intersections(bm)); rep.update(_face_shape(bm, ref))
     rep["quad_only"] = fc[3] == 0 and fc[5] == 0          # the repo's rule: delivered retopo is quads only
     if ref is not None:
         inward, area, d = 0.0, 0.0, []
