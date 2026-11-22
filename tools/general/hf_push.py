@@ -18,7 +18,7 @@ tags: [retopology, 3d, blender, imitation-learning]
 ---
 # Retopology sessions (Blender)
 Licence: **CC BY 4.0**: free for any use, commercial included, training models included; the only condition is attribution.
-Attribution: "Retopology sessions by Eperson (Braziletto project), https://huggingface.co/datasets/Eperson/retopo-sessions, CC BY 4.0".
+Attribution: "Retopology sessions by Eperson, https://huggingface.co/datasets/Eperson/retopo-sessions, CC BY 4.0".
 
 Raw recordings of an artist retopologizing game assets by hand (Blender 5.x, `session_recorder.py`). One folder per project and recording, all under `projects/`.
 - `actions.jsonl`: one line per trigger {{t, n, obj, mode, triggers, actions:[select|add_vertex|move_vertex|add_face|topology_change]}} (vertex ids, local/world coordinates).
