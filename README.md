@@ -26,7 +26,7 @@ A request such as "retopologize this model" or "do the retopology of X" means th
 1. **Faithful**: the `qa.py` battery (`docs/03-qa/qa.md`) passes, `fit` included (mean IoU ≥ 0.88, worst ≥ 0.80), and
    `fit_report` / `compare_mesh` give mean, p95 and max in mm. Ornamented parts (volutas, filigree, medallions) must
    follow the ref's shape: if `wire_overlay` shows a part reduced to a "mass", the mesh is not ready, however clean it is.
-2. **Quads only** and clean (`topo_qa`, `qa_mesh`): 0 open borders, non-manifold, duplicates.
+2. **Quads only** and clean (`topo_qa`, `qa_mesh`): 0 open borders, non-manifold, duplicates, **0 intersecting faces** (`qa_intersect`).
 3. **UV** with no overlap, inside 0-1, islands ≥ 8 px apart at 2048 (`qa_uv`). Never bake over a failing UV.
 4. **Bake** (basecolor, normal, roughness, metallic, AO) with `bake_robust`; report the invalid-texel %.
    **New model with no high-poly**: nothing to bake, so paint the texture in **TextureCraft** and **ask the user the style

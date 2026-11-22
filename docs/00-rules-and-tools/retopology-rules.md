@@ -13,5 +13,9 @@
    texture. Full theory: `docs/02-retopology/topology.md`.
 5. **Budget**: start from a low target (cow: ~2000 tris after triangulating, ~1000 quads) and justify every loop.
 6. Automatic tools only **measure** (BVH, raycast, fit_report); they do not generate the final mesh.
-7. Statue in "as is" mode: if the reference is crooked/asymmetric, the user fixes it later; do not symmetrize
+7. **No face may cut through another face of the same loose part** (intersection or fold-over), anywhere, at any moment. It is a defect
+   of the geometry, not of looks: the mesh is rejected. Detect with `qa_intersect` (zero tolerance, in `qa.py`, `topo_qa` and
+   `Topo.write`) and keep `tools/general/live_intersect.py` running while you work: faces cutting each other turn red. Never "fix"
+   by hiding it (smoothing until the number is 0 can throw tips onto another part: check the distance to the ref afterwards).
+8. Statue in "as is" mode: if the reference is crooked/asymmetric, the user fixes it later; do not symmetrize
    or edit the reference without being asked.

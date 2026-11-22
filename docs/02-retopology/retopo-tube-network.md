@@ -36,6 +36,10 @@ Trunk (torso, chest) first, then the tubes that leave it (neck, tail, legs), the
 extras (horns, breasts, hair locks) next; face and ears last. Each tube is one round (`retopo-by-parts.md`): one image, one number,
 the artist integrates, next.
 
+## 3b. Tips and webs must not cross themselves
+Tips of toes, claws and webs are tiny quads (1-3 mm): where faces cut each other. After every build run `qa_intersect`; keep
+`live_intersect.py` on while building by hand. Anchor a copied block by the NEW seam ring, never only by a global fit.
+
 ## 4. What the end of a tube must match
 The tip of a toe, claw or tail is part of the silhouette. Check the **extent**, not only the topology: the farthest point of the part
 along each axis, low versus reference, in mm (`fit_report`; the bbox of both). A part that stops 1 cm short of the claws fails even if

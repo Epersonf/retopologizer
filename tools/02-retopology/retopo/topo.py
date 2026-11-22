@@ -113,7 +113,7 @@ class Topo(TopoOps):
                 self.f(G[j][i], G[j][i + 1], G[j + 1][i + 1], G[j + 1][i])
         return G
 
-    def write(self, name, collection=None):
+    def write(self, name, collection=None, check=True):
         o = bpy.data.objects.get(name)
         if o is None:
             o = bpy.data.objects.new(name, bpy.data.meshes.new(name))
@@ -121,4 +121,9 @@ class Topo(TopoOps):
         if o.mode != 'OBJECT':
             raise RuntimeError(name + " is in Edit Mode: leave it before writing")
         self.bm.to_mesh(o.data); o.data.update()
+        if check:  # faces cutting each other are never acceptable in a retopology: stop here, do not hand it on
+            from .qa import _self_intersections
+            r = _self_intersections(self.bm)
+            if r["self_intersections"]:
+                raise RuntimeError("%s: %d face pairs intersect (faces %s). Fix before continuing (write(check=False) only to inspect)." % (name, r["self_intersections"], r["intersecting_faces"][:12]))
         return o

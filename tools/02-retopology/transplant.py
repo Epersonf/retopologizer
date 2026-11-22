@@ -45,6 +45,39 @@ def icp(P, ref, iters=12, maxd=0.04):
     return [Vector(a) for a in A]
 
 
+def anchor(V, src_idx, dst_pts, move_idx, rotate=True):
+    """Moves the vertices `move_idx` by the similarity (rotation + uniform scale + translation) that best maps the seam ring
+    V[src_idx] onto dst_pts (the NEW part's seam ring): the copied block follows the new ring's position, slant and size."""
+    import numpy as np
+    A = np.array([tuple(V[i]) for i in src_idx]); B = np.array([tuple(p) for p in dst_pts])
+    ca, cb = A.mean(0), B.mean(0); U, S, Vt = np.linalg.svd((A - ca).T @ (B - cb))
+    R = Vt.T @ U.T
+    if np.linalg.det(R) < 0: Vt[-1] *= -1; R = Vt.T @ U.T
+    sc = float(S.sum() / ((A - ca) ** 2).sum())
+    if not rotate: R, sc = np.eye(3), 1.0   # toes do not follow the leg slant: only follow the ring position
+    out = list(V)
+    for i in move_idx: out[i] = tuple(((np.array(tuple(V[i])) - ca) @ R.T) * sc + cb)
+    return out
+
+
+def conform(V, F, ref, fixed_idx, iters=40, lam=0.35, maxd=0.03, max_move=None):
+    """Non-rigid fit of a moved copy when the target part is shaped differently (rear vs front paw): alternates a Laplacian
+    smoothing step and a projection onto the ref along the vertex normal; `fixed_idx` (the seam) never moves. Topology untouched."""
+    P = [Vector(p) for p in V]; P0 = list(P); fx = set(fixed_idx); nb = [set() for _ in P]
+    for f in F:
+        for i, a in enumerate(f): nb[a].add(f[(i + 1) % len(f)]); nb[f[(i + 1) % len(f)]].add(a)
+    for _ in range(iters):
+        N = _normals(P, F); Q = list(P)
+        for i, p in enumerate(P):
+            if i in fx: continue
+            avg = sum((P[j] for j in nb[i]), Vector()) / len(nb[i])
+            Q[i] = Vector(ref.snap(p.lerp(avg, lam), N[i], maxd))
+        if max_move:  # nenhum vertice foge mais que max_move da posicao ancorada: evita pontas jogadas para outra parte da superficie
+            Q = [p0 + (q - p0).normalized() * max_move if (q - p0).length > max_move else q for p0, q in zip(P0, Q)]
+        P = Q
+    return [tuple(p) for p in P]
+
+
 def transplant(V, F, ref, M, fixed=None, maxd=0.04, refine=True):
     """Returns (V2, F2, report). refine: rigid ICP onto the ref before snapping (keeps the topology, only places the copy)."""
     M = Matrix(M); fixed = fixed or {}

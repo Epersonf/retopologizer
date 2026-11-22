@@ -1,6 +1,7 @@
-"""QA battery: ONE call runs every gate and returns a short report (one line per check), so an agent spends a few hundred tokens
+r"""QA battery: ONE call runs every gate and returns a short report (one line per check), so an agent spends a few hundred tokens
 instead of reading six result dicts. Checks, cheapest first:
   mesh      qa_mesh.py     quads only, no open border / non-manifold / winding conflict / duplicate
+  intersect qa_intersect.py faces of one loose part cutting through each other: zero tolerance
   budget    triangles <= `budget`
   shape     qa_shape.py    spikes, needle-pointed tubes, thin tubes (+ sliver share, reported)
   floating  qa_floating.py parts that touch nothing
@@ -14,10 +15,11 @@ Command line (worker on 9877): python -I tools/03-qa/qa.py LowPoly --ref HairFul
 import bpy, time
 import os
 ROOT_QA = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools", "03-qa")
-for _f in ("qa_faces", "qa_strict", "qa_shape", "qa_floating", "qa_attach", "qa_local", "qa_fit", "qa_mesh"):
+for _f in ("qa_faces", "qa_strict", "qa_shape", "qa_floating", "qa_attach", "qa_local", "qa_fit", "qa_mesh", "qa_intersect"):
     exec(open(ROOT_QA + "/" + _f + ".py", encoding="utf-8").read())
-ORDER = ["mesh", "budget", "shape", "floating", "attach", "local", "strict", "fit"]
-HINT = {"mesh": "open border = hole: close it; winding: rebuild the part with outward winding; duplicates: merge",
+ORDER = ["mesh", "intersect", "budget", "shape", "floating", "attach", "local", "strict", "fit"]
+HINT = {"intersect": "faces cut through each other: move the listed vertices (relax + project), never leave it; select_faces() shows them",
+        "mesh": "open border = hole: close it; winding: rebuild the part with outward winding; duplicates: merge",
         "budget": "drop the smallest tubes or coarsen the shell counts", "shape": "heal_spikes(); tube: raise min radius / blunt tip",
         "attach": "root deeper into the parent (EXT, hair_connect target + 1 r), never just touching", "floating": "hair_connect.py: extend the tube end to the target point", "local": "folds: heal_flipped after relaxing; move the rim / lid",
         "strict": "heal_flipped(); then change the geometry (rim, lid), never flip by hand", "fit": "cover the clusters: more shells/tubes where it says"}
@@ -26,6 +28,8 @@ HINT = {"mesh": "open border = hole: close it; winding: rebuild the part with ou
 def _line(k, r):
     if k == "mesh":
         return "%d quads-eq tris, tris=%d ngons=%d border=%d nonmanifold=%d winding=%d dup=%d" % (r["triangles_equiv"], r["tris"], r["ngons"], r["open_border_edges"], r["non_manifold_edges"], r["winding_conflicts"], r["duplicate_verts"])
+    if k == "intersect":
+        return "%d faces in %d crossing pairs (parts=%d, buried in other parts=%d): %s" % (r["faces_n"], r["n_pairs"], r["parts"], r["cross_part"], r["faces"][:12])
     if k == "budget":
         return "%d / %d triangles" % (r["tris"], r["budget"])
     if k == "shape":
@@ -44,7 +48,7 @@ def qa_suite(name, ref=None, only=None, skip=(), fast=False, budget=3000):
     raw = {}; lines = []; failed = []
     for k in [c for c in ORDER if (not only or c in only) and c not in skip and (c != "fit" or ref)]:
         t = time.time()
-        r = {"mesh": lambda: qa_mesh(name), "budget": lambda: (lambda m: {"pass": m["triangles_equiv"] <= budget, "tris": m["triangles_equiv"], "budget": budget})(qa_mesh(name)),
+        r = {"mesh": lambda: qa_mesh(name), "intersect": lambda: qa_intersect(name), "budget": lambda: (lambda m: {"pass": m["triangles_equiv"] <= budget, "tris": m["triangles_equiv"], "budget": budget})(qa_mesh(name)),
              "shape": lambda: qa_shape(name), "floating": lambda: qa_floating([name]), "attach": lambda: qa_attach(name), "local": lambda: qa_local(name),
              "strict": lambda: qa_strict([name], n_dirs=100 if fast else 400, res=100 if fast else 200), "fit": lambda: qa_fit(name, ref)}[k]()
         r.pop("_all", None)

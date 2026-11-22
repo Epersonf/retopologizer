@@ -8,6 +8,17 @@ from collections import Counter
 from mathutils.kdtree import KDTree
 
 
+def _self_intersections(bm):
+    """Faces of one loose part cutting through each other (tools/general/face_intersect.py): never allowed."""
+    import os
+    g = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")), "tools", "general", "face_intersect.py")
+    ns = {"__name__": "face_intersect"}; exec(open(g, encoding="utf-8").read(), ns)
+    V = [v.co.copy() for v in bm.verts]; F = [[v.index for v in f.verts] for f in bm.faces]
+    pairs = ns["face_intersections"](V, F); part = ns["loose_parts"](F, len(V))
+    same = [(a, b) for a, b in pairs if part[a] == part[b]]
+    return {"self_intersections": len(same), "intersecting_faces": sorted({f for ab in same for f in ab})[:40]}
+
+
 def topo_qa(name, ref=None, seam_x=None, doubles=0.0005):
     bm = bmesh.new(); bm.from_mesh(bpy.data.objects[name].data); M = bpy.data.objects[name].matrix_world
     bm.transform(M); bm.normal_update()
@@ -33,6 +44,7 @@ def topo_qa(name, ref=None, seam_x=None, doubles=0.0005):
            "wire_edges": sum(1 for e in bm.edges if not e.link_faces), "loose_verts": sum(1 for v in bm.verts if not v.link_edges),
            "doubles": dbl, "winding_conflicts": wind, "poles": {k: val[k] for k in sorted(val) if k != 4},
            "degenerate_faces": sum(1 for f in bm.faces if f.calc_area() < 1e-8)}
+    rep.update(_self_intersections(bm))
     rep["quad_only"] = fc[3] == 0 and fc[5] == 0          # the repo's rule: delivered retopo is quads only
     if ref is not None:
         inward, area, d = 0.0, 0.0, []

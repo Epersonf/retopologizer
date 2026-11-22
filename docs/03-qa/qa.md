@@ -11,7 +11,7 @@ python -I tools/03-qa/qa.py LowPoly --only fit,attach         # only some (--ski
 ```
 Exits with code 1 if any test fails; each FAIL carries a `fix:` line and **where** the problem is (coordinates and region,
 `front-top-right` etc.), so the agent does not need to open 8 dicts. Inside Blender: `qa_suite(name, ref=..., only=..., fast=...)`.
-Order (cheapest to most expensive): `mesh`, `budget`, `shape`, `floating`, `attach`, `local`, `strict`, `fit`.
+Order (cheapest to most expensive): `mesh`, `intersect`, `budget`, `shape`, `floating`, `attach`, `local`, `strict`, `fit`.
 Agent flow: **iterate with `--fast`, run the full one once before showing it to the user**; when the user points at a
 defect that no test caught, write the test first (it must fail the bad file), then fix.
 
@@ -23,6 +23,14 @@ defect that no test caught, write the test first (it must fail the bad file), th
 4. **Shape that reads well**: no spikes, needle tips, thin tubes (`shape`).
 5. **Budget** (`budget`).
 Passing all five together is the minimum; a model that passes only the surface ones (1 and 2 for normals) can still look terrible.
+
+## Intersecting faces (`qa_intersect`, zero tolerance): never in a retopology
+Faces of the SAME loose part that cut through each other, or lie folded over each other, reject the mesh (guara-wolf paws: 64 pairs
+on the rear paw, the artist's selection showed it). `face_intersect.py` triangulates, takes BVH candidates and tests exactly (edge through
+triangle, coplanar overlap, folded shared edge; faces of one polygon and neighbours that merely touch do not count). Parts buried in another
+part are reported as `cross_part`, not failed. `select_faces(obj, r["faces"])` selects them; `untangle.py` moves only those vertices
+(max_move limit) and the distance to the ref must be checked afterwards. While working: `live_intersect.py` paints them red and writes the
+count in the status bar. Also run inside `topo_qa` (`self_intersections`) and `Topo.write` (raises).
 
 ## Chest gate (`qa_all.py`: backfaces + UV + z-fighting)
 `exec(open(r"<repo>\tools\03-qa\qa_all.py", encoding="utf-8").read()); qa_all(["chest_base", "chest_lid"])`

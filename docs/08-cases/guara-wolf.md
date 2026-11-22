@@ -46,3 +46,12 @@ the rear legs start from the artist's method instead of a script's guess.
 Leg: `limb_tube` mirrored (a x = -0.045, z = 0.19; dx = 0, z 0.19 and 0.17 pass, 0.21 fails), 10 x 12, 0 flipped, 0% inward. Toes: the
 recorded pattern (12 quads to a 14-ring, three 6-ring toes), seam aligned to MY end ring (7 mm mean offset, vertices re-snapped).
 `projects/guara-wolf/i4_paw_right.py`. 180 quads, winding 0, inward 0.01%, claws at y -323.8 mm (ref -326.0). Open: skew faces at the webs.
+
+## Error: faces cutting each other at the claws (artist, 2026-11-22)
+The rear paw (and the front one) delivered with faces crossing at the toe tips: 64 pairs / 34 faces on the rear paw, 4 on the front; the artist
+selected them in Blender. The agent only looked at `topo_qa` (no intersection test existed) and at images. Cause: the toe block was copied with a global
+rigid fit, not anchored to the NEW leg's seam ring, then pulled onto the surface; tips of 1-3 mm fold over each other easily. First "fix"
+(relax + project) reached 0 pairs by throwing claw vertices up to 49 mm away: the number was 0 and the paw was wrong. Final fix:
+`transplant.anchor` (ring Procrustes; rear paw: ICP for the toe direction, then translation only), `conform(max_move)`, `untangle(max_move)`.
+Front paw: 0 pairs, claws at y -324.7 (ref -326.0), 0.0% inward. Rear paw: 0 pairs, claws at 114.9 (ref 113.0), 0.4% inward; the outer toe tip is still irregular.
+New: `qa_intersect` (battery, `topo_qa`, `Topo.write` raises), `live_intersect.py`, `untangle.py`, rule 7 in `retopology-rules.md`.

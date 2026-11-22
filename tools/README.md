@@ -35,6 +35,8 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | rec_rebuild.py | inside Blender or `python` | rebuilds the artist's mesh from a recording (`replay`, `rebuild`) when no .blend survived |
 | session_report.py | `python tools/general/session_report.py <rec_dir>` | reads a recording: timeline of operators, face sizes, valences, border, layers from the seam ring |
 | live_rings.py | `python` + user's Blender (MCP 9876) | shows rings, shrink and bridge growing live in the artist's Blender (`play`) |
+| face_intersect.py | inside Blender | exact face-vs-face intersection per loose part: `qa_intersect`, `select_faces`, `face_intersections(V, F)` |
+| live_intersect.py | inside Blender (the artist's too) | `start()`: faces cutting each other are painted red live + count in the status bar; `stop()` |
 | blend_diff.py | inside Blender (one-shot) | what the artist changed between two saves: counts, bbox, moved vertices, thickness, UV (`compare_blends`, `edit_record`) |
 
 ## 01-input-and-measurement/
@@ -47,6 +49,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 ## 02-retopology/ (build by hand and check the shape)
 | file | where it runs | what for |
 |---|---|---|
+| untangle.py | inside Blender | removes intersecting faces / collapsed tips by moving only those vertices (relax + project, `max_move`) |
 | transplant.py | inside Blender | reuses an approved part elsewhere (matrix or mirror) and snaps it to the target ref: no new topology |
 | mesh_lib.py | inside Blender | simple props: `box`, `loft`, `rect_sweep`, `prism`, `pentagon`, `to_object` |
 | snap_retopo.py | inside Blender | hard-surface pieces: loads the three below (`docs/02-retopology/retopo-snap-mirror.md`) |
@@ -80,6 +83,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | qa_fit.py | inside Blender | fidelity to the ref, visible part only: silhouette IoU in 14 directions, holes (ref without coverage), bumps the ref does not have (first-hit depth) |
 | qa_strict.py | inside Blender | zero-tolerance gate: no ray out of 400 directions may hit the back of a face; `heal_flipped` relaxes folds and raises an error if any remain |
 | qa_floating.py | inside Blender | no loose piece floating: groups of parts that touch; returns the gap and the point to reach |
+| qa_intersect.py | inside Blender | faces of one loose part cutting/folding over each other (zero tolerance; core `general/face_intersect.py`) |
 | qa_zfight.py | inside Blender | nearly parallel faces overlapping at < 1 mm, AABB broad phase |
 | qa_mark.py | inside Blender | points out defects on the mesh itself (idea from the TopoToolkit add-on): `qa_*` attributes (border, non-manifold, orphan, doubles, tris, n-gons, poles 3..N) and selects one type, so the `.blend` opens in Edit Mode with them marked |
 | qa_report.py | inside Blender | report of an object as HTML (tables + inline views), TXT or CSV: counts, edge types, valence histogram, battery rows (`battery=True`) |
