@@ -8,7 +8,7 @@ Raw recordings (`projects/*/session/rec_NN`) are heavy (2.2 GB) and `projects/` 
 2. `hf auth login` (once, a Write token from huggingface.co/settings/tokens; the scripts never read or store a token).
 3. `python tools/general/hf_push.py --repo Eperson/retopo-sessions` : dry run, lists recordings and sizes. Add `--go --public` to upload.
    Re-running is safe: recordings already on the Hub are skipped; one that gained a `ref.npz` is re-sent (unchanged files are deduplicated).
-Options: `--no-shots` leaves the PNGs out; `--license <id>` sets the card's licence (default `other`); without `--public` a NEW repo is private.
+Options: `--no-shots` leaves the PNGs out; `--license <id>` sets the card's licence (default `cc-by-4.0`); without `--public` a NEW repo is private.
 
 ## What is uploaded
 `<project>/rec_NN/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png, ref.npz, ref.json}`; schema in the repo's README (dataset card, written by `hf_push.py`).
@@ -19,4 +19,4 @@ Text files are scrubbed first (Windows user name and absolute paths -> `<home>`)
 - Some recordings are almost empty (0-15 actions: espada rec_01-03, curupira rec_04, rec_10); they weigh little.
 - The reference is a 60000-point sample, not the mesh; curupira's 18M-vertex trunk (rec_03-06) is thinly sampled.
 - Screenshots are not inspected one by one: if one shows something private, delete it from the Hub and from `session/` and tell the maintainer.
-- Licence is `other` until chosen: set it with `--license` and re-run.
+- Licence: **CC BY 4.0** (any use, commercial and model training included, attribution only; the text is in the dataset card). The artist decided this; the reference meshes inside `ref.npz` are covered by the same licence.

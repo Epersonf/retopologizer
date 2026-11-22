@@ -7,7 +7,7 @@ r"""Sends the raw recordings (projects/*/session/rec_NN) to a Hugging Face DATAS
 Layout in the repo: <project>/<rec_NN>/{actions.jsonl, events.jsonl, meta.json, checkpoint_*.json, shot_*.png}.
 Scrubbing: text files are copied to a temp folder with the Windows user name and absolute paths replaced (`<home>`) before upload;
 a rec already on the Hub (same file list) is skipped, so it can be re-run after every session. Empty recordings (no actions) are skipped.
-Also writes a README.md (dataset card) with the schema and the licence note you choose with --license (default: unspecified, private)."""
+Also writes a README.md (dataset card) with the schema and the licence chosen with --license (default cc-by-4.0)."""
 import argparse, glob, json, os, re, shutil, sys, tempfile
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 TEXT = (".json", ".jsonl", ".txt", ".md")
@@ -17,6 +17,9 @@ task_categories: [other]
 tags: [retopology, 3d, blender, imitation-learning]
 ---
 # Retopology sessions (Blender)
+Licence: **CC BY 4.0**: free for any use, commercial included, training models included; the only condition is attribution.
+Attribution: "Retopology sessions by Eperson (Braziletto project), https://huggingface.co/datasets/Eperson/retopo-sessions, CC BY 4.0".
+
 Raw recordings of an artist retopologizing game assets by hand (Blender 5.x, `session_recorder.py`). One folder per project and recording.
 - `actions.jsonl`: one line per trigger {{t, n, obj, mode, triggers, actions:[select|add_vertex|move_vertex|add_face|topology_change]}} (vertex ids, local/world coordinates).
 - `events.jsonl`: keys, mouse, operators with properties (extrude, translate, resize, rotate, loop cut, merge...), time in seconds.
@@ -42,7 +45,7 @@ def recs():
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--repo", required=True); ap.add_argument("--go", action="store_true")
-    ap.add_argument("--public", action="store_true"); ap.add_argument("--license", default="other"); ap.add_argument("--no-shots", action="store_true")
+    ap.add_argument("--public", action="store_true"); ap.add_argument("--license", default="cc-by-4.0"); ap.add_argument("--no-shots", action="store_true")
     a = ap.parse_args(); user = os.environ.get("USERNAME") or os.environ.get("USER") or ""
     items = [(r, os.path.relpath(r, os.path.join(ROOT, "projects")).replace(os.sep + "session" + os.sep, "/")) for r in recs()]
     tot = 0
