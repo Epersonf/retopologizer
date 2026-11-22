@@ -5,7 +5,7 @@ flat curved blade itself. Each part is a run of rings along a 2D path; every rin
 reference. Result on the cutlass (1.5M-tri Hunyuan3D reference): 4 meshes, 452 quads / 904 tris, quads only, blade
 mean new→ref error 1.9 mm, guard 2.3–4.6 mm, `topo_qa` clean (no holes, no non-manifold, no winding conflicts).
 
-Code: `tools/02-retopology/tube_path.py` (`build_tube`, `tube_ring`; needs `P` with `draft/raster.npz`) and `examples/cutlass/`
+Code: `tools/02-retopology/tube_path.py` (`build_tube`, `tube_ring`; `load_raster` reads `draft/raster.npz`; no globals) and `examples/cutlass/`
 (`measure_raster.py`, `blade_centerline.py`, `cutlass_blade.py`, `cutlass_guard.py`, `cutlass_grip.py`, `cutlass_uvbake.py`,
 `cutlass_deliver.py`).
 
@@ -31,7 +31,7 @@ Code: `tools/02-retopology/tube_path.py` (`build_tube`, `tube_ring`; needs `P` w
 5. **Tube rings** (`tube_path.tube_ring`): 8 rays from the path point around the tangent, first ray at 22.5° so flat
    faces sit front/back. **The reach depends on the direction**: along ±Y nothing crosses the tube, so up to 8 cm;
    in the XZ plane the reach is the silhouette half width (+4 mm), divided by the cosine to the in-plane normal
-   with a floor (`FLOOR`). An unlimited in-plane ray exits through the blade or the neighbouring tube.
+   with a floor (`floor`). An unlimited in-plane ray exits through the blade or the neighbouring tube.
 6. **Bury the ends** that meet another part: copy the end ring and push it 2–3.5 cm along the tangent, into the
    neighbour, unsnapped (`bury=`). Measuring rings right at the junction catches the neighbour's width.
 7. **Separate shells instead of a T-junction**: the knuckle bow leaves the crossguard sideways; it is its own tube,
@@ -58,7 +58,7 @@ reference surface there belongs to the other part. Bake: 3.8% of texels inpainte
 | ring spikes into the blade | unlimited in-plane ray exits through the neighbour | in-plane reach = silhouette half width |
 | crossguard ring spreads over the blade | where the blade crosses, the silhouette is continuous and the half width is huge | cap to the part's typical half width (`wide=`) |
 | pommel ring shrinks to the grip width | the cap above also hit the pommel (11 cm wide) | raise the measuring range `r` so only truly continuous cuts are capped |
-| pommel vertices pulled onto the knuckle bow | long diagonal rays (`FLOOR=0.3`) | `FLOOR=0.6` on the pommel |
+| pommel vertices pulled onto the knuckle bow | long diagonal rays (`floor=0.3`) | `floor=0.6` on the pommel |
 | blade base ring twisted, error 40 mm | the cut next to the guard measures the guard | inherit the neighbour's profile and put the centre on its line |
 | buried ring visible behind the guard | buried too deep (3.5 cm) through a thin guard | 2 cm, and always render the back view |
 | `wire_overlay` "cannot save" | the PNG is open in an image viewer (Windows locks it) | write each round to a new file name |
@@ -66,5 +66,5 @@ reference surface there belongs to the other part. Bake: 3.8% of texels inpainte
 
 ## Adapting to another piece
 - New path: change the polyline points and ring counts; keep `bury` where parts meet.
-- Thicker or rounder sections: more sides (10–12) and a smaller `FLOOR`.
+- Thicker or rounder sections: more sides (10–12) and a smaller `floor`.
 - Part out of the XZ plane: rotate the reference so its plane of symmetry is XZ before step 2.

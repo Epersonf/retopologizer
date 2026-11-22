@@ -1,14 +1,18 @@
 # N-sided tubes along a path in the XZ plane (guard, grip), rings snapped by rays onto REFERENCE.
-# Use: exec after snap_retopo.py, with P set (the project folder with draft/raster.npz); build_tube(S, name, points, rings, ...).
+# Use: exec after snap_retopo.py, R = load_raster(P + "draft/raster.npz"); build_tube(S, R, name, points, rings, ...).
 # Guide: docs/02-retopology/retopo-tube-path.md
 import numpy as np
 from mathutils import Vector
-d = np.load(P + "draft/raster.npz"); T = d["yf"] - d["yb"]; xs, zs = d["xs"], d["zs"]
-SIDES = 8
-FLOOR = 0.3                                                       # max diagonal reach = half width / FLOOR
+SIDES = 8                                                         # the octagon caps in build_tube assume 8
 
 
-def inside(q):
+def load_raster(path):
+    d = np.load(path)
+    return d["yf"] - d["yb"], d["xs"], d["zs"]                    # thickness, x and z of the cells
+
+
+def inside(R, q):
+    T, xs, zs = R
     j = int(round((q[0] - xs[0]) / 0.002)); i = int(round((q[1] - zs[0]) / 0.002))
     return 0 <= i < len(zs) and 0 <= j < len(xs) and np.isfinite(T[i, j])
 
@@ -28,8 +32,8 @@ def resample(pts, n):
     return np.c_[np.interp(u, seg, pts[:, 0]), np.interp(u, seg, pts[:, 1])]
 
 
-def halfwidth(p, n, r=0.04, wide=0.016):
-    s = np.arange(-r, r, 0.002); m = np.array([inside(p + n * k) for k in s])
+def halfwidth(R, p, n, r=0.04, wide=0.016):
+    s = np.arange(-r, r, 0.002); m = np.array([inside(R, p + n * k) for k in s])
     if not m[len(s) // 2]:
         return 0.015
     lo = hi = len(s) // 2
@@ -41,20 +45,20 @@ def halfwidth(p, n, r=0.04, wide=0.016):
     return wide if wide and w >= r - 0.01 else w                  # continuous silhouette (blade crossing): typical width of the part
 
 
-def tube_ring(S, c, t, r, wide):
+def tube_ring(S, R, c, t, r, wide, floor=0.3):   # floor: max diagonal reach = half width / floor
     # Rays along Y go far (nothing crosses them); in the XZ plane the reach is the silhouette half width, or the ray runs into the blade.
-    n = np.array([-t[1], t[0]]); hw = halfwidth(c, n, r, wide) + 0.004; C3 = Vector((c[0], 0.0, c[1]))
+    n = np.array([-t[1], t[0]]); hw = halfwidth(R, c, n, r, wide) + 0.004; C3 = Vector((c[0], 0.0, c[1]))
     a, u, v = basis((t[0], 0.0, t[1]), (0, 1, 0)); pts = []
     for k in range(SIDES):
         ang = np.radians(22.5 + 360 * k / SIDES); dvec = u * np.cos(ang) + v * np.sin(ang)
-        reach = 0.08 if abs(dvec.y) > 0.7 else hw / max(abs(dvec.x * n[0] + dvec.z * n[1]), FLOOR)
+        reach = 0.08 if abs(dvec.y) > 0.7 else hw / max(abs(dvec.x * n[0] + dvec.z * n[1]), floor)
         h = S.bv.ray_cast(C3, dvec, reach)
         pts.append(tuple(h[0]) if h[0] is not None else S.nearest(tuple(C3 + dvec * reach), 0.03))
     return pts
 
 
-def recenter(p, n, r=0.04):
-    s = np.arange(-r, r, 0.002); m = np.array([inside(p + n * k) for k in s])
+def recenter(R, p, n, r=0.04):
+    s = np.arange(-r, r, 0.002); m = np.array([inside(R, p + n * k) for k in s])
     if not m.any():
         return p
     lo = hi = int(np.argmin(np.where(m, abs(s), 9)))
@@ -66,12 +70,12 @@ def recenter(p, n, r=0.04):
 
 
 
-def build_tube(S, name, pts, n, bury=(0.0, 0.0), r=0.04, wide=0.016):
+def build_tube(S, R, name, pts, n, bury=(0.0, 0.0), r=0.04, wide=0.016, floor=0.3):
     C = resample(chaikin(np.array(pts)), n)
     tg = np.gradient(C, axis=0); tg /= np.linalg.norm(tg, axis=1)[:, None]
-    C = np.array([recenter(c, np.array([-t[1], t[0]])) if 0 < i < n - 1 else c for i, (c, t) in enumerate(zip(C, tg))])
+    C = np.array([recenter(R, c, np.array([-t[1], t[0]])) if 0 < i < n - 1 else c for i, (c, t) in enumerate(zip(C, tg))])
     tg = np.gradient(C, axis=0); tg /= np.linalg.norm(tg, axis=1)[:, None]
-    M = Mesh(); rings = [[M.v(tuple(p)) for p in tube_ring(S, c, t, r, wide)] for c, t in zip(C, tg)]
+    M = Mesh(); rings = [[M.v(tuple(p)) for p in tube_ring(S, R, c, t, r, wide, floor)] for c, t in zip(C, tg)]
     for k, sgn, dist in ((0, -1, bury[0]), (-1, 1, bury[1])):   # end buried in the neighbouring part
         if dist:
             g = tg[k] * sgn * dist

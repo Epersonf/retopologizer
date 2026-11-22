@@ -17,9 +17,9 @@ PATHS = {
 }
 BURY = {"KnuckleBow": (0.025, 0.025)}                             # bow ends go into the crossguard and the pommel
 
-S = Surface("REFERENCE"); out = {}
+S = Surface("REFERENCE"); R = load_raster(P + "draft/raster.npz"); out = {}
 for name, (pts, n) in PATHS.items():
-    out[name] = len(build_tube(S, name, pts, n, BURY.get(name, (0.0, 0.0))).data.polygons)
+    out[name] = len(build_tube(S, R, name, pts, n, BURY.get(name, (0.0, 0.0))).data.polygons)
 exec(open(ROOT + "tools/02-retopology/wire_overlay.py").read())
 for v in ("front", "persp", "back"):
     wire_overlay(["Crossguard", "KnuckleBow"], P + f"draft/guard_{v}.png", view=v, shade=["REFERENCE"], center=(0.13, 0, 0.19), size=0.42, res=900)
