@@ -26,8 +26,9 @@ the outer shrink does not leave through a gap.
 |---|---|
 | `wrap(ref, c, axis, n=12, up=(0,0,1), mode="in", margin=1.6)` | `(start, end)`: the circle and where each point lands |
 | `limb_ring(ref, c, axis, n, name, mode)` | one wrapped ring as an object |
-| `ring_stations(length, radius, joints=(), per_joint=3, straight=1)` | station fractions 0..1, denser at joints |
-| `limb_tube(ref, a, b, stations, n, name, up, cap, mode)` | rings at the stations + bridges; `stations` is a count or a list; keeps `T.centers` |
+| `ring_stations(length, radius, joints=(), per_joint=3, straight=1)` | simple stations: denser at joints (use `auto` below instead) |
+| `sample_profile`, `extrema`, `auto_stations` | profile A(t), its extrema by derivative, exact stations (section 4) |
+| `limb_tube(ref, a, b, stations, n, name, up, cap, mode, joints, tol)` | rings at the stations + bridges; `stations` is a count, a list or `auto`; keeps `T.centers`, `T.profile` |
 | `bridge(T, A, B)` | faces between two rings (A, B lists of vertices) |
 
 All return a `Topo` (or write one) and are exported by `retopo`. Run `topo_qa` afterwards.
@@ -38,17 +39,27 @@ All return a `Topo` (or write one) and are exported by `retopo`. Run `topo_qa` a
   arc fraction: a quad when both advance together, a triangle when one side has to wait. 12 -> 8 gives 16 faces: 4 quads + 12 triangles.
   Prefer ratios of 2 (12 -> 6) to get a clean 2-to-1 transition; the triangles are the cost of an arbitrary ratio.
 
-## 4. Where to put rings (density from the rig)
-`ring_stations` implements the first rule; the others are the plan.
-- **Joints** (implemented): `per_joint` rings around each joint fraction, spaced `radius / 2`; both ends; `straight` rings in a gap larger
-  than `4 x spacing`. Female A-pose arm trimmed to 22%..100% of shoulder-wrist (radius 0.04, elbow at 0.34): stations
-  `0, 0.26, 0.34, 0.42, 0.71, 1.0` = 6 rings.
-- **Skin weights** (plan): where two bones share a vertex (about 50/50 in the heat weights) the surface bends; more rings there.
-- **Range of motion** (plan): knee and elbow ~140 degrees, shoulder nearly free, wrist little; scale `per_joint` by it.
-- **Surface curvature** (plan): curved at rest = more rings; a straight cylinder needs few.
-- **N per ring** may change too: 12-16 at joints, 8 on straight parts, hence the different-N bridge.
+## 4. Where to put rings: the profile A(t) and its derivative (`retopo/profile.py`)
+Rings must go where the shape changes, not at even steps (a uniform 6-ring arm missed the widest part of the forearm). The rule is exact:
+1. **Profile.** For m = 80 stations `t` along the limb (centres re-centred as in section 1) measure the section area
+   `A(t)` (shoelace over the N inside-ray points) and the equivalent radius `r(t) = sqrt(A / pi)`.
+2. **Despike.** A median of 5 samples removes measuring artefacts: one or two samples where a ray leaves through the elbow crease or the
+   thumb (raw r jumped to 60-80 mm). A real bulge is wider than 2 samples (2.5% of the limb) and survives.
+3. **Derivative.** `dr/dt` of the smoothed profile (moving average, k = 2). A sign change of `dr/dt` is a local **maximum** (+ to -) or
+   **minimum** (- to +): a progression of shrinking that starts growing is a minimum. Zigzags smaller than `prominence x mean(r)`
+   (5%) are dropped and extrema must alternate. Each extremum is a ring.
+4. **Joints.** `per_joint` rings (3) around each joint fraction from the rig, spaced half a mean radius.
+5. **Error control.** Between consecutive stations, if the profile deviates from the straight line by more than `tol x mean(r)`
+   (6%), the worst point becomes a station and the two halves are checked again (Douglas-Peucker on `(t, r)`). So
+   `|r(t) - piecewise-linear| <= tol x mean(r)` everywhere: nothing relevant is lost, a straight taper needs no rings.
+6. **Aspect.** No gap longer than `max_aspect` (3) quad widths `2 pi r / N`: long quads deform badly; the gap is split evenly.
 
-The rig comes first: `autorig.detect` (or the Rig Studio markers) gives `a`, `b` and the joint fractions.
+Calls: `sample_profile(ref, a, b, m)`, `extrema(t, r, prominence)`, `auto_stations(P, joints, tol, prominence, n, max_aspect)`;
+`limb_tube(..., stations="auto", joints=[...])` does all of it and keeps `T.profile`.
+Result on the female A-pose arm (22%..100% of shoulder-wrist; elbow joint at 0.34): extrema = max 0.06 (upper arm, 45 mm), min 0.32
+(elbow crease, 37 mm), **max 0.49 (forearm bulge, 42.5 mm)**, min 0.89 (wrist, 32.7 mm), max 0.97 (hand, 36 mm); stations
+`0, .06, .25, .32, .34, .42, .49, .69, .89, .97, 1` = 11 rings, 120 quads.
+Planned inputs (not built): skin weights (50/50 zones), range of motion per joint, surface curvature; N per ring (12-16 at joints, 8 straight).
 
 ## 5. Example (Blender worker, female A-pose, left arm)
 ```python
@@ -61,10 +72,10 @@ ob = bpy.data.objects["Body"]; J, B, _ = detect(mesh_of([ob])); ref = Ref("Body"
 a, e, h = [Vector(J[k]) for k in ("LeftArm", "LeftForeArm", "LeftHand")]
 a = a + (h - a) * 0.22                      # past the shoulder, where the torso would catch the rings
 L = (h - a).length
-T = limb_tube(ref, a, h, ring_stations(L, 0.04, joints=[(e - a).length / L]), n=12, name="Arm")
+T = limb_tube(ref, a, h, "auto", n=12, name="Arm", joints=[(e - a).length / L])
 ```
-Result: 6 rings x 12 = 72 vertices, 60 quads, every vertex within 0.1 mm of the surface (`Ref.nearest`), ring radii following the
-taper (3.6 -> 3.3 cm on the forearm). Same N on all rings; a 12 -> 8 pair gives the 4 quads + 12 triangles above.
+Result: 11 rings x 12 = 132 vertices, 120 quads, every vertex within 0.1 mm of the surface (`Ref.nearest`), ring radii following the
+taper (see section 4). Same N on all rings; a 12 -> 8 pair gives the 4 quads + 12 triangles above.
 
 ## 6. Limits (plan around them)
 - **Concave sections** (arm against torso in A-pose, ears): mode `"in"` plus the 1.25 acceptance test copes with an arm beside the torso,
@@ -77,12 +88,13 @@ taper (3.6 -> 3.3 cm on the forearm). Same N on all rings; a 12 -> 8 pair gives 
   with the artist deciding N and seams.
 - Not built yet: automatic segmentation of the whole body, the interactive mode in the Rig Studio page (click a limb, ring appears),
   a clean 2-to-1 transition without triangles, density from skin weights and range of motion.
+- The profile measures the section by inside rays: on a deep crease or a thumb it jumps (despiked, see section 4), so very small features (< 2.5% of the limb) are not detected.
 
 ## 7. The demo video
 ```
 python tools/general/blender_rpc.py --port 9877 tools/02-retopology/limb_demo_data.py   # writes projects/limb-demo/data.json
-python tools/02-retopology/limb_demo_video.py [data.json] [out.mp4]                     # matplotlib + ffmpeg, 24 fps, 15 s
+python tools/02-retopology/limb_demo_video.py [data.json] [out.mp4]                     # matplotlib + ffmpeg, 24 fps, 21 s
 ```
-Timeline: ring appears (yellow) -> shrink (green, radial guides) -> second ring -> bridge (orange faces) -> the rest of the rings
+Timeline: the profile A(t) is drawn with its extrema (4.5 s), then a ring appears (yellow) -> shrink (green, radial guides) -> second ring -> bridge (orange faces) -> the rest of the rings
 (faster) -> result with the reference fading out. Camera azimuth sweeps from 65 to 15 degrees (`YAW0`, `YAW1` env) so the rings are
 seen as ellipses first and the tube from the side at the end. The drawing is numpy/matplotlib from the json: no Blender at render time.

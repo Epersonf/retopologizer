@@ -8,7 +8,7 @@ OUT = "C:/Users/epers/Desktop/retopologizer/projects/limb-demo/data.json"
 import os; os.makedirs(os.path.dirname(OUT), exist_ok=True)
 from mathutils import Vector
 import importlib, retopo; importlib.reload(retopo)
-from retopo import Ref, limb_tube, ring_stations
+from retopo import Ref, limb_tube, auto_stations
 from autorig.load import mesh_of
 from autorig.detect import detect
 ob = bpy.data.objects["Body"]
@@ -16,9 +16,9 @@ J, B, _ = detect(mesh_of([ob])); ref = Ref("Body")
 a, e, h = [Vector(J[k]) for k in ("LeftArm", "LeftForeArm", "LeftHand")]
 a = a + (h - a) * 0.22                                   # start past the shoulder: rings there would catch the torso
 L = (h - a).length; ef = (e - a).length / L; N = 12
-st = ring_stations(L, 0.04, joints=[ef])
 for o in [o for o in bpy.data.objects if o.name.startswith("Arm_")]: bpy.data.objects.remove(o)
-T = limb_tube(ref, a, h, st, N, "Arm_demo")
+T = limb_tube(ref, a, h, "auto", N, "Arm_demo", joints=[ef])
+st, info = auto_stations(T.profile, [ef], return_info=True, n=N)
 t = bpy.data.objects["Arm_demo"]; P = [list(v.co) for v in t.data.vertices]
 rings = []
 for i, c in enumerate(T.centers):
@@ -30,5 +30,5 @@ def near(v):                                                 # only the arm: clo
 keep = {i for i, v in enumerate(V) if near(v)}
 tri = [[p for p in f.vertices] for f in M.polygons if all(p in keep for p in f.vertices)]
 json.dump({"ref_v": V, "ref_f": tri, "rings": rings, "faces": [list(p.vertices) for p in t.data.polygons], "stations": st,
-           "elbow": ef, "joints": {"shoulder": list(a), "elbow": list(e), "wrist": list(h)}}, open(OUT, "w"))
+           "elbow": ef, "profile": {"t": [float(x) for x in T.profile["t"]], "r": [float(x) for x in T.profile["r"]], "raw": [float(x) for x in T.profile["raw"]]}, "extrema": info["extrema"], "joints": {"shoulder": list(a), "elbow": list(e), "wrist": list(h)}}, open(OUT, "w"))
 result = {"rings": len(rings), "faces": len(t.data.polygons), "ref_tris": len(tri), "out": OUT}

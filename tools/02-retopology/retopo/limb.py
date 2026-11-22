@@ -12,6 +12,7 @@ from mathutils import Vector
 from .contour import align, centred, frame
 from .curves import arc
 from .topo import Topo
+from .profile import sample_profile, auto_stations
 
 
 def circle(c, axis, up, n, r):
@@ -52,8 +53,11 @@ def ring_stations(length, radius, joints=(), per_joint=3, straight=1):
     return out + [ts[-1]]
 
 
-def limb_tube(ref, a, b, stations=6, n=12, name="Tube", up=(0, 0, 1), cap=False, mode="in"):
+def limb_tube(ref, a, b, stations=6, n=12, name="Tube", up=(0, 0, 1), cap=False, mode="in", joints=(), tol=0.06):
+    """stations: a count, a list of fractions, or "auto" (extrema of the area profile + joints + error tolerance `tol`, see profile.py)."""
     a, b = Vector(a), Vector(b); d = (b - a).normalized(); T = Topo(ref)
+    if stations == "auto":
+        T.profile = sample_profile(ref, a, b, up=up); stations = auto_stations(T.profile, joints, tol=tol, n=n)
     ts = [i / (stations - 1) for i in range(stations)] if isinstance(stations, int) else list(stations)
     loops, prev, pc = [], None, None
     for t in ts:
