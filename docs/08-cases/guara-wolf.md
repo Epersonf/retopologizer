@@ -61,3 +61,8 @@ After the intersection fix the artist selected one toe tip and said it was not f
 nothing crossed and all vertices were 0 mm from the surface. Numbers: face 170 had its two triangles folded onto each other (cosine -0.99), 168 and 171
 too (-0.88, -0.84); faces 127 and 178 looked into the toe (normal vs surface -0.88, -0.84); 127 was 2-3 mm behind 170-172. The front paw had one (face 120).
 New test `qa_faceshape` (rule 8, `docs/03-qa/qa.md`).
+
+## Toe refinement after `qa_faceshape` (2026-11-22)
+`l1_build_paw.py` now loads `face_shape.py`, so `untangle` also repairs twisted/stamped/inverted faces. Front paw: clean with `max_move` 8 mm.
+Rear paw: stuck at 13 bad faces with 8 and 12 mm (the template seam is 10.7 mm from the new leg ring), clean with 20 mm (`MAX_MOVE` in `l2_run_hind.py`),
+claw tip 113.8 mm vs ref 113.0. Both paws: `qa_intersect` and `qa_faceshape` pass. `qa_shape` still reports 1 pointed vertex (claw tip) and 1.1% slivers: natural for a claw.
