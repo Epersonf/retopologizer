@@ -16,10 +16,11 @@ Command line (worker on 9877): python -I tools/03-qa/qa.py LowPoly --ref HairFul
 import bpy, time
 import os
 ROOT_QA = os.path.join(os.environ.get("RETOPOLOGIZER_ROOT") or (os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")) if "__file__" in globals() else os.getcwd()), "tools", "03-qa")
-for _f in ("qa_faces", "qa_strict", "qa_shape", "qa_floating", "qa_attach", "qa_local", "qa_fit", "qa_mesh", "qa_intersect", "qa_faceshape"):
+for _f in ("qa_faces", "qa_strict", "qa_shape", "qa_floating", "qa_attach", "qa_local", "qa_fit", "qa_mesh", "qa_intersect", "qa_faceshape", "qa_cover"):
     exec(open(ROOT_QA + "/" + _f + ".py", encoding="utf-8").read())
-ORDER = ["mesh", "intersect", "faceshape", "budget", "shape", "floating", "attach", "local", "strict", "fit"]
-HINT = {"faceshape": "twisted quad = two triangles folded on each other: move its corners onto ONE sheet of the surface (untangle), never leave it",
+ORDER = ["mesh", "intersect", "faceshape", "budget", "shape", "floating", "attach", "local", "strict", "fit", "cover"]
+HINT = {"cover": "a toe/limb of the ref is missing or collapsed: build it from the ref slices (toe_axes rule, docs/08-cases/toes-artist-why.md); clusters say where",
+        "faceshape": "twisted quad = two triangles folded on each other: move its corners onto ONE sheet of the surface (untangle), never leave it",
         "intersect": "faces cut through each other: move the listed vertices (relax + project), never leave it; select_faces() shows them",
         "mesh": "open border = hole: close it; winding: rebuild the part with outward winding; duplicates: merge",
         "budget": "drop the smallest tubes or coarsen the shell counts", "shape": "heal_spikes(); tube: raise min radius / blunt tip",
@@ -34,6 +35,8 @@ def _line(k, r):
         return "%d faces: twisted=%s stamped=%d inverted_vs_ref=%d" % (r["faces_n"], r["twisted"][:6], len(r["stamped"]), len(r["inverted"]))
     if k == "intersect":
         return "%d faces in %d crossing pairs (parts=%d, buried in other parts=%d): %s" % (r["faces_n"], r["n_pairs"], r["parts"], r["cross_part"], r["faces"][:12])
+    if k == "cover":
+        return "%.2f%% of the ref near the part is uncovered (worst %.1f mm): %s" % (r["uncovered_pct"], r["worst_mm"], [(c["centroid_mm"], c["points"]) for c in r["clusters"][:4]])
     if k == "budget":
         return "%d / %d triangles" % (r["tris"], r["budget"])
     if k == "shape":
@@ -50,11 +53,11 @@ def _line(k, r):
 
 def qa_suite(name, ref=None, only=None, skip=(), fast=False, budget=3000):
     raw = {}; lines = []; failed = []
-    for k in [c for c in ORDER if (not only or c in only) and c not in skip and (c != "fit" or ref)]:
+    for k in [c for c in ORDER if (not only or c in only) and c not in skip and (c not in ("fit", "cover") or ref)]:
         t = time.time()
         r = {"mesh": lambda: qa_mesh(name), "intersect": lambda: qa_intersect(name), "faceshape": lambda: qa_faceshape(name, ref=ref), "budget": lambda: (lambda m: {"pass": m["triangles_equiv"] <= budget, "tris": m["triangles_equiv"], "budget": budget})(qa_mesh(name)),
              "shape": lambda: qa_shape(name), "floating": lambda: qa_floating([name]), "attach": lambda: qa_attach(name), "local": lambda: qa_local(name),
-             "strict": lambda: qa_strict([name], n_dirs=100 if fast else 400, res=100 if fast else 200), "fit": lambda: qa_fit(name, ref)}[k]()
+             "strict": lambda: qa_strict([name], n_dirs=100 if fast else 400, res=100 if fast else 200), "fit": lambda: qa_fit(name, ref), "cover": lambda: qa_cover(name, ref)}[k]()
         r.pop("_all", None)
         raw[k] = r; ok = bool(r["pass"]); failed += [] if ok else [k]
         lines.append("%s %-8s %s  (%.0fs)%s" % ("PASS" if ok else "FAIL", k, _line(k, r), time.time() - t, "" if ok else "\n     fix: " + HINT[k]))

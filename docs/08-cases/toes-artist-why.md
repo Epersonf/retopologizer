@@ -43,3 +43,13 @@ Ring radii from the tip backwards (middle toe): 0 / 5.1 / 9.8 / 12.2 / 13.4 / 15
 3. `base_connect`: 14 seam columns (cut loops 0-1 and 11-0 on the leg), bridge columns to the three bases, poles only at the gaps. **Check:** 0 border edges except the leg's open end.
 4. `qa_toes`: every ref claw tip has a mesh vertex within 3 mm; every toe has >= 4 rings; `find_doubles` 0.6 mm = 0; border edges = leg end only.
 5. Merge by distance (0.6 mm) is part of every build; `Topo.write` raises if doubles remain.
+
+## 5. Status of the automation (honest)
+| piece | state |
+|---|---|
+| merge by distance | **done** `merge_doubles.py`, run by every paw build; `Topo.write` refuses duplicates |
+| cleanup of defects without destroying the work | **done** `face_polish.py` (the artist's mesh: 5 vertices, <= 5.7 mm) |
+| toes present and covering the ref | **done as a test** `qa_cover` (artist 0.67%, agent's paw 4.77%) |
+| each toe on its own ref toe (transplant) | done `toe_fit.py`, but it still reuses a template: not the recipe |
+| `toe_axes` (rule 1: direction, split depth, 3 axes and tips from the ref) | **not working**: a first version took the principal axis of the nearby ref points, which on a paw that bends 90 deg at the ankle is the body, not the toes; needs the ground/forward direction or the leg's own flow as input |
+| `toe_tube` (rule 2) and `base_connect` (rule 3, the 197 s hand base) | **not started**; these are what makes it work "without help". The recipe of section 1 is complete enough to implement them |

@@ -123,6 +123,11 @@ class Topo(TopoOps):
         self.bm.to_mesh(o.data); o.data.update()
         if check:  # faces cutting each other are never acceptable in a retopology: stop here, do not hand it on
             from .qa import _self_intersections, _face_shape
+            from mathutils.kdtree import KDTree
+            kd = KDTree(len(self.bm.verts)); [kd.insert(v.co, i) for i, v in enumerate(self.bm.verts)]; kd.balance()
+            dup = sum(1 for v in self.bm.verts if len(kd.find_range(v.co, 0.0006)) > 1) // 2   # merge by distance: the artist's recording forgot it
+            if dup:
+                raise RuntimeError("%s: %d pairs of vertices closer than 0.6 mm: merge by distance (tools/02-retopology/merge_doubles.py) before writing." % (name, dup))
             s = _face_shape(self.bm, self.ref)
             if s["twisted_quads"] or s["stamped_faces"] or s["inverted_vs_ref"]:
                 raise RuntimeError("%s: twisted/stamped/inverted faces %s. Fix before continuing." % (name, s["bad_shape_faces"][:12]))

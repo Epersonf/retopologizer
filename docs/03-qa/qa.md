@@ -44,6 +44,19 @@ The tests do not replace the others: `qa_intersect` finds crossings, this finds 
 (`twisted_quads`, `stamped_faces`, `inverted_vs_ref`), `Topo.write` (raises), `untangle` (repairs them) and `live_intersect.py` (magenta).
 `tools/03-qa/test_intersect.py` is the regression: bad meshes must fail, good ones pass; run it after touching either module.
 
+## Coverage (`qa_cover`): does the mesh cover the ref near it?
+Guara-wolf rear paw: every face was clean (`qa_intersect`, `qa_faceshape` pass) while the left toe was collapsed into a 5 mm blob and the tip of the middle toe missing:
+no face-level test can see an absent toe. `qa_coverage.py` takes the ref vertices inside the mesh bounding box (+ 10 mm) whose nearest point on the mesh is between
+6 mm and 30 mm (too far to be covered, too near to be another body part; points whose nearest face touches an open border are skipped: that piece belongs to the next part)
+and reports the share (`uncovered_pct`) and the clusters (centroid in mm). Pass <= 1%.
+| mesh | uncovered | clusters |
+|---|---|---|
+| artist's rear toes (rec_02, merged) | 0.67% (pass) | one, 242 points at (-126,168,42): the ref belly above the ankle, also in the leg alone |
+| agent's rear paw, round 2 | 4.77% (fail) | (-136,129,38) 907 points (knuckle), (-165,193,10), (-175,145,2) the left toe tip, (-156,117,3) the middle tip |
+| agent's front paw | 1.52% (fail) | (-28,-304,31) 484 points, (-54,-317,36) |
+Limit: it sees a toe that is built badly or short, not a toe that lies outside the bounding box of a leg-only mesh (that is `qa_fit` / `budget`).
+Regression: `tools/03-qa/test_cover.py` (a sphere with a cap missing must fail, the full one pass).
+
 ## Chest gate (`qa_all.py`: backfaces + UV + z-fighting)
 `exec(open(r"<repo>\tools\03-qa\qa_all.py", encoding="utf-8").read()); qa_all(["chest_base", "chest_lid"])`
 raises an error if any test fails (`raise_on_fail=False` just returns the report).
