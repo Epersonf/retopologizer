@@ -20,6 +20,7 @@ Paths in the guides: always `docs/<folder>/<file>.md`, from the repo root.
 | | retopo-hair-tubes.md | fused strands/tubes (hair): one separate mesh per tube, strand detector, polygon budget |
 | | retopo-tube-path.md | thin parts along a planar curve (sword guard, grip, curved blade): rings of rays with per-direction reach, buried ends |
 | | retopo-ring-tubes.md | closed tube along a curved band open on one side (headband, bracelet): spine by angular slices, hull ring per slab |
+| | retopo-convex-parts.md | ring, shrink, bridge: tubes of rings per limb, density from the rig, API, example, limits (face), demo video |
 | 03-qa (4) | qa.md | checking the mesh before UV, bake and export |
 | 04-uv-bake (5 and 6) | uv-bake.md | UV, PBR maps, high-to-low bake, artifacts |
 | | texturecraft-cli.md | painting/retouching in TextureCraft through the CLI (the MCP cannot read files) |

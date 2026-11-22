@@ -26,3 +26,6 @@ band this thin, and `lock` expects a given axis. Here the spine comes from the s
   falls back to the mean radius for angles with no point.
 - Ring sign flips (`u @ prev_u < 0`) are what twist a tube; `hull_section` already handles it, but a custom spine must
   keep the rings in order along one direction.
+
+## One call around a limb
+`retopo/limb.py` (`limb_ring`, `limb_tube`, `bridge`): see `retopo-convex-parts.md` (ring, shrink, bridge, density from the rig, demo video).

@@ -119,6 +119,7 @@ repo root or set `RETOPOLOGIZER_ROOT`.
 | rig_chain.py | inside Blender | rig for a limb-like prop (wing, tail, cape): bone chain, numeric positional weights, looping flap animation |
 | autorig/ | `blender -b --factory-startup --python tools/06-rig/autorig/cli.py -- modelo saida.fbx` | humanoid auto-rig, Mixamo style (`autorig/README.md`) |
 | rig_studio/ | `python tools/06-rig/rig_studio/server.py` then open http://127.0.0.1:8765 | Mixamo-style auto-rigger page: upload, orient (green arrow = front), markers (chin, wrists, elbows, knees, groin) or fully automatic, LOD, symmetry, skeleton + test pose preview, FBX download |
+| limb_demo_data.py, limb_demo_video.py | worker, then `python tools/02-retopology/limb_demo_video.py` | animated demo of ring, shrink and bridge on an arm (`docs/02-retopology/retopo-convex-parts.md`) |
 
 Blender: `C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe` (5.3).
 
